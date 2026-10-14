@@ -4,18 +4,33 @@ Repo tujuan: `https://github.com/dhimasbebe/Mei-V2.git` (publik, saat ini **koso
 
 ---
 
-## Status saat ini (sudah dikerjakan)
+## Status saat ini (15 Okt 00:35)
 
 | Langkah | Status |
 |---|---|
 | `git init -b main` di `mei-v2/` | Selesai |
-| 291 berkas di-stage (artefak berat terabaikan) | Selesai |
-| Commit pertama `b5446fd` | Selesai |
-| Remote `origin` diarahkan ke `dhimasbebe/Mei-V2.git` | Selesai |
-| **Autentikasi GitHub** | **Belum — hanya Anda yang bisa** |
-| **Push** | **Belum** |
+| Commit pertama `b5446fd` | Selesai — **sudah ada di GitHub** |
+| Identitas git lokal → `dhimasbebe <dhimasbintangbb@gmail.com>` | Selesai |
+| Remote `origin` → `dhimasbebe/Mei-V2.git` | Selesai |
+| Autentikasi GitHub | Selesai (commit pertama berhasil di-push) |
+| 3 commit terbaru di lokal | **Belum di-push** |
 
-Karena repo tujuan masih kosong, push pertama akan bersih. **Tidak perlu `--force`.**
+Riwayat lokal sekarang lurus di atas `origin/main`:
+
+```
+a53abb5  chore: abaikan artefak uji & log diagnostik, tambah skrip analyzer
+e01c374  fix: bersihkan 12 temuan flutter analyze
+1a4daed  docs: panduan push Mei-V2 ke GitHub
+b5446fd  feat: redesign UI berbasis role + perbaiki layar scan   <- origin/main
+```
+
+Status: `## main...origin/main [ahead 3]` — **push akan fast-forward. Tidak perlu `--force`.**
+
+> **Catatan riwayat.** Commit pertama sempat di-*amend* setelah di-push (untuk memperbaiki
+> identitas penulis), sehingga `main` lokal dan `origin/main` sempat bercabang. Isi amend
+> identik dengan commit asli, jadi riwayat sudah diluruskan kembali di atas `origin/main`.
+> Tidak ada pekerjaan yang hilang.
+
 
 ---
 
@@ -39,11 +54,37 @@ git show --stat --oneline HEAD | more
 
 ---
 
-## Langkah 2 — Autentikasi ke GitHub
+## Langkah 2 — Push lewat GitHub Desktop
 
-Pilih salah satu. **Cara A lebih mudah.**
+Autentikasi sudah beres (commit pertama berhasil di-push), jadi langsung ke push.
 
-### Cara A — GitHub CLI (disarankan)
+1. Buka **GitHub Desktop**.
+2. Menu **File → Add local repository…**
+3. Pilih folder `C:\Users\user\WorkBuddy AI\Mei-V\mei-v2`, lalu **Add repository**.
+   GitHub Desktop mengenali repo yang sudah ada — ia tidak membuat repo baru.
+4. Di bar atas muncul tombol **Push origin** dengan keterangan **3 commits**. Klik.
+   - Bila yang muncul **Publish branch**, itu juga benar — artinya sama: cabang
+     `main` lokal dikirim ke `origin`.
+   - **Jangan** pakai **Repository → Publish repository**. Repo `Mei-V2` sudah ada
+     di GitHub, dan menu itu mencoba *membuat* repo baru (akan gagal).
+5. Tunggu sampai selesai. Tombol berubah jadi **Fetch origin** dan panel kiri
+   berbunyi "No local changes".
+
+Verifikasi: buka <https://github.com/dhimasbebe/Mei-V2/commits/main> — harus
+terlihat 4 commit dengan `a53abb5` paling atas.
+
+### Bila GitHub Desktop meminta login lagi
+
+Pilih **Sign in with your browser**, lalu selesaikan di browser. Setelah itu
+ulangi langkah 4.
+
+---
+
+## Langkah 2b — Alternatif: autentikasi & push lewat terminal
+
+Lewati bagian ini bila GitHub Desktop sudah berhasil.
+
+**Cara A — GitHub CLI.**
 
 `gh` versi 2.96.0 sudah terpasang di mesin Anda, tapi belum login.
 
@@ -143,7 +184,11 @@ gh run watch
 
 ---
 
-## Perhatian: atribusi commit
+## Atribusi commit — sudah beres
+
+Identitas git repo ini sudah diatur ke `dhimasbebe <dhimasbintangbb@gmail.com>`
+dan seluruh commit memakainya. Bagian di bawah hanya arsip, bila suatu saat
+identitasnya perlu diganti lagi.
 
 Identitas git global di mesin Anda saat ini:
 
