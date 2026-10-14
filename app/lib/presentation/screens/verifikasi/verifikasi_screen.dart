@@ -182,7 +182,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                   ],
                 ),
               ),
-              StatusBadge(
+              const StatusBadge(
                 label: 'Menunggu',
                 color: AppColors.verifikasiMenunggu,
                 softColor: AppColors.verifikasiMenungguSoft,

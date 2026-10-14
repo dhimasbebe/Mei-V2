@@ -211,7 +211,7 @@ class _AntreanVerifikasi extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      StatusBadge(
+                      const StatusBadge(
                         label: 'Menunggu',
                         color: AppColors.verifikasiMenunggu,
                         softColor: AppColors.verifikasiMenungguSoft,

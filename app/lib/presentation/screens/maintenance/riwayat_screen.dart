@@ -228,7 +228,7 @@ class _KartuRiwayat extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                m.namaUsers ?? m.username ?? '-',
+                m.namaTeknisi,
                 style: const TextStyle(
                   fontSize: 11,
                   color: AppColors.textSecondary,

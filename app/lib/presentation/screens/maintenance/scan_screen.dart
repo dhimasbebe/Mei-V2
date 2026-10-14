@@ -507,9 +507,9 @@ class _LayarMemvalidasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
+    return const ColoredBox(
       color: AppColors.overlayScrim,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

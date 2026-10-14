@@ -185,7 +185,7 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
                         cells: <DataCell>[
                           DataCell(Text('${m.idMaintenance}')),
                           DataCell(Text(m.waktuTampil)),
-                          DataCell(Text(m.namaUsers ?? m.username ?? '-')),
+                          DataCell(Text(m.namaTeknisi)),
                           DataCell(Text(m.barcodeAlat)),
                           DataCell(Text(m.namaKategori ?? '-')),
                           DataCell(Text(m.namaLokasi ?? '-')),

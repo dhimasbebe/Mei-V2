@@ -179,23 +179,23 @@ class AppTheme {
       ),
 
       // Sidebar web (rail) — item aktif latar primarySoft, teks primary.
-      navigationRailTheme: NavigationRailThemeData(
+      navigationRailTheme: const NavigationRailThemeData(
         backgroundColor: AppColors.surface,
         indicatorColor: AppColors.primarySoft,
-        selectedIconTheme: const IconThemeData(
+        selectedIconTheme: IconThemeData(
           color: AppColors.primary,
           size: AppSizes.iconMd,
         ),
-        unselectedIconTheme: const IconThemeData(
+        unselectedIconTheme: IconThemeData(
           color: AppColors.textSecondary,
           size: AppSizes.iconMd,
         ),
-        selectedLabelTextStyle: const TextStyle(
+        selectedLabelTextStyle: TextStyle(
           color: AppColors.primary,
           fontWeight: FontWeight.w700,
           fontSize: 12,
         ),
-        unselectedLabelTextStyle: const TextStyle(
+        unselectedLabelTextStyle: TextStyle(
           color: AppColors.textSecondary,
           fontWeight: FontWeight.w500,
           fontSize: 12,
@@ -241,19 +241,19 @@ class AppTheme {
       ),
 
       // Chip filter/badge — latar abu, terpilih primarySoft + teks primary.
-      chipTheme: ChipThemeData(
+      chipTheme: const ChipThemeData(
         backgroundColor: AppColors.surfaceMuted,
         selectedColor: AppColors.primarySoft,
         secondarySelectedColor: AppColors.primarySoft,
         side: BorderSide.none,
-        shape: const StadiumBorder(),
+        shape: StadiumBorder(),
         showCheckmark: false,
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        secondaryLabelStyle: const TextStyle(
+        secondaryLabelStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: AppColors.primary,

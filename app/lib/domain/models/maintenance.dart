@@ -79,6 +79,16 @@ class Maintenance {
   final String? namaLokasi;
   final int? lantai;
 
+  /// Nama teknisi untuk ditampilkan pada tabel/kartu.
+  ///
+  /// `username` (NIP) hanya dipakai sebagai cadangan bila `nama_users` tidak
+  /// dikirim server. Nilainya disalin lebih dulu ke variabel bertipe `String?`
+  /// supaya maksudnya eksplisit bagi pembaca dan analyzer.
+  String get namaTeknisi {
+    final String? nama = namaUsers;
+    return nama ?? username;
+  }
+
   // Kolom verifikasi (migrasi M1). Opsional agar fixture lama tetap terparse.
   /// 'menunggu' | 'disetujui' | 'ditolak'.
   final String? statusVerifikasi;
