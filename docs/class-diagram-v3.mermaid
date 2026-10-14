@@ -1,0 +1,184 @@
+%% Mei-V2 — Diagram kelas fitur tahap 3 (aditif terhadap docs/class-diagram.mermaid)
+%% Fokus: modul logika murni baru + kelas tema. Kelas lama (Maintenance, Alat, User, dll.)
+%% tetap seperti di class-diagram.mermaid dan tidak diulang di sini.
+
+classDiagram
+    class DraftStatus {
+        <<enumeration>>
+        menungguSinkron
+        sedangKirim
+        terkirim
+        ditolakServer
+        ditahan
+        +String code
+        +fromCode(String) DraftStatus
+        +bool bolehDiulangOtomatis
+    }
+
+    class DraftRecord {
+        +String clientUuid
+        +String barcodeAlat
+        +int idLokasi
+        +int? idKategori
+        +Map~int,String~ checklist
+        +String? catatan
+        +String? kondisiKeseluruhan
+        +DateTime waktuMaintenance
+        +List~String~ fotoPaths
+        +DraftStatus status
+        +String? pesanError
+        +int attempt
+        +DateTime? nextAttemptAt
+        +int? idMaintenanceServer
+        +copyWith(...) DraftRecord
+        +toJson() Map
+        +fromJson(Map)$ DraftRecord
+        +toMaintenancePayload() Map
+    }
+
+    class DraftQueue {
+        +List~DraftRecord~ items
+        +int count
+        +DraftRecord? nextPending
+        +bool perluLoginUlang
+        +enqueue(DraftRecord)
+        +markSending(String) bool
+        +onSent(String, int) bool
+        +onUploadFailed(String, String) bool
+        +onRejected(String, Map) bool
+        +onUnauthorized(String) bool
+        +purgeTerkirim(Duration)
+        +serialize() String
+        +deserialize(String?)$ DraftQueue
+    }
+
+    class RetryPolicy {
+        <<static>>
+        +Duration base
+        +Duration max
+        +nextDelay(int) Duration
+    }
+
+    class PhotoPolicy {
+        <<static>>
+        +int maxFotos
+        +int maxBytes
+        +int maxSisiPx
+        +int jpegQuality
+        +canAdd(int) bool
+        +acceptSize(int) bool
+    }
+
+    class PaletteSpec {
+        <<static>>
+        +Map~String,int~ light
+        +Map~String,int~ dark
+        +Set~String~ tokens
+        +value(PaletteTheme, String) int
+        +contrastRatio(int, int) double
+    }
+
+    class AppPalette {
+        +Color background
+        +Color surface
+        +Color surfaceAlt
+        +Color surfaceMuted
+        +Color textPrimary
+        +Color textSecondary
+        +Color divider
+        +Color borderSubtle
+        +Color fieldDark
+        +Color shadowColor
+        +light()$ AppPalette
+        +dark()$ AppPalette
+        +of(Brightness)$ AppPalette
+        +copyWith(...) AppPalette
+        +lerp(ThemeExtension, double) AppPalette
+    }
+
+    class ThemeModeCodec {
+        <<static>>
+        +fromString(String?) String
+        +toStorage(String) String
+    }
+
+    class AuditDetail {
+        <<static>>
+        +format(String?) List~String~
+    }
+
+    class AuditAksi {
+        <<static>>
+        +Map~String,String~ labels
+        +label(String) String
+    }
+
+    class ChartRange {
+        +DateTime dari
+        +DateTime sampai
+        +forPeriod(String, DateTime?)$ ChartRange
+        +label(String)$ String
+    }
+
+    class SwipeActionType {
+        <<enumeration>>
+        setujui
+        tolak
+        hapus
+    }
+
+    class SwipeAction {
+        <<static>>
+        +forRole(String, String) List~SwipeActionType~
+        +confirmRequired(SwipeActionType) bool
+    }
+
+    class SearchHistory {
+        +int kapasitas
+        +List~String~ items
+        +add(String)
+        +remove(String)
+        +clear()
+        +serialize() List~String~
+        +deserialize(List~String~)$ SearchHistory
+    }
+
+    class AppMotion {
+        <<static>>
+        +Map~String,int~ durations
+        +transitionMs(String) int
+    }
+
+    class DraftProvider {
+        +load() Future~void~
+        +enqueue(DraftRecord)
+        +sinkronSekarang() Future~void~
+        +persist() Future~void~
+    }
+
+    class ThemeProvider {
+        +ThemeMode mode
+        +set(String) Future~void~
+    }
+
+    class AuditRepository {
+        +getLog(filters, page) Future~PagedResult~
+    }
+
+    class FotoRepository {
+        +upload(int, bytes, mime) Future~Foto~
+        +list(int) Future~List~
+        +hapus(int) Future~void~
+    }
+
+    DraftQueue "1" *-- "0..*" DraftRecord : berisi
+    DraftRecord --> DraftStatus : status
+    DraftQueue ..> RetryPolicy : backoff
+    DraftRecord ..> PhotoPolicy : validasi foto
+    AppPalette ..> PaletteSpec : baca nilai ARGB
+    ThemeProvider ..> ThemeModeCodec : encode/decode
+    DraftProvider ..> DraftQueue : orkestrasi + persist
+    DraftProvider ..> FotoRepository : unggah foto pasca-sinkron
+    AuditRepository ..> AuditDetail : format tampilan
+    AuditRepository ..> AuditAksi : label tampilan
+    SearchHistory ..> SwipeAction : tidak terkait (lihat WS H)

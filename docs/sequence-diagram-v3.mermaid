@@ -1,0 +1,113 @@
+%% Mei-V2 — Diagram sekuens fitur tahap 3
+%% Empat alur kunci: sinkron offline (A+C), unggah foto, audit log (D), tema (E).
+
+sequenceDiagram
+    autonumber
+    participant U as Teknisi
+    participant F as MaintenanceFormScreen
+    participant DP as DraftProvider
+    participant DQ as DraftQueue (pure)
+    participant SP as shared_preferences
+    participant CP as connectivity_plus
+    participant API as ApiService (Dio)
+    participant BE as Laravel
+
+    Note over U,BE: Alur 1 — Sinkron offline (WS A + C)
+    U->>F: isi checklist / catatan / kondisi
+    F->>DP: autosave debounce 600ms
+    DP->>DQ: enqueue(DraftRecord(status=menungguSinkron))
+    DP->>SP: setString('meiv.draft_queue.v1', DQ.serialize())
+    U->>F: tekan KIRIM
+    F->>DP: sinkronSekarang()
+    alt online
+        DP->>DQ: nextPending(); markSending(uuid)
+        DP->>API: POST /maintenance (client_uuid)
+        API->>BE: 
+        alt 201 / 200
+            BE-->>API: data + id_maintenance
+            DP->>DQ: onSent(uuid, idMaintenance)
+            loop tiap foto draf
+                DP->>API: POST /maintenance/{id}/foto (multipart)
+                API->>BE: 
+                alt 201
+                    BE-->>DP: id_foto
+                else gagal
+                    DP->>DQ: onUploadFailed(uuid, reason)
+                end
+            end
+            DP->>SP: persist
+        else 422
+            BE-->>DP: errors
+            DP->>DQ: onRejected(uuid, errors)
+        else 401
+            BE-->>DP: 
+            DP->>DQ: onUnauthorized(uuid) -> ditahan
+            DP-->>U: minta login ulang
+        else 403
+            DP->>DQ: onRejected(uuid, {'pesan':'Tidak berhak'})
+        else 5xx / timeout
+            DP->>DQ: onUploadFailed(uuid, reason) -> backoff
+        end
+    else offline
+        DP->>SP: persist (tetap menungguSinkron)
+    end
+    CP-->>DP: event "online"
+    DP->>DQ: nextPending() FIFO (tanpa intervensi)
+
+    Note over U,DQ: Alur 2 — Unggah foto (WS C)
+    participant PK as FotoPickerField
+    participant PC as photo_compressor
+    participant PP as PhotoPolicy (pure)
+    U->>PK: Ambil Foto / Pilih Galeri
+    PK->>PP: canAdd(currentCount)?
+    alt penuh
+        PP-->>PK: false -> "maksimum 5 foto"
+    else
+        PK->>PC: compress(bytes) resize <=1600px
+        PC->>PP: acceptSize(len)?
+        alt > 5 MB
+            PP-->>PK: false -> "ukuran melebihi batas"
+        else
+            PP-->>PK: true
+            PK->>DQ: fotoPaths += path lokal
+        end
+    end
+
+    Note over U,BE: Alur 3 — Audit Log (WS D)
+    participant S as Supervisor/Admin
+    participant AS as AuditLogScreen
+    participant AP as auditProvider
+    participant AR as AuditRepository
+    participant AD as AuditDetail (pure)
+    participant AA as AuditAksi (pure)
+    S->>AS: buka layar
+    AS->>AP: muat(filter)
+    AP->>AR: getLog(entitas, actor, aksi, dari, sampai, page)
+    AR->>API: GET /audit-log?...
+    API-->>AR: PagedResult<AuditLogEntry>
+    AR-->>AP: data
+    AP-->>AS: AsyncValue.data
+    AS->>AA: label(aksi) -> badge
+    AS->>AD: format(detail) -> ringkasan 1 baris
+    S->>AS: tekan "Lihat perubahan"
+    AS->>AD: format(detail) -> List<String>
+    AS-->>S: dialog baris kunci: lama -> baru
+
+    Note over U,BE: Alur 4 — Tema (WS E)
+    participant P as ProfileScreen
+    participant TP as themeProvider
+    participant M as MaterialApp.router
+    participant PS as PaletteSpec (pure)
+    participant TH as AppTheme.dark()
+    M->>TP: watch(themeModeProvider)
+    TP->>SP: getString('meiv.theme_mode')
+    TP->>PS: ThemeModeCodec.fromString(raw)
+    PS-->>TP: 'light'|'dark'|'system'
+    TP-->>M: ThemeMode
+    M->>TH: AppTheme.dark()
+    TH->>PS: PaletteSpec.dark (ARGB)
+    PS-->>TH: nilai -> AppPalette (ThemeExtension)
+    U->>P: pilih Terang/Gelap/Sistem
+    P->>TP: set(code)
+    TP->>SP: setString
+    TP-->>M: rebuild (tema berubah)
