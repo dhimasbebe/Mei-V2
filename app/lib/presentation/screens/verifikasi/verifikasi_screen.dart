@@ -3,13 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
+import '../../../domain/models/maintenance.dart';
 import '../../../domain/models/verifikasi.dart';
+import '../../../providers/draft_provider.dart';
 import '../../../providers/verifikasi_provider.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/foto_gallery.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
@@ -147,6 +150,26 @@ class _KartuVerifikasi extends ConsumerStatefulWidget {
 class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
   bool _terbuka = false;
 
+  /// Galeri foto lampiran (Tahap 3 — WS C, AC-C13): dimuat saat pertama
+  /// kali dibuka supaya daftar verifikasi tetap ringan.
+  List<FotoLampiran> _foto = const <FotoLampiran>[];
+  bool _fotoTerbuka = false;
+  bool _fotoDimuat = false;
+  bool _fotoGagal = false;
+
+  Future<void> _muatFoto() async {
+    if (_fotoDimuat) return;
+    _fotoDimuat = true;
+    try {
+      final List<FotoLampiran> hasil = await ref
+          .read(fotoRepositoryProvider)
+          .list(widget.item.idMaintenance);
+      if (mounted) setState(() => _foto = hasil);
+    } catch (_) {
+      if (mounted) setState(() => _fotoGagal = true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final VerifikasiItem v = widget.item;
@@ -252,6 +275,76 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                     color: AppColors.textPrimary,
                   ),
                 ),
+              ),
+              secondChild: const SizedBox(width: double.infinity),
+            ),
+          ],
+          if (v.punyaFoto) ...<Widget>[
+            const SizedBox(height: AppSpacing.sm),
+            InkWell(
+              onTap: () {
+                setState(() => _fotoTerbuka = !_fotoTerbuka);
+                if (_fotoTerbuka) _muatFoto();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                child: Row(
+                  children: <Widget>[
+                    const Icon(
+                      Icons.photo_library_outlined,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      _fotoTerbuka
+                          ? 'Sembunyikan foto'
+                          : 'Lihat foto (${v.jumlahFoto})',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    Icon(
+                      _fotoTerbuka ? Icons.expand_less : Icons.expand_more,
+                      size: 18,
+                      color: AppColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            AnimatedCrossFade(
+              duration: AppDurations.normal,
+              crossFadeState: _fotoTerbuka
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              firstChild: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: AppSpacing.sm),
+                child: _fotoGagal && _foto.isEmpty
+                    ? const Text(
+                        'Gagal memuat foto.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.statusDanger,
+                        ),
+                      )
+                    : (_foto.isEmpty && !_fotoDimuat
+                        ? const SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: Center(
+                              child: SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2),
+                              ),
+                            ),
+                          )
+                        : FotoGallery(foto: _foto, dense: true)),
               ),
               secondChild: const SizedBox(width: double.infinity),
             ),

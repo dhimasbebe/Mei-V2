@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'providers/draft_provider.dart';
 
 /// Entry point dashboard web Mei-V.
 ///
@@ -19,6 +20,9 @@ class MeiVWebApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+
+    // Muat antrean draf offline (web: foto hanya bertahan selama sesi — §5.2).
+    ref.watch(draftQueueProvider);
 
     return MaterialApp.router(
       title: 'Mei-V Dashboard',

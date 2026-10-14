@@ -22,7 +22,9 @@ class SyncQueueScreen extends ConsumerStatefulWidget {
 }
 
 class _SyncQueueScreenState extends ConsumerState<SyncQueueScreen> {
-  static final DateFormat _fmt = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
+  // Tanpa locale eksplisit: `intl` hanya membawa data simbol `en_US`,
+  // locale lain melempar LocaleDataException bila tidak diinisialisasi.
+  static final DateFormat _fmt = DateFormat('dd MMM yyyy, HH:mm');
 
   @override
   Widget build(BuildContext context) {

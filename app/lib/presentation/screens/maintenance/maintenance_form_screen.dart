@@ -1,15 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/media/foto_lokal.dart';
+import '../../../core/media/photo_store.dart';
+import '../../../core/offline/draft_queue.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/repositories/foto_repository.dart';
 import '../../../domain/models/maintenance.dart';
 import '../../../domain/models/spesifikasi.dart';
 import '../../../providers/alat_provider.dart';
+import '../../../providers/draft_provider.dart';
 import '../../../providers/kategori_provider.dart';
 import '../../../providers/maintenance_provider.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/foto_picker_field.dart';
 
 /// Form pemeliharaan dinamis berdasarkan spesifikasi kategori.
 /// Teknisi mengisi checklist item per item, lalu kirim ke server.
@@ -27,18 +35,96 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
   String? _kondisiKeseluruhan;
   bool _isSubmitting = false;
 
+  /// Foto lampiran lokal (Tahap 3 — WS C). Dimiliki state form; parent
+  /// widget menyimpannya ke draf offline lewat [DraftRecord.fotoPaths].
+  List<FotoLokal> _fotos = <FotoLokal>[];
+
+  /// UUID draf autosave sesi ini (dibuat sekali, dipertahankan saat
+  /// autosave berikutnya supaya antrean tidak menduplikasi — AC-A3).
+  String? _uuidDraf;
+
+  /// Apakah draf sudah masuk antrean (enqueue pertama, lalu replace).
+  bool _drafTersimpan = false;
+
+  /// Timer debounce autosave 600 ms (§5.1) — form menulis draf setelah
+  /// pengguna berhenti mengetik, bukan pada tiap ketukan tombol.
+  Timer? _debounceDraf;
+
   /// Nilai satu item checklist (select atau teks) — dipakai menghitung progres.
   String _nilaiUntuk(Spesifikasi s) => s.tipeInput == 'select'
       ? (_selectValues[s.idSpesifikasi] ?? '')
       : (_controllers[s.idSpesifikasi]?.text.trim() ?? '');
 
-  /// Dipanggil setiap isi field berubah agar bilah progres ikut bergerak.
+  /// Dipanggil setiap isi field berubah agar bilah progres ikut bergerak
+  /// dan autosave draf dijadwalkan.
   void _perbaruiProgres() {
     if (mounted) setState(() {});
+    _jadwalkanSimpanDraf();
+  }
+
+  /// Menjadwalkan autosave draf (debounce 600 ms).
+  void _jadwalkanSimpanDraf() {
+    _debounceDraf?.cancel();
+    _debounceDraf = Timer(const Duration(milliseconds: 600), _simpanDrafSekarang);
+  }
+
+  /// Membangun [DraftRecord] dari isi form saat ini.
+  DraftRecord _bangunDraf() {
+    final MaintenancePayload? formState = ref.read(maintenanceFormProvider);
+    final Map<int, String> checklist = <int, String>{};
+    _controllers.forEach((int id, TextEditingController c) {
+      final String v = c.text.trim();
+      if (v.isNotEmpty) checklist[id] = v;
+    });
+    _selectValues.forEach((int id, String? v) {
+      if (v != null && v.trim().isNotEmpty) checklist[id] = v.trim();
+    });
+
+    _uuidDraf ??= MaintenancePayload(
+      barcodeAlat: formState?.barcodeAlat ?? '',
+      idLokasi: formState?.idLokasi ?? 0,
+      detail: const <DetailMaintenance>[],
+    ).clientUuid;
+
+    return DraftRecord(
+      clientUuid: _uuidDraf!,
+      barcodeAlat: formState?.barcodeAlat ?? '',
+      idLokasi: formState?.idLokasi ?? 0,
+      idKategori: ref.read(alatDetailProvider)?.idKategori,
+      waktuMaintenance: formState?.waktuMaintenance ?? DateTime.now(),
+      checklist: checklist,
+      catatan: _catatanCtrl.text.trim().isEmpty ? null : _catatanCtrl.text.trim(),
+      kondisiKeseluruhan: _kondisiKeseluruhan,
+      fotoPaths: _fotos.map((FotoLokal f) => f.kunci).toList(growable: false),
+    );
+  }
+
+  /// Menyimpan draf ke antrean offline (AC-A12): draf belum lengkap pun
+  /// tersimpan, sehingga aplikasi mati mendadak tidak menghilangkan kerja
+  /// teknisi.
+  Future<void> _simpanDrafSekarang() async {
+    final MaintenancePayload? formState = ref.read(maintenanceFormProvider);
+    if (formState == null) return;
+    final DraftNotifier notifier = ref.read(draftQueueProvider.notifier);
+    final DraftRecord draf = _bangunDraf();
+    if (!_drafTersimpan) {
+      _drafTersimpan = true;
+      await notifier.simpanDraf(draf);
+    } else {
+      await notifier.perbaruiDraf(draf);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Catatan ikut memicu progres + autosave draf.
+    _catatanCtrl.addListener(_perbaruiProgres);
   }
 
   @override
   void dispose() {
+    _debounceDraf?.cancel();
     for (final TextEditingController c in _controllers.values) {
       c.dispose();
     }
@@ -112,7 +198,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
           const SizedBox(height: 8),
           _KondisiSelector(
             value: _kondisiKeseluruhan,
-            onChanged: (String? v) => setState(() => _kondisiKeseluruhan = v),
+            onChanged: (String? v) {
+              setState(() => _kondisiKeseluruhan = v);
+              _jadwalkanSimpanDraf();
+            },
           ),
           const SizedBox(height: 20),
           AppTextField(
@@ -120,6 +209,14 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
             label: 'Catatan Tambahan',
             hint: 'Opsional: tulis temuan atau kendala...',
             onTap: () {},
+          ),
+          const SizedBox(height: 24),
+          FotoPickerField(
+            fotos: _fotos,
+            onChanged: (List<FotoLokal> v) {
+              setState(() => _fotos = v);
+              _jadwalkanSimpanDraf();
+            },
           ),
           const SizedBox(height: 24),
           AppButton(
@@ -161,7 +258,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                   items: s.opsi
                       .map((String o) => DropdownMenuItem<String>(value: o, child: Text(o)))
                       .toList(),
-                  onChanged: (String? v) => setState(() => _selectValues[s.idSpesifikasi] = v),
+                  onChanged: (String? v) {
+                    setState(() => _selectValues[s.idSpesifikasi] = v);
+                    _jadwalkanSimpanDraf();
+                  },
                 ),
               ),
             ),
@@ -220,7 +320,19 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
 
     try {
       final repo = ref.read(maintenanceRepositoryProvider);
-      await ref.read(maintenanceFormProvider.notifier).submit(repo);
+      final Maintenance laporan =
+          await ref.read(maintenanceFormProvider.notifier).submit(repo);
+
+      // Unggah foto lampiran (Tahap 3 — WS C) setelah laporan ada di server.
+      await _unggahFoto(laporan.idMaintenance);
+
+      // Draf autosave tidak diperlukan lagi — laporan sudah terkirim.
+      if (_drafTersimpan && _uuidDraf != null) {
+        await ref.read(draftQueueProvider.notifier).hapusDraf(_uuidDraf!);
+      }
+      _uuidDraf = null;
+      _drafTersimpan = false;
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Maintenance berhasil dikirim!'), backgroundColor: Colors.green),
@@ -229,12 +341,40 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // Simpan laporan ke antrean offline (WS A): akan dikirim otomatis
+        // saat online (AC-A19), idempoten lewat client_uuid (AC-A17).
+        await ref.read(draftQueueProvider.notifier).simpanDraf(_bangunDraf());
+        _drafTersimpan = true;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal mengirim: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('Gagal mengirim. Laporan disimpan di antrean offline '
+                'dan dikirim otomatis saat online.'),
+            backgroundColor: Colors.orange,
+          ),
         );
+        context.goHome();
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  /// Mengunggah seluruh foto lokal ke [idMaintenance]. Kegagalan satu foto
+  /// tidak membatalkan laporan — foto tersisa dicoba, sisanya dilaporkan.
+  Future<void> _unggahFoto(int idMaintenance) async {
+    for (final FotoLokal f in _fotos) {
+      final List<int>? bytes = await PhotoStore.baca(f.kunci);
+      if (bytes == null) continue;
+      try {
+        await ref.read(fotoRepositoryProvider).upload(
+              idMaintenance,
+              bytes: bytes,
+              namaFile: f.nama,
+            );
+      } catch (_) {
+        // Foto gagal terunggah: laporan tetap terkirim; teknisi dapat
+        // mengunggah ulang lewat detail laporan.
+      }
     }
   }
 }

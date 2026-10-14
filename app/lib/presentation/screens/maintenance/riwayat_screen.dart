@@ -12,6 +12,7 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/filter_chip_bar.dart';
+import '../../widgets/foto_gallery.dart' show FotoCountBadge;
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
 
@@ -200,6 +201,8 @@ class _KartuRiwayat extends StatelessWidget {
                   ),
                 ),
               ),
+              FotoCountBadge(jumlah: m.jumlahFoto),
+              const SizedBox(width: AppSpacing.sm),
               StatusBadge(
                 label: status.$4,
                 color: status.$1,

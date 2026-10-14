@@ -15,6 +15,7 @@ import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
 import '../../widgets/status_badge.dart';
+import '../../widgets/sync_banner.dart';
 import 'home_header.dart';
 
 /// Beranda Teknisi — "Tugas Hari Ini".
@@ -52,6 +53,9 @@ class _TeknisiHomeScreenState extends ConsumerState<TeknisiHomeScreen> {
             user: ref.watch(authProvider).user,
             subtitle: 'Tugas pemeliharaan hari ini',
           ),
+          // Pita status sinkron offline (Tahap 3 — WS A): muncul saat ada
+          // draf menunggu atau perangkat offline; ketuk → /sinkron.
+          const SyncBanner(),
           Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(

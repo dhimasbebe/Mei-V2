@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'providers/draft_provider.dart';
 
 /// Entry point aplikasi Mei-V mobile.
 ///
@@ -18,6 +19,11 @@ class MeiVApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+
+    // Muat antrean draf offline sejak aplikasi dibuka: memulihkan draf dari
+    // shared_preferences, memasang listener konektivitas, dan mengirim
+    // otomatis saat online (Tahap 3 — AC-A19).
+    ref.watch(draftQueueProvider);
 
     return MaterialApp.router(
       title: 'Mei-V',
