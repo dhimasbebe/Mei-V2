@@ -682,12 +682,38 @@ void main() {
   // --------------------------------------------------------------------
   section('16. FOTO — PhotoPolicy');
   // --------------------------------------------------------------------
-  // AC-C9 — canAdd.
-  check('AC-C9 canAdd(0..4) true',
-      List<int>.generate(5, (int i) => i).every(PhotoPolicy.canAdd));
-  check('AC-C9 canAdd(5) false', !PhotoPolicy.canAdd(5));
-  check('AC-C9 canAdd(6) false', !PhotoPolicy.canAdd(6));
-  check('AC-C9 maxFotos == 5', PhotoPolicy.maxFotos == 5);
+  // AC-C9 — canAdd (jumlah).
+  check('AC-C9 canAdd(0..14) true',
+      List<int>.generate(15, (int i) => i).every(PhotoPolicy.canAdd));
+  check('AC-C9 canAdd(15) false', !PhotoPolicy.canAdd(15));
+  check('AC-C9 canAdd(16) false', !PhotoPolicy.canAdd(16));
+  check('AC-C9 maxFotos == 15', PhotoPolicy.maxFotos == 15);
+  // AC-C9 — canAdd (kuota total 100 MB).
+  const int mb = 1024 * 1024;
+  check('AC-C9 maxTotalBytes == 104857600 (100 MB)',
+      PhotoPolicy.maxTotalBytes == 104857600);
+  check('AC-C9 canAdd kuota: foto 1 MB pada kuota kosong -> true',
+      PhotoPolicy.canAdd(0, totalBytes: 0, bytesBaru: 1 * mb));
+  check('AC-C9 canAdd kuota: pas mengisi 100 MB -> true',
+      PhotoPolicy.canAdd(0,
+          totalBytes: PhotoPolicy.maxTotalBytes - 1 * mb, bytesBaru: 1 * mb));
+  check('AC-C9 canAdd kuota: melebihi 100 MB -> false',
+      !PhotoPolicy.canAdd(0,
+          totalBytes: PhotoPolicy.maxTotalBytes - 1 * mb,
+          bytesBaru: 1 * mb + 1));
+  check('AC-C9 canAdd kuota: kuota penuh, ukuran tak diketahui -> false',
+      !PhotoPolicy.canAdd(0, totalBytes: PhotoPolicy.maxTotalBytes));
+  check('AC-C9 canAdd kuota: kuota penuh, ukuran diketahui -> false',
+      !PhotoPolicy.canAdd(0,
+          totalBytes: PhotoPolicy.maxTotalBytes, bytesBaru: 1 * mb));
+  check('AC-C9 canAdd kuota: total negatif -> false',
+      !PhotoPolicy.canAdd(0, totalBytes: -1, bytesBaru: 1 * mb));
+  check('AC-C9 canAdd kuota: 15 foto @5MB masih dalam 100 MB',
+      PhotoPolicy.maxFotos * PhotoPolicy.maxBytes <= PhotoPolicy.maxTotalBytes);
+  check('AC-C9 sisaKuota: 40 MB terpakai -> 60 MB sisa',
+      PhotoPolicy.sisaKuota(40 * mb) == 60 * mb);
+  check('AC-C9 sisaKuota: tidak pernah negatif',
+      PhotoPolicy.sisaKuota(PhotoPolicy.maxTotalBytes + 5) == 0);
   // AC-C10 — acceptSize.
   check('AC-C10 acceptSize(1) true', PhotoPolicy.acceptSize(1));
   check('AC-C10 acceptSize(5MB) true', PhotoPolicy.acceptSize(PhotoPolicy.maxBytes));

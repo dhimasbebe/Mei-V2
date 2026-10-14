@@ -11,18 +11,41 @@ abstract class PhotoPolicy {
   const PhotoPolicy._();
 
   /// Jumlah maksimum foto per laporan.
-  static const int maxFotos = 5;
+  static const int maxFotos = 15;
 
-  /// Ukuran maksimum satu berkas foto (5 MB).
+  /// Total kuota ukuran gabungan seluruh foto per laporan (100 MB).
+  static const int maxTotalBytes = 100 * 1024 * 1024; // 104857600
+
+  /// Ukuran maksimum satu berkas foto (5 MB) — batas per berkas yang wajar
+  /// karena aplikasi mengompres ke ±300–500 KB per foto (JPEG q80, ≤1600 px).
   static const int maxBytes = 5 * 1024 * 1024;
 
   /// Panjang maksimum sisi terpanjang setelah resize (px).
   static const int maxSisiPx = 1600;
 
-  /// `true` bila masih boleh menambah foto saat ini ada [currentCount] foto.
+  /// `true` bila masih boleh menambah foto saat ini ada [currentCount] foto,
+  /// dengan total berkas terpakai [totalBytes] byte dan foto baru berukuran
+  /// [bytesBaru] byte (AC-C9).
   ///
-  /// `false` saat `currentCount >= maxFotos` (AC-C9).
-  static bool canAdd(int currentCount) => currentCount < maxFotos;
+  /// Aturan:
+  /// - `false` saat `currentCount >= maxFotos`;
+  /// - bila [bytesBaru] belum diketahui (0), cukup pastikan kuota total belum
+  ///   penuh (`totalBytes < maxTotalBytes`);
+  /// - bila [bytesBaru] diketahui (> 0), wajib `totalBytes + bytesBaru <=
+  ///   maxTotalBytes`.
+  static bool canAdd(int currentCount, {int totalBytes = 0, int bytesBaru = 0}) {
+    if (currentCount >= maxFotos) return false;
+    if (totalBytes < 0 || bytesBaru < 0) return false;
+    if (bytesBaru == 0) return totalBytes < maxTotalBytes;
+    return totalBytes + bytesBaru <= maxTotalBytes;
+  }
+
+  /// Sisa kuota total (byte) setelah [totalBytes] terpakai — tidak pernah
+  /// negatif. Berguna untuk indikator kuota di UI.
+  static int sisaKuota(int totalBytes) {
+    final int sisa = maxTotalBytes - totalBytes;
+    return sisa > 0 ? sisa : 0;
+  }
 
   /// `true` bila ukuran [bytes] diterima (1 ≤ [bytes] ≤ [maxBytes]) (AC-C10).
   static bool acceptSize(int bytes) => bytes > 0 && bytes <= maxBytes;
