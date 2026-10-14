@@ -129,12 +129,13 @@ class FotoTest extends TestCase
 
     // ---------------------------------------------------------------- AC-C4
 
-    public function test_unggah_foto_keenam_menghasilkan_422_maksimum_5_foto(): void
+    public function test_unggah_foto_kelimabelas_menghasilkan_201_dan_keenambelas_422(): void
     {
         $token = $this->token('67890');
         $m = $this->maintenanceMilikTeknisi();
 
-        for ($i = 0; $i < 5; $i++) {
+        // 14 foto sudah ada di server.
+        for ($i = 0; $i < 14; $i++) {
             MaintenanceFoto::create([
                 'id_maintenance' => $m->id_maintenance,
                 'path' => "foto/seed-$i.jpg",
@@ -145,14 +146,77 @@ class FotoTest extends TestCase
             ]);
         }
 
+        // Foto ke-15 masih diterima.
         $this->withToken($token)
             ->post("/api/v1/maintenance/{$m->id_maintenance}/foto", [
-                'foto' => UploadedFile::fake()->image('keenam.jpg', 100, 100),
+                'foto' => UploadedFile::fake()->image('kelima-belas.jpg', 100, 100),
+            ])
+            ->assertStatus(201);
+
+        $this->assertSame(15, MaintenanceFoto::where('id_maintenance', $m->id_maintenance)->count());
+
+        // Foto ke-16 ditolak.
+        $this->withToken($token)
+            ->post("/api/v1/maintenance/{$m->id_maintenance}/foto", [
+                'foto' => UploadedFile::fake()->image('keenam-belas.jpg', 100, 100),
             ])
             ->assertStatus(422)
             ->assertJsonPath('code', 422);
 
-        $this->assertSame(5, MaintenanceFoto::where('id_maintenance', $m->id_maintenance)->count());
+        $this->assertSame(15, MaintenanceFoto::where('id_maintenance', $m->id_maintenance)->count());
+    }
+
+    // ---------------------------------------------------------------- AC-C4b
+
+    public function test_unggah_foto_melebihi_kuota_total_100mb_menghasilkan_422(): void
+    {
+        $token = $this->token('67890');
+        $m = $this->maintenanceMilikTeknisi();
+
+        // Kuota terpakai 100 MB dikurangi 1 byte — unggahan apa pun (> 1 byte)
+        // pasti melebihi kuota total.
+        MaintenanceFoto::create([
+            'id_maintenance' => $m->id_maintenance,
+            'path' => 'foto/seed-besar.jpg',
+            'mime' => 'image/jpeg',
+            'ukuran' => 104857600 - 1,
+            'username' => '67890',
+            'created_at' => now(),
+        ]);
+
+        $this->withToken($token)
+            ->post("/api/v1/maintenance/{$m->id_maintenance}/foto", [
+                'foto' => UploadedFile::fake()->image('melebihi-kuota.jpg', 100, 100),
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 422);
+
+        $this->assertSame(1, MaintenanceFoto::where('id_maintenance', $m->id_maintenance)->count());
+    }
+
+    public function test_unggah_foto_tepat_mengisi_kuota_total_100mb_diterima(): void
+    {
+        $token = $this->token('67890');
+        $m = $this->maintenanceMilikTeknisi();
+
+        // Total terpakai = 100 MB dikurangi ukuran foto unggahan.
+        $terpakai = 104857600 - 1024;
+
+        MaintenanceFoto::create([
+            'id_maintenance' => $m->id_maintenance,
+            'path' => 'foto/seed-kuota.jpg',
+            'mime' => 'image/jpeg',
+            'ukuran' => $terpakai,
+            'username' => '67890',
+            'created_at' => now(),
+        ]);
+
+        $this->withToken($token)
+            ->post("/api/v1/maintenance/{$m->id_maintenance}/foto", [
+                // 1024 byte: kuota pas terisi 100 MB tanpa melebihi.
+                'foto' => UploadedFile::fake()->create('pas-kuota.jpg', 1, 'image/jpeg'),
+            ])
+            ->assertStatus(201);
     }
 
     // ---------------------------------------------------------------- AC-C5

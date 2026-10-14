@@ -24,12 +24,17 @@ use Illuminate\Validation\ValidationException;
 class FotoController extends Controller
 {
     /** Batas jumlah foto per laporan (selaras `PhotoPolicy.maxFotos`). */
-    public const MAX_FOTO = 5;
+    public const MAX_FOTO = 15;
+
+    /** Kuota total ukuran gabungan seluruh foto per laporan, 100 MB. */
+    public const MAX_TOTAL_UKURAN = 104857600;
 
     /**
      * POST /api/v1/maintenance/{id}/foto  (Teknisi, Admin)
      *
-     * multipart field `foto`; `mimes:jpg,jpeg,png`; `max:5120` (5 MB).
+     * multipart field `foto`; `mimes:jpg,jpeg,png`; `max:5120` (5 MB per berkas —
+     * aplikasi mengompres ke ±300–500 KB per foto @1600px JPEG q80).
+     * Batas laporan: maksimum 15 foto dan total gabungan ≤ 100 MB.
      * 404 bila id tidak ada, 403 bila Teknisi bukan pemiliknya, 201 bila sukses.
      */
     public function store(Request $request, int $id): JsonResponse
@@ -51,20 +56,30 @@ class FotoController extends Controller
             'foto' => 'required|file|mimes:jpg,jpeg,png|max:5120',
         ]);
 
+        $fotoBaru = $request->file('foto');
+
         if (MaintenanceFoto::where('id_maintenance', $id)->count() >= self::MAX_FOTO) {
             throw ValidationException::withMessages([
                 'foto' => ['maksimum '.self::MAX_FOTO.' foto'],
             ]);
         }
 
-        $file = $request->file('foto');
-        $path = $file->store('foto', 'public');
+        $totalUkuran = (int) MaintenanceFoto::where('id_maintenance', $id)->sum('ukuran');
+        $ukuranBaru = (int) $fotoBaru->getSize();
+
+        if ($totalUkuran + $ukuranBaru > self::MAX_TOTAL_UKURAN) {
+            throw ValidationException::withMessages([
+                'foto' => ['total ukuran foto melebihi 100 MB'],
+            ]);
+        }
+
+        $path = $fotoBaru->store('foto', 'public');
 
         $foto = MaintenanceFoto::create([
             'id_maintenance' => $id,
             'path' => $path,
-            'mime' => $file->getClientMimeType() ?: 'application/octet-stream',
-            'ukuran' => $file->getSize(),
+            'mime' => $fotoBaru->getClientMimeType() ?: 'application/octet-stream',
+            'ukuran' => $fotoBaru->getSize(),
             'username' => $user->username,
             'created_at' => now(),
         ]);
