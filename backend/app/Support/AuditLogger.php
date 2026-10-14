@@ -8,16 +8,21 @@ use App\Models\AuditLog;
  * Penulis log audit terpusat.
  *
  * Dipanggil oleh controller CRUD (users/alat/kategori/lokasi/spesifikasi),
- * verifikasi maintenance, penugasan alat, dan login. Aktor diambil dari
- * pengguna yang sedang terautentikasi pada request berjalan.
+ * verifikasi maintenance, penugasan alat, impor CSV (WS M), share link
+ * (WS O), dan login. Aktor diambil dari pengguna yang sedang terautentikasi
+ * pada request berjalan.
  */
 class AuditLogger
 {
     /**
      * Tulis satu baris audit.
      *
-     * @param  string       $aksi        create|update|delete|verify|assign|login
-     * @param  string       $entitas     users|alat|kategori|lokasi|spesifikasi|maintenance
+     * Nilai aksi/entitas bertipe string 50 — daftar di bawah ADITIF
+     * (keputusan arsitek, §C.2.3): nilai baru ditambahkan tanpa perubahan
+     * skema.
+     *
+     * @param  string       $aksi        create|update|delete|verify|assign|login|import
+     * @param  string       $entitas     users|alat|kategori|lokasi|spesifikasi|maintenance|share_link
      * @param  string       $entitasId   kunci entitas (username/barcode/id)
      * @param  array        $detail      detail tambahan (disimpan sebagai JSON)
      * @param  string|null  $actor       penimpa aktor (mis. saat login, sebelum auth)

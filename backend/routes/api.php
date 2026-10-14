@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AlatController;
+use App\Http\Controllers\Api\AlatImportController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LokasiController;
 use App\Http\Controllers\Api\MaintenanceController;
 use App\Http\Controllers\Api\PengingatController;
+use App\Http\Controllers\Api\ShareController;
 use App\Http\Controllers\Api\SpesifikasiController;
 use App\Http\Controllers\Api\TugasController;
 use App\Http\Controllers\Api\UserController;
@@ -71,6 +73,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/maintenance/overdue', [MaintenanceController::class, 'overdue']);
             Route::post('/maintenance/{id}/verify', [MaintenanceController::class, 'verify']);
 
+            // --- Share link laporan (WS O, Fitur Tahap 3) ---
+            Route::post('/maintenance/{id}/share', [ShareController::class, 'store']);
+            Route::delete('/share/{token}', [ShareController::class, 'destroy']);
+
             Route::post('/alat/{barcode}/assign', [AlatController::class, 'assign']);
 
             Route::get('/dashboard/export', [DashboardController::class, 'export']);
@@ -120,6 +126,12 @@ Route::prefix('v1')->group(function () {
             Route::post('/alat', [AlatController::class, 'store']);
             Route::put('/alat/{barcode}', [AlatController::class, 'update']);
             Route::delete('/alat/{barcode}', [AlatController::class, 'destroy']);
+
+            // --- Admin: impor massal alat dari CSV (WS M, Fitur Tahap 3) ---
+            // Rute statis "impor" didaftarkan SEBELUM pola dinamis apa pun
+            // agar tidak tertelan /alat/{barcode}.
+            Route::post('/alat/impor/preview', [AlatImportController::class, 'preview']);
+            Route::post('/alat/impor/commit', [AlatImportController::class, 'commit']);
 
         });
 
