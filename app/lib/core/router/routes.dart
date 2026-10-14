@@ -18,6 +18,9 @@ abstract class Routes {
   static const String riwayat = '/riwayat';
   static const String profile = '/profil';
 
+  /// Antrean sinkronisasi offline (draf menunggu kirim — Tahap 3 §5.1).
+  static const String sinkron = '/sinkron';
+
   /// Supervisor & Admin.
   static const String verifikasi = '/verifikasi';
 

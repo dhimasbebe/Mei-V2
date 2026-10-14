@@ -26,7 +26,8 @@ abstract class RouteAccess {
             _cocok(location, Routes.verifikasi) ||
             _cocok(location, Routes.riwayat) ||
             _cocok(location, Routes.profile) ||
-            _cocok(location, Routes.alatPrefix);
+            _cocok(location, Routes.alatPrefix) ||
+            _cocok(location, Routes.sinkron);
 
       case 'teknisi':
       default:
@@ -37,7 +38,8 @@ abstract class RouteAccess {
             _cocok(location, Routes.riwayat) ||
             _cocok(location, Routes.profile) ||
             _cocok(location, Routes.alatPrefix) ||
-            _cocok(location, Routes.maintenanceForm);
+            _cocok(location, Routes.maintenanceForm) ||
+            _cocok(location, Routes.sinkron);
     }
   }
 

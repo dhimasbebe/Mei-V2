@@ -18,7 +18,13 @@ Future<FotoLokal> simpan({
   final String kunci =
       'mem://${DateTime.now().microsecondsSinceEpoch}_${_seq++}';
   _memori[kunci] = List<int>.of(bytes);
-  return FotoLokal(kunci: kunci, nama: nama, mime: mime, persisten: false);
+  return FotoLokal(
+    kunci: kunci,
+    nama: nama,
+    mime: mime,
+    persisten: false,
+    ukuran: bytes.length,
+  );
 }
 
 Future<List<int>?> baca(String kunci) async => _memori[kunci];

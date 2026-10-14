@@ -16,6 +16,7 @@ import '../../presentation/screens/maintenance/detail_alat_screen.dart';
 import '../../presentation/screens/maintenance/maintenance_form_screen.dart';
 import '../../presentation/screens/maintenance/riwayat_screen.dart';
 import '../../presentation/screens/maintenance/scan_screen.dart';
+import '../../presentation/screens/offline/sync_queue_screen.dart';
 import '../../presentation/screens/profile/profile_screen.dart';
 import '../../presentation/screens/verifikasi/verifikasi_screen.dart';
 import '../../presentation/shell/role_shell.dart';
@@ -85,6 +86,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.riwayat,
             builder: (BuildContext context, GoRouterState state) =>
                 const RiwayatScreen(),
+          ),
+          GoRoute(
+            path: Routes.sinkron,
+            builder: (BuildContext context, GoRouterState state) =>
+                const SyncQueueScreen(),
           ),
           GoRoute(
             path: Routes.profile,

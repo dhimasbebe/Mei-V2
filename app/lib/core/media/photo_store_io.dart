@@ -25,7 +25,13 @@ Future<FotoLokal> simpan({
       '${fotoDir.path}/${DateTime.now().microsecondsSinceEpoch}_$aman';
   await File(path).writeAsBytes(bytes, flush: true);
 
-  return FotoLokal(kunci: path, nama: aman, mime: mime, persisten: true);
+  return FotoLokal(
+    kunci: path,
+    nama: aman,
+    mime: mime,
+    persisten: true,
+    ukuran: bytes.length,
+  );
 }
 
 Future<List<int>?> baca(String kunci) async {

@@ -11,6 +11,7 @@ class FotoLokal {
     required this.nama,
     required this.mime,
     required this.persisten,
+    this.ukuran = 0,
   });
 
   /// Penanda lokasi foto: path berkas (mobile) atau `mem://<id>` (web).
@@ -24,6 +25,10 @@ class FotoLokal {
 
   /// `true` bila foto bertahan setelah aplikasi ditutup (butuh `path_provider`).
   final bool persisten;
+
+  /// Ukuran berkas hasil kompresi (byte) — dipakai untuk kuota total
+  /// 100 MB per laporan ([PhotoPolicy.maxTotalBytes]). `0` = tidak diketahui.
+  final int ukuran;
 
   /// `true` bila foto hanya ada di memori (web / tanpa `path_provider`).
   bool get diMemori => !persisten;
