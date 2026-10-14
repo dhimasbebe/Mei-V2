@@ -1,0 +1,11 @@
+{
+  "code": 200,
+  "message": "Verifikasi tersimpan.",
+  "data": {
+    "id_maintenance": 88,
+    "status_verifikasi": "disetujui",
+    "diverifikasi_oleh": "11111",
+    "waktu_verifikasi": "2026-07-15 10:02:11",
+    "komentar_verifikasi": "Data lengkap."
+  }
+}

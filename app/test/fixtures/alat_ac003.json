@@ -1,0 +1,18 @@
+{
+  "code": 200,
+  "data": {
+    "barcode_alat": "AC-003",
+    "merk_alat": "LG Dual Inverter 2PK",
+    "id_kategori": 1,
+    "id_lokasi": 3,
+    "created_at": "2026-10-13T20:00:50.000000Z",
+    "updated_at": "2026-10-13T20:00:50.000000Z",
+    "terakhir_maintenance": null,
+    "nama_kategori": "AC",
+    "deskripsi": "Air Conditioner",
+    "nama_lokasi": "Ruang Rapat Direksi",
+    "lantai": 3,
+    "maintenance_cycle_days": 30
+  },
+  "message": "OK"
+}

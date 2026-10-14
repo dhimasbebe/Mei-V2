@@ -1,0 +1,26 @@
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "data": [
+      {
+        "username": "67890",
+        "nama_users": "Teknisi A",
+        "role_users": "Teknisi",
+        "email_users": "teknisi.a@meiv.test",
+        "jumlah_maintenance": 34
+      },
+      {
+        "username": "11111",
+        "nama_users": "Supervisor Mei-V",
+        "role_users": "Supervisor",
+        "email_users": "supervisor@meiv.test",
+        "jumlah_maintenance": 0
+      }
+    ],
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 20,
+    "total": 2
+  }
+}

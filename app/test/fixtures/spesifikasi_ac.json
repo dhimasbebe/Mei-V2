@@ -1,0 +1,94 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "id_spesifikasi": 1,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Voltage R-S",
+      "tipe_input": "number",
+      "satuan": "V",
+      "opsi": null,
+      "urutan": 1,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    },
+    {
+      "id_spesifikasi": 2,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Voltage S-T",
+      "tipe_input": "number",
+      "satuan": "V",
+      "opsi": null,
+      "urutan": 2,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    },
+    {
+      "id_spesifikasi": 3,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Voltage T-R",
+      "tipe_input": "number",
+      "satuan": "V",
+      "opsi": null,
+      "urutan": 3,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    },
+    {
+      "id_spesifikasi": 4,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Ampere R",
+      "tipe_input": "number",
+      "satuan": "A",
+      "opsi": null,
+      "urutan": 4,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    },
+    {
+      "id_spesifikasi": 5,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Ampere S",
+      "tipe_input": "number",
+      "satuan": "A",
+      "opsi": null,
+      "urutan": 5,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    },
+    {
+      "id_spesifikasi": 6,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Ampere T",
+      "tipe_input": "number",
+      "satuan": "A",
+      "opsi": null,
+      "urutan": 6,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    },
+    {
+      "id_spesifikasi": 7,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Freon Pressure",
+      "tipe_input": "number",
+      "satuan": "PSI",
+      "opsi": null,
+      "urutan": 7,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    },
+    {
+      "id_spesifikasi": 8,
+      "id_kategori": 1,
+      "nama_spesifikasi": "Bersih/Tidak",
+      "tipe_input": "select",
+      "satuan": null,
+      "opsi": "Bersih|Tidak",
+      "urutan": 8,
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z"
+    }
+  ],
+  "message": "OK"
+}

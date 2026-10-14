@@ -1,0 +1,51 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "barcode_alat": "PP-001",
+      "merk_alat": "Kingsmill Air Terminal",
+      "nama_kategori": "Penangkal Petir",
+      "nama_lokasi": "Rooftop",
+      "lantai": 9,
+      "terlambat_hari": 270,
+      "nama_users": "Teknisi A"
+    },
+    {
+      "barcode_alat": "FA-002",
+      "merk_alat": "Notifier AFP-200",
+      "nama_kategori": "Fire Alarm",
+      "nama_lokasi": "Aula Besar",
+      "lantai": 7,
+      "terlambat_hari": 90,
+      "nama_users": "Teknisi A"
+    },
+    {
+      "barcode_alat": "GS-003",
+      "merk_alat": "Caterpillar 100 kVA",
+      "nama_kategori": "Genset",
+      "nama_lokasi": "Basement",
+      "lantai": -1,
+      "terlambat_hari": 90,
+      "nama_users": "Teknisi A"
+    },
+    {
+      "barcode_alat": "AC-003",
+      "merk_alat": "LG Dual Inverter 2PK",
+      "nama_kategori": "AC",
+      "nama_lokasi": "Ruang Rapat Direksi",
+      "lantai": 3,
+      "terlambat_hari": 30,
+      "nama_users": null
+    },
+    {
+      "barcode_alat": "PL-003",
+      "merk_alat": "Hager Volta",
+      "nama_kategori": "Panel Listrik",
+      "nama_lokasi": "Basement",
+      "lantai": -1,
+      "terlambat_hari": 15,
+      "nama_users": "Teknisi A"
+    }
+  ],
+  "message": "OK"
+}

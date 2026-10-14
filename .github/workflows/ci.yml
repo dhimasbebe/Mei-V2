@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Backend (Laravel)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          # Laravel 13 mensyaratkan PHP >= 8.3 (lihat backend/composer.json).
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite, sqlite3, curl, dom, fileinfo, openssl, tokenizer, xml, sodium, intl, zip, ctype
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('backend/composer.json') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Migrate & seed (SQLite)
+        run: php artisan migrate --seed --force
+
+      - name: Run tests
+        run: php artisan test
+
+  app:
+    name: App (Flutter)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.44.8'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build web dashboard
+        run: flutter build web --release --target lib/main_web.dart
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: mei-v2-web
+          path: app/build/web
+          retention-days: 7
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mei-v2-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7

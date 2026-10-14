@@ -1,0 +1,5218 @@
+
+
+===== PAGE 1 =====
+i 
+ 
+RANCANG BANGUN APLIKASI PEMELIHARAAN 
+ALAT MENGGUNAKAN KODE QR BERBASIS 
+ANDROID STUDI KASUS TELKOM PROPERTY 
+SURABAYA UTARA 
+ (DEVELOPMENT OF QR CODE MAINTENANCE TOOL 
+ANDROID BASED APPLICATION CASE STUDY NORTH 
+SURABAYA TELKOM PROPERTY) 
+ 
+PROPOSAL TUGAS AKHIR  
+ 
+Disusun oleh: 
+DHIMAS BINTANG BAGASKARA 
+1201181005 
+ 
+ 
+ 
+ 
+ 
+ 
+INSTITUT TEKNOLOGI TELKOM SURABAYA 
+SURABAYA 
+2022 
+ 
+ 
+
+
+===== PAGE 2 =====
+ii 
+ 
+[Halaman ini sengaja dikosongkan] 
+ 
+ 
+ 
+
+
+===== PAGE 3 =====
+iii 
+ 
+LEMBAR PERSETUJUAN 
+ 
+ 
+
+
+===== PAGE 4 =====
+iv 
+ 
+LEMBAR PENGESAHAN 
+ 
+ 
+
+
+===== PAGE 5 =====
+v 
+ 
+ABSTRAK 
+Pemeliharaan alat merupakan hal yang harus dilakukan secara berkala pada 
+perusahaan. Perbaikan dan cek kondisi alat setiap harinya dilakukan oleh beberapa 
+teknisi yang ditugaskan pada berbagai titik alat yang berbeda. Pemeliharaan 
+dipantau oleh seorang Supervisor yang bertanggung jawab mengenai kelancaran 
+perbaikan alat dan penyelesaian setiap masalah yang ditemui pada saat melakukan 
+pemeliharaan alat. Pada Telkom Property, perbaikan dilakukan secara rutin sesuai 
+jadwal dan selama ini detailnya masih ditulis manual pada banyak kertas.  
+Melihat hal tersebut, penulis merasa diperlukannya sebuah aplikasi yang 
+berisi daftar semua alat yang ada di area gedung Telkom Property. Aplikasi Mei-V 
+ini dibuat dapat bisa diisi oleh para teknisi yang melakukan perbaikan sebagai 
+langkah digitalisasi agar tidak menggunakan banyak kertas. Mei-V berbasis mobile 
+serta dibuat dengan metode Spiral Model karena dapat melakukan penambahan 
+fungsi maupun perubahan menyesuaikan dengan kebutuhan yang ada. Hasil 
+penerapan Spiral Model nantinya akan terlihat pada efektifitas pembuatan karena 
+langsung berfokus pada prototyping pada setiap evolusi produk dan menghindari 
+adanya masalah  
+Mei-V menggunakan bahasa pemrograman Java, framework Native dan 
+menggunakan database MySQL. Mei-V diuji dengan usability testing dengan 
+harapan pengguna dapat memberikan evaluasi terhadap user interface serta 
+kemudahan menggunakan aplikasi. Usability Testing dengan model questionnaire 
+digunakan sebagai parameter pengukur apakah fungsinya sudah sesuai dan dapat 
+digunakan oleh user. 
+Di awal penggunaan, Supervisor melihat panduan pemakaian aplikasi dan 
+mulai mengajarkan penggunaannya pada para teknisi yang bertugas. Sebelum 
+aplikasi mulai digunakan, sudah tersedia id dan password yang dibuat di awal agar 
+dapat digunakan para teknisi dan supervisor 
+Kata Kunci: Native, Usability Testing, Spiral Model, Java, MySQL 
+ 
+ 
+
+
+===== PAGE 6 =====
+vi 
+ 
+DAFTAR ISI 
+LEMBAR PERSETUJUAN .....................................................................................iii 
+LEMBAR PENGESAHAN ...................................................................................... iv 
+ABSTRAK ................................................................................................................ v 
+DAFTAR ISI ............................................................................................................ vi 
+DAFTAR GAMBAR ................................................................................................ ix 
+DAFTAR TABEL ..................................................................................................... x 
+DAFTAR KODE PROGRAM.................................................................................. xi 
+BAB I PENDAHULUAN .......................................................................................... 1 
+1.1 
+Latar Belakang Masalah ................................................................................ 1 
+1.2 
+Rumusan Masalah ........................................................................................ 2 
+1.3 
+Batasan Masalah .......................................................................................... 2 
+1.4 
+Tujuan dan Manfaat ..................................................................................... 2 
+1.4.1 
+Tujuan Penelitian .................................................................................. 2 
+1.4.2 
+Manfaat Penelitian ............................................................................... 3 
+1.5 
+Metodologi Penelitian .................................................................................. 3 
+1.5.1 
+Metode Pengumpulan Data................................................................... 3 
+1.5.2 
+Metode Pengembangan Sistem ............................................................. 4 
+1.6 
+Sistematika Penulisan ................................................................................... 6 
+BAB II TINJAUAN PUSTAKA ................................................................................ 8 
+2.1 
+Penelitian Terkait ......................................................................................... 8 
+2.2 
+Mechanical Electrical Telkom Property .......................................................... 8 
+2.3 
+Pencatatan Pemeliharaan Alat Digital ............................................................ 8 
+2.4 
+Monitoring Pemeliharaan Alat ...................................................................... 9 
+2.5 
+Android ....................................................................................................... 9 
+2.6 
+Metode Spiral Model.................................................................................. 10 
+2.7 
+MariaDB .................................................................................................... 11 
+2.8 
+Java ........................................................................................................... 11 
+2.9 
+PHP (Backend) ........................................................................................... 12 
+2.10 
+Usability Testing ......................................................................................... 12 
+BAB III ANALISIS DAN PERANCANGAN SISTEM............................................ 14 
+3.1 
+Analisis ...................................................................................................... 14 
+
+
+===== PAGE 7 =====
+vii 
+ 
+3.1.1 
+Analisis Permasalahan ......................................................................... 14 
+3.1.2 
+Deskripsi Umum Sistem....................................................................... 14 
+3.1.3 
+Spesifikasi Kebutuhan Perangkat Lunak ................................................ 15 
+3.2 
+Perancangan .............................................................................................. 29 
+3.2.1 
+Perancangan Arsitektur Sistem ............................................................ 29 
+3.2.2 
+Perancangan Basis Data ...................................................................... 30 
+3.2.3 
+Perancangan Antarmuka Sistem .......................................................... 33 
+BAB IV IMPLEMENTASI ..................................................................................... 38 
+4.1 
+Implementasi Aplikasi................................................................................. 38 
+4.1.1 
+Perangkat Keras .................................................................................. 38 
+4.1.2 
+Perangkat Lunak ................................................................................. 39 
+4.2 
+Implementasi Tampilan Antarmuka Aplikasi................................................. 39 
+4.2.1 
+Halaman Antarmuka Login .................................................................. 39 
+4.2.2 
+Halaman Antarmuka Home ................................................................. 40 
+4.2.3 
+Halaman Antarmuka User Profile ......................................................... 42 
+4.2.4 
+Halaman Antarmuka Registrasi ............................................................ 43 
+4.2.5 
+Halaman Antarmuka Edit Password ..................................................... 44 
+4.2.6 
+Halaman Antarmuka Detail Alat ........................................................... 45 
+4.2.7 
+Halaman Antarmuka Detail Maintenance ............................................. 46 
+4.3 
+Implementasi Kasus Penggunaan ................................................................ 47 
+4.3.1 
+Implementasi Kasus Penggunaan Login ................................................ 47 
+4.3.2 
+Implementasi Kasus Penggunaan Menambahkan data Teknisi dan 
+Supervisor ....................................................................................................... 51 
+4.3.3 
+Implementasi Kasus Penggunaan Melakukan Scan .............................. 54 
+4.3.4 
+Implementasi Kasus Penggunaan Melihat Riwayat Pemeliharaan 
+Sebelumnya ..................................................................................................... 55 
+4.3.5 
+Implementasi Kasus Penggunaan Input Detail Pemeliharaan ................. 56 
+4.3.6 
+Implementasi Kasus Penggunaan Melihat Laporan Rutin ....................... 99 
+4.3.7 
+Implementasi Kasus Penggunaan Logout ............................................ 103 
+BAB V PENGUJIAN DAN EVALUASI................................................................ 104 
+5.1 
+Pengujian Aplikasi .................................................................................... 104 
+5.2 
+Pengujian Fungsionalitas .......................................................................... 104 
+5.2.1 
+Pengujian Fungsionalitas Login dan Logout Mei-V ............................... 104 
+5.2.2 
+Pengujian Fungsionalitas Register pengguna Mei-V............................. 105 
+
+
+===== PAGE 8 =====
+viii 
+ 
+5.2.3 
+Pengujian Fungsionalitas Masuk Detail Alat ........................................ 105 
+5.2.4 
+Pengujian Fungsionalitas Scan Barcode .............................................. 105 
+5.2.5 
+Pengujian Fungsionalitas Input Detail Maintenance ............................ 106 
+5.3 
+Pengujian Penggunaan pada Telkom Property Surabaya Utara.................... 106 
+5.4 
+Evaluasi Pengujian.................................................................................... 108 
+BAB VI KESIMPULAN DAN SARAN ................................................................. 109 
+6.1 
+Kesimpulan .............................................................................................. 109 
+6.2 
+Saran ....................................................................................................... 109 
+DAFTAR PUSTAKA ............................................................................................ 110 
+ 
+ 
+ 
+ 
+
+
+===== PAGE 9 =====
+ix 
+ 
+DAFTAR GAMBAR 
+Gambar 1.1 Metode Spiral Model ............................................................................ 4 
+Gambar 1.2 Diskusi perencanaan kebutuhan aplikasi .............................................. 5 
+Gambar 3.1 Deskripsi Umum Sistem ..................................................................... 14 
+Gambar 3.2 Diagram Kasus Penggunaan ............................................................... 17 
+Gambar 3.3 Aktivitas menambahkan data teknisi dan supervisor .......................... 19 
+Gambar 3.4 Aktifitas menguji fungsi aplikasi........................................................ 20 
+Gambar 3.5 Aktifitas Login...................................................................................... 21 
+Gambar 3.6 Aktifitas Melakukan Scan ...................................................................... 22 
+Gambar 3.7 Aktifitas Melihat riyawat pemeliharaan ............................................. 23 
+Gambar 3.8 Aktifitas Input update detail pemeliharaan......................................... 24 
+Gambar 3.9 Aktifitas Menyimpan hasil pemeliharaan ........................................... 25 
+Gambar 3.10 Aktivitas Melihat laporan rutin......................................................... 27 
+Gambar 3.11 Aktivitas Logout ............................................................................... 28 
+Gambar 3.12 Sequence Diagram............................................................................... 28 
+Gambar 3.13 Rancangan Arsitektur Sistem ............................................................ 29 
+Gambar 3.14 Entity Relationship Diagram ................................................................ 32 
+Gambar 3.15 Conceptual Data Model ....................................................................... 33 
+Gambar 3.16 Physical Data Model............................................................................ 33 
+Gambar 3.17 Tampilan Halaman Login.................................................................. 34 
+Gambar 3.18 Tampilan Menu Utama...................................................................... 35 
+Gambar 3.19 Tampilan Halaman Pemeliharaan Alat.............................................. 36 
+Gambar 3.20 Tampilan Halaman User Profile........................................................ 37 
+Gambar 4.1 Halaman Antarmuka Login ................................................................. 37 
+Gambar 4.2 Halaman Antarmuka Home ................................................................. 48 
+Gambar 4.3 Halaman Antarmuka User Profile ....................................................... 49 
+Gambar 4.4 Halaman Antarmuka Registrasi .......................................................... 50 
+Gambar 4.5 Halaman Antarmuka Edit Password ................................................... 51 
+Gambar 4.6 Halaman Antarmuka Detail Alat......................................................... 52 
+Gambar 4.7 Halaman Antarmuka Detail Maintenance Teknisi .............................. 53 
+Gambar 4.8 Halaman Antarmuka Detail Maintenance Supervisor ......................... 53 
+ 
+ 
+ 
+
+
+===== PAGE 10 =====
+x 
+ 
+ 
+DAFTAR TABEL 
+Tabel 3.1 Tabel Kebutuhan Fungsional .................................................................. 15 
+Tabel 3.2 Tabel Kasus Penggunaan ........................................................................ 17 
+Tabel 3.3 Tabel Spesifikasi Kasus Penggunaan UC-001 ........................................ 18 
+Tabel 3.4 Tabel Spesifikasi Kasus Penggunaan UC-002 ........................................ 19 
+Tabel 3.5 Tabel Spesifikasi Kasus Penggunaan UC-003 ........................................ 20 
+Tabel 3.6 Tabel Spesifikasi Kasus Penggunaan UC-004 ......................................... 21 
+Tabel 3.7 Tabel Spesifikasi Kasus Penggunaan UC-005 ........................................ 22 
+Tabel 3.8 Tabel Spesifikasi Kasus Penggunaan UC-006 ........................................ 23 
+Tabel 3.9 Tabel Spesifikasi Kasus Penggunaan UC-007 ........................................ 25 
+Tabel 3.10 Tabel Spesifikasi Kasus Penggunaan UC-008 ...................................... 26 
+Tabel 3.11 Tabel Spesifikasi Kasus Penggunaan UC-009 ...................................... 27 
+Tabel 3.12 Tabel Request Web Server .................................................................... 29 
+Tabel 3.13 Tabel Data Admin ................................................................................. 30 
+Tabel 3.14 Tabel Data Supervisor ........................................................................... 30 
+Tabel 3.15 Tabel Data Teknisi ................................................................................ 30 
+Tabel 3.16 Tabel Data Alat ..................................................................................... 30 
+Tabel 5.1 Tabel Pengujian Fungsionalitas Login dan Logout............................... 104 
+Tabel 5.2 Tabel Pengujian Fungsionalitas Register .............................................. 105 
+Tabel 5.3 Tabel Pengujian Fungsionalitas Masuk Detail Alat .............................. 105 
+Tabel 5.4 Tabel Pengujian Fungsionalitas Scan Barcode ..................................... 105 
+Tabel 5.5 Tabel Pengujian Fungsionalitas Input Detail Maintenance................... 106 
+Tabel 5.6 Tabel Pertanyaan Pengujian Penggunaan.............................................. 106 
+Tabel 5.7 Tabel Hasil Pengujian Penggunaan ....................................................... 108 
+Tabel 5.6 Tabel Hasil Perhitungan Pengujian Penggunaan................................... 108 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+===== PAGE 11 =====
+xi 
+ 
+ 
+DAFTAR KODE PROGRAM 
+Kode Program 4.1 Kode Program PHP Login  ..................................................... 153 
+Kode Program 4.2 Kode Program Java Login  ..................................................... 154 
+Kode Program 4.3 Kode Program PHP formregistrasi.php  ................................. 156 
+Kode Program 4.4 Kode Program Java RegistrasiActivity.java  .......................... 157 
+Kode Program 4.5 Kode Program PHP cari_id_alat.php  ..................................... 159 
+Kode Program 4.6 Kode Program PHP history_maintenance.php  ......................... 60 
+Kode Program 4.7 Kode Program PHP input_data_ac.php  ................................. 615 
+Kode Program 4.8 Kode Program Java MaintenanceACActivity.java  .................. 62 
+Kode Program 4.9 Kode Program PHP input_data_alarm.php  .............................. 67 
+Kode Program 4.10 Kode Program Java MaintenanceAlarmActivity.java  ............ 69 
+Kode Program 4.11 Kode Program PHP input_data_apar.php  .............................. 74 
+Kode Program 4.12 Kode Program Java MaintenanceAPARActivity.java ............ 75 
+Kode Program 4.13 Kode Program PHP input_data_panel.php ............................. 81 
+Kode Program 4.14 Kode Program Java MaintenancePanelListrikActivity.java  ........ 83 
+Kode Program 4.15 Kode Program PHP input_data_hydrant.php .......................... 88 
+Kode Program 4.16 Kode Program Java MaintenanceHydrantActivity.java  ......... 89 
+Kode Program 4.17 Kode Program PHP input_data_petir.php  .............................. 94 
+Kode Program 4.18 Kode Program Java MaintenancePenangkalPetirActivity.java 
+ ................................................................................................................................ 95 
+Kode Program 4.19 Kode Program PHP download_report.php  ........................... 100 
+Kode Program 4.20 Kode Program Java DownloadReport.java .......................... 102 
+Kode Program 4.21 Kode Program Java Logout .................................................. 103 
+ 
+ 
+ 
+ 
+
+
+===== PAGE 12 =====
+1 
+ 
+ 
+ 
+ 
+BAB I 
+PENDAHULUAN 
+1.1 
+Latar Belakang Masalah 
+Telkom Property Surabaya Utara memiliki peranan serta tugas untuk menjaga 
+dan melakukan maintenance terhadap semua aset perusahan Telkom Indonesia di 
+wilayah Surabaya Utara dan Madura. Aset yang dimiliki Telkom Property sangat 
+beragam, mulai dari air conditioner (AC) , genset, alat pemadam api ringan 
+(APAR), penangkal petir, panel listrik, serta hydrant untuk pemadam saat 
+kebakaran. Setiap alat memiliki fungsi yang berbeda dan diletakkan di banyak 
+sekali ruangan yang tersebar pada seluruh gedung Telkom Property Surabaya Utara. 
+Berdasarkan pengalaman kerja yang penulis dapat melalui praktek kerja di 
+Telkom Property, penulis menemukan beberapa hal yang masih belum dilakukan 
+secara digital.  Penelitian ini dilakukan sebagai langkah lanjutan penulis mengenai 
+permasalahan yang ditemukan sewaktu pelaksanaan kerja praktek yang lalu. 
+Selama ini, proses penulisan hasil pemeliharaan alat dilakukan secara manual oleh 
+para teknisi dan para Supervisor tidak bisa memantau setiap saat dan mengetahui 
+kondisi semua alat yang ada.  
+Berdasarkan sistem yang sudah berjalan, kesulitan yang ditemui adalah tidak 
+adanya akses Supervisor secara langsung ke alat-alat yang perlu dipelihara secara 
+berkala. Melihat banyaknya alat yang tersedia dan perlu diperbaiki oleh para teknisi 
+Telkom property, penulis mengusulkan Mei-V, yang berbentuk aplikasi android 
+yang dapat digunakan para Teknisi dan Supervisor dalam memelihara alat-alat yang 
+ada.  
+Mei-V dibuat dengan metode Spiral Model agar pengembangan aplikasinya 
+dapat dilakukan secara sistematis dan terdapat kemudahan dalam melakukan 
+perubahan kebutuhan dan dokumentasi. Pola sistematis dan fleksibilitas perubahan 
+tersebut bertujuan untuk mempermudah komunikasi dengan supervisor dan 
+pembuatan aplikasinya dapat menyesuaikan dengan kebutuhan yang diinginkan. 
+Diharapkan aplikasi ini dapat menjadi solusi bagi Telkom Property dalam hal 
+pemeliharaan alat dan Mei-V dapat mempermudah kinerja para Teknisi serta dapat 
+
+
+===== PAGE 13 =====
+2 
+ 
+ 
+menghemat banyak waktu karena adanya data riwayat yang muncul, teknisi dan 
+supervisor tidak perlu memeriksa kondisi alat secara menyeluruh dan cukup 
+berfokus pada hal yang akan diperbaiki dan ditingkatkan performa nya saja.    
+ 
+1.2 
+Rumusan Masalah 
+Menurut uraian latar belakang diatas, dapat ditemukan beberapa rumusan 
+masalah seperti : 
+1) Bagaimana merancang dan membangun aplikasi pemeliharaan alat 
+berbasis android? 
+2) Bagaimana cara melakukan pengujian aplikasi pemeliharaan alat 
+berbasis android? 
+3) Bagaimana aplikasi yang diusulkan bisa menyelesaikan masalah 
+pemeliharaan alat di Telkom Property?  
+ 
+1.3 
+Batasan Masalah 
+Terdapat beberapa batasan yang penulis tetapkan pada aplikasi Mei-V, 
+diantaranya : 
+a) Aplikasi hanya berbasis android 
+b) Aplikasi membutuhkan akses internet 
+c) Aplikasi menggunakan bahasa pemrograman Java 
+d) Aplikasi menggunakan framework Native 
+e) Aplikasi hanya dapat digunakan oleh Teknisi dan Supervisor Telkom 
+Property 
+f) Akun Teknisi dan Supervisor dibuat oleh penulis yang berperan 
+sebagai Admin sekaligus pembuat aplikasi 
+g) Alat yang diinputkan merupakan properti milik Telkom Property 
+Surabaya Utara 
+1.4 
+Tujuan dan Manfaat 
+Dalam pembuatan proposal tugas akhir ini, mempunyai beberapa tujuan dan 
+manfaat. Tujuan dan manfaat yang didapatkan adalah sebagai berikut. 
+1.4.1 Tujuan Penelitian 
+Adapun tujuan dari tugas akhir ini adalah sebagai berikut :  
+
+
+===== PAGE 14 =====
+3 
+ 
+ 
+1) Membuat perancangan dan implementasi aplikasi pemeliharaan alat 
+berbasis android. 
+2) Melakukan pengujian aplikasi menggunakan metode Usability Testing. 
+3) Melakukan pengujian aplikasi terhadap permasalahan pemeliharaan 
+alat. 
+1.4.2 Manfaat Penelitian 
+Adapun manfaat dari tugas akhir ini adalah sebagai berikut :  
+1) Mempermudah supervisor dalam memantau kinerja para teknisinya. 
+2) Membantu para teknisi dalam melakukan pemeliharaan alat. 
+3) Menghemat banyak waktu karena teknisi tidak perlu mencari 
+permasalahan satu persatu ketika ada masalah pada alat, cukup melihat 
+riwayat pemeliharaan. 
+ 
+1.5 
+Metodologi Penelitian 
+Metode penilitian yang digunakan dalam pengembangan aplikasi ini adalah 
+dengan menggunakan metode Spiral Model. 
+1.5.1 Metode Pengumpulan Data 
+Dalam penulisan tugas akhir ini, penulis memperoleh seluruh data yang 
+diperlukan dengan menggunakan metode berikut ; 
+1.5.1.1 Wawancara 
+Tahap dimana penulis datang ke Telkom Property dan melakukan tanya 
+jawab mengenai sistem kerja dan bagian mana yang masih perlu ditingkatkan 
+performanya melalui sebuah aplikasi.  
+Dari hasil wawancana tersebut, penulis diminta untuk berfokus di bagian 
+perbaikan alat dan membuat aplikasi untuk mencatat setiap detail perbaikan yang 
+dilakukan 
+ 
+1.5.1.2 Studi Literatur 
+Studi literatur dalam pengerjaan aplikasi ini adalah mengenai penggunaan 
+framework Native dan Java, integrasi antara aplikasi android dan database yang 
+akan digunakan. Studi literatur didapat dari internet 
+
+
+===== PAGE 15 =====
+4 
+ 
+ 
+1.5.1.3 Observasi 
+Tahap dimana penulis melakukan pengamatan secara langsung mengenai 
+sistem yang berjalan di Telkom Property. Penulis melakukan observasi selama 1 
+bulan saat melakukan kerja praktek di Telkom Property Surabaya Utara 
+1.5.2 Metode Pengembangan Sistem 
+Pembuatan Dalam mengerjakan tugas akhir ini, penulis menggunakan metode 
+Spiral Model pada aplikasi Mei-V yang sedang dibuat ini. Berikut beberapa tahapan 
+sesuai metode Spiral yang sedang penulis lakukan : 
+ 
+Gambar 1.1 Metode Spiral Model 
+1. Customer Communication 
+Tahap awal dimana penulis berkomunikasi dengan Supervisor Telkom 
+Property melalui media sosial untuk membahas sistem kerja dan bagaimana 
+divisi Mechanical Electrical melakukan pemeliharaan pada setiap alat yang 
+dimiliki Telkom Property. 
+2. Planning 
+
+
+===== PAGE 16 =====
+5 
+ 
+ 
+ 
+Gambar 1.2 Diskusi perencanaan kebutuhan aplikasi 
+ Tahap komunikasi lanjutan dengan Supervisor yang dilakukan secara 
+langsung dengan cara bertemu di Gedung Telkom Property Surabaya 
+Utara dan melakukan diskusi secara langsung mengenai sistem 
+pemeliharaan yang berjalan di Telkom Property. Pertemuan tersebut 
+menghasilkan sebuah perencanaan awal dan pemberian data alat-alat yang 
+ada. 
+3. Risk Analysis 
+Tahap selanjutnya adalah pembuatan rancangan sistem yang berupa UML 
+diagram yang berisi use case diagram beserta penjelasan setiap activity 
+yang ada. Bagian dokumentasi ini juga memuat rancangan database 
+aplikasi dan tampilan antarmuka aplikasi. 
+4. Engineering 
+Setelah desain sistem telah ada, Tahap selanjutnya merupakan tahap 
+pembuatan kode program dan melakukan tes awal pada setiap fungsi 
+aplikasi. Testing disini hanya dilakukan oleh pembuat aplikasi saja dan 
+belum tersedia untuk pengguna. 
+Dalam pembuatan aplikasinya, Mei-V dibuat menggunakan: 
+a) Java sebagai bahasa pemrograman yang akan digunakan 
+b) Native sebagai Framework aplikasi 
+c) MySQL sebagai database aplikasi 
+d) Android Studio sebagai text editor aplikasi 
+
+
+===== PAGE 17 =====
+6 
+ 
+ 
+e) Visual Paradigm untuk pembuatan dokumentasi aplikasi 
+f) Spiral Model sebagai metode yang digunakan saat pembuatan aplikasi 
+g) Usability Testing sebagai sarana pengujian aplikasinya 
+5. Construction & Release 
+Tahap dimana aplikasi mulai di instalasi dan fungsi nya mulai diujikan ke 
+pengguna secara langsung. Mei-V hanya dapat digunakan oleh internal 
+Telkom Property Surabaya Utara dan tidak dipublikasikan melalui Google 
+Play Store maupun aplikasi sejenis lainnya. 
+Aktivitas yang dibutuhkan untuk develop software, testing, instalasi dan 
+penyediaan user / costumer support seperti training penggunaan software 
+serta dokumentasi seperti buku manual penggunaan software. 
+6. Customer Evaluation 
+Tahap akhir dari pembuatan aplikasi. Setelah Mei-V digunakan oleh 
+pengguna, pengguna dapat memberikan evaluasi apabila masih terdapat 
+kesalahan pada fungsi maupun tampilan aplikasi. 
+1.6 
+Sistematika Penulisan 
+Penulis membuat susunan proposal dengan tujuan mendapatkan gambaran 
+penuh dari setiap tahap pengerjaan tugas akhir penulis. Sistematika 
+penulisan dari proposal ini adalah sebagai berikut : 
+BAB I 
+Pendahuluan 
+Bab ini berisi latar belakang, rumusan masalah, tujuan dan 
+manfaat, batasan masalah, metodologi penelitian, sistematika 
+penulisan, dan jadwal pelaksanaan. 
+BAB II 
+Tinjauan Pustaka 
+Bab ini berisi penjelasan detail dari teori yang digunakan dalam 
+pembuatan tugas akhir ini. 
+BAB III 
+ 
+ 
+BAB IV 
+ 
+ 
+Analisis dan Perancangan Sistem 
+Bab ini berisi analisis sistem, deskripsi umum sistem, diagram 
+blok, diagram kelas, dan spesifikasi kebutuhan perangkat lunak 
+Hasil Pembuatan dan Analisis 
+
+
+===== PAGE 18 =====
+7 
+ 
+ 
+ 
+ 
+ 
+BAB V 
+Bab ini berisi hasil penelitian dan pembuatan aplikasi yang 
+telah dilakukan. Topik yang dibahas terdiri atas implementasi 
+dari kode program yang telah dibuat sebelumnya. 
+Kesimpulan dan Saran 
+Bab ini berisi ringkasan dan dari berbagai fitur dan semua poin 
+penting pada seluruh bab sebelumnya. 
+ 
+ 
+ 
+ 
+
+
+===== PAGE 19 =====
+8 
+ 
+ 
+ 
+BAB II 
+TINJAUAN PUSTAKA 
+2.1 
+Penelitian Terkait 
+Sebelumnya, telah terdapat beberapa penelitian luar yang berkaitan dengan 
+Pemeliharaan Gedung seperti yang penulis lakukan, diantaranya Perancangan 
+Manajemen Pemeliharaan Gedung Dekanat Fakultas Kedokteran Universitas 
+Andalas [1], Sistem Informasi Manajemen Pemeliharaan Fasilitas Gedung Berbasis 
+Website Studi Kampus STMIK Musirawas Lubuklingau [2], Evaluasi Pemasangan 
+Dan Pemeliharaan Alat Pemadam Api Ringan Di Gresik [3]. 
+Di Telkom Property sebelumnya juga telah terdapat penelitian terdahulu 
+terkait pemeliharaan Gedung yang berfokus pada pemeliharaan alat AC yakni 
+MAC-E. Penelitian tersebut dilakukan Telkom property Surabaya Utara untuk 
+mengikuti Lomba Innovation Award 2021 oleh Telkom Property pusat. Penelitian 
+yang difokuskan pada perbaikan alat ini berupa aplikasi android yang berbasis kode 
+QR dan penyimpanan basis datanya menggunakan layanan google drive sehingga 
+semua data detail maintenance dan riwayat perbaikan dari para teknisi dapat 
+tersimpan disatu tempat. Sebagai tindak lanjut penelitian tersebut, penulis 
+mengusulkan sebuah aplikasi pemeliharaan alat yakni Mei-V yang memiliki 
+perbedaan dari penelitian sebelumnya karena dapat memuat lebih banyak alat yang 
+belum tersedia. 
+2.2 
+Mechanical Electrical Telkom Property 
+Dalam melakukan pembuatan tugas akhir ini, obyek penelitian penulis adalah 
+Telkom Property Surabaya Utara dan berfokus pada pemeliharaan alat yang 
+dilakukan oleh divisi Mechanical Electrical (ME). Mechanical Electrical sendiri 
+adalah sebuah bagian pekerjaan penting yang bertugas merawat fungsi Gedung. 
+Mechanical Electrical harus dapat menyediakan suplai listrik ke seluruh Gedung 
+agar alat elekstronik dapat beroperasi dan mengatur tata ruang udara agar sirkulasi 
+udara lancar. 
+2.3 
+Pencatatan Pemeliharaan Alat Digital 
+Di Telkom Property, penulis menemui permasalahan dibagian pemeliharaan 
+alat, yang rekap penulisannya masih dilakukan secara manual dan belum terdapat 
+suatu aplikasi untuk membantu para teknisi dalam mencatat pemeliharaan yang ada. 
+
+
+===== PAGE 20 =====
+9 
+ 
+ 
+Melihat hal tersebut, penulis mengusulkan sebuah aplikasi yang dapat mencatat 
+seluruh riwayat pemeliharaan alat secara digital melalui smartphone android yang 
+dimiliki seluruh Teknisi dan Supervisor Telkom Property Surabaya Utara. 
+2.4 
+Monitoring Pemeliharaan Alat 
+. Monitoring merupakan suatu kegiatan yang terdiri atas pengumpulan data, 
+peninjauan ulang, pelaporan, serta tindakan atas informasi suatu proses yang sedang 
+diimplementasikan [4]. Monitoring dilihat dari hubungan terhadap manajemen 
+kinerja untuk memastikan bahwa proses berjalan sesuai rencana (on the track). Pada 
+pelaksanaannya, monitoring dilakukan disaat suatu proses berjalan.  Pemeliharaan 
+alat merupakan suatu kegiatan yang dilakukan untuk menjaga fasilitas atau 
+peralatan dan mengadakan penyesuaian / penggantian yang diperlukan secara rutin 
+pada jangka waktu tertentu agar alat dapat berfungsi secara normal dan optimal  
+2.5 
+Android 
+Android merupakan perangkat bergerak pada sistem operasi untuk telepon 
+seluler yang berbasis linux [5] . Android dikembangkan oleh Google sejak tahun 
+2005 untuk ponsel cerdas dan perangkat seluler lainnya seperti tablet dan smart 
+watch. Android berkembang menjadi platform yang sangat diminati dan 
+mendominasi semua aplikasi melalui layanan google play store nya. Android 
+pertama kali dikembangkan oleh perusahaan startup di California bernama 
+Android, Inc. Android dibangun berbasis platform Linux yang bersifat open source 
+dan memiliki berbagai fitur, diantaranya : 
+a) Integrated Browser WebKit 
+b) Bluetooth sebagai sarana pengiriman data 
+c) Grafis OpenGL yang mendukung 3D dan 2D secara maksimal 
+d) Multimedia Support karena mendukung video, gambar, serta audio yang sangat 
+baik 
+e) Multi-Touch 10 Jari 
+f) Refresh rate tinggi untuk kenyamanan scroll saat sedang membaca sesuatu 
+g) Split Screen untuk memudahkan pengguna yang gemar membuka lebih dari 
+satu aplikasi secara bersamaan 
+h) Dukungan perangkat tambahan yang banyak selama perangkat tambahan 
+tersebut mendukung bluetooth 
+
+
+===== PAGE 21 =====
+10 
+ 
+ 
+2.6 
+Metode Spiral Model 
+Metode Spiral Model merupakan suatu metodologi pengembangan aplikasi 
+yang diusulkan oleh Boehm pada tahun dan merupakan model yang evolusioner, 
+karena proses pembuatan prototype nya dengan cara melakukan kontrol secara 
+sistematis dari model sekuensial linear [6]. Spiral Model memiliki proses 
+pengembangan yang cepat karena dapat melakukan penambahan fungsi maupun 
+perubahan menyesuaikan dengan kebutuhan yang ada. 
+Model Spiral dibagi menjadi beberapa langkah kerja, diantaranya: 
+1) Komunikasi  
+Komunikasi merupakan hal terpenting yang dibutuhkan untuk membangun 
+hubungan yang efektif di antara pengembang dan pelanggan,  
+2) Perencanaan 
+Pada setiap proses, perencanaan selalu dibutuhkan untuk mendefinisikan 
+sumber – sumber daya, ketepatan waktu, dan proyek informasi lain yang 
+berhubungan, analisis risiko yang dibutuhkan untuk memperhitungkan 
+resiko teknis maupun resiko manajemen 
+3) Rekayasa 
+Proses rekayasa dibutuhkan untuk membangun satu atau lebih representasi 
+dari aplikasi tersebut 
+4) Konstruksi dan peluncuran  
+Peluncuran atau release dibutuhkan untuk mengkonstruksi dan menguji 
+serta memasang dan memberikan pelayanan berupa pelatihan kepada user 
+tentang bagaimana cara mengoperasikan aplikasi tersebut 
+5) Evaluasi 
+Evaluasi dilakukan oleh user dan dibutuhkan untuk memperoleh umpan 
+balik dengan didasarkan pada evaluasi representasi software, yang dibuat 
+selama masa perekayasaan, dan diimplementasikan selama masa 
+pemasangan.  
+Terdapat beberapa keuntungan menggunakan Spiral Model, diantaranya : 
+a) Pengerjaan aplikasi dapat lebih teratur dan sistematis 
+b) Manajemen Analisa resiko yang mudah 
+
+
+===== PAGE 22 =====
+11 
+ 
+ 
+c) Fleksibilitas yang baik dalam hal perubahan kebutuhan dan dokumentasi, 
+tidak seperti Waterfall 
+d) Pembuatan prototype secara langsung dan biaya dapat diperkirakan 
+2.7 
+MariaDB 
+MariaDB merupakan salah satu database server yang digunakan untuk 
+menyimpan dan memanajemen data. [7] . MariaDB memiliki kompatibilitas dan 
+API seperti pada MySQL. Jika di MySQL ada InnoDB maka MariaDB memiliki 
+XtraDB [8]. Struktur dasar dari ekspresi SQL terdiri dari tiga klausa yakni select, 
+from dan where. 
+MySQL memiliki beberapa kelebihan [9] diantaranya :  
+1. Dapat digunakan oleh beberapa user dalam waktu yang bersamaan tanpa 
+mengalami masalah. 
+2. Memiliki kecepatan yang bagus dalam menangani query sederhana. 
+3. Memiliki operator dan fungsi secara penuh dan mendukung perintah select 
+dan where dalam perintah query. 
+4. Memiliki keamanan yang bagus karena beberapa lapisan sekuritas seperti 
+level subnetmask, nama host, dan izin akses user, dengan sistem perizinan 
+yang mendetail serta sandi terenkripsi. 
+5. Mampu menangani basis data dalam skala besar 
+2.8 
+Java 
+Java merupakan bahasa pemrograman yang berorientasi objek dan dapat 
+dijalankan pada berbagai platform sistem operasi [10] . Java dikembangkan oleh 
+Sun Microsystem Inc dan dapat dijalankan hampir di semua perangkat yang 
+mendukung Java, dengan sedikit perubahan atau tanpa perubahan sama sekali 
+dalam kodenya. Aplikasi dengan berbasis Java ini dikompulasi dan bisa dijalankan 
+dengan Java Virtual Machine. Fungsionalitas dari Java ini dapat berjalan dengan 
+platform sistem operasi yang berbeda karena sifatnya yang umum dan non spesifik. 
+Java memiliki library yang lengkap. Library disini adalah sebuah kumpulan dari 
+program yang disertakan dalam Java. Terdapat beberapa fitur pada bahasa Java, 
+diantaranya: 
+a) Berorientasi objek 
+b) Memiliki compiler sendiri 
+
+
+===== PAGE 23 =====
+12 
+ 
+ 
+c) Objek perlu dideklarasikan terlebih dahulu 
+d) Multithreading karena bisa memiliki lebih dari satu thread eksekusi dalam 
+waktu bersamaan 
+e) Tidak mudah crash 
+f) Fungsi dapat ditulis dalam bahasa lain karena mendukung Native method. 
+2.9 
+PHP (Backend) 
+PHP atau Hypertext Preprocessor merupakan bahasa pemrograman web 
+server-side yang bersifat open source dan dirancang khusus untuk web [11]. Script 
+PHP terintegrasi dengan HTML dan berada pada server. PHP dalam sistem aplikasi 
+web berfungsi sebagai server side scripting language, yaitu sebagai sederetan kode 
+yang dieksekusi seluruhnya di server. 
+PHP adalah bahasa pemrograman yang berjalan pada sebuah webserver dan 
+dapat mengolah data dengan tipe apapun, menciptakan halaman web yang dinamis, 
+serta menerima dan menciptakan cookies [12]. Pada tugas akhir ini, nantinya PHP 
+akan digunakan sebagai bahasa pemrograman untuk pembuatan website backend 
+untuk aplikasi Mei-V. 
+2.10 Usability Testing 
+Usability testing adalah salah satu kategori metode dalam evaluasi usability 
+yang mengobservasi pengguna sebuah desain kemudian diambil data dan 
+menganalisanya [13]. Usability testing dilakukan untuk mengidentifikasi masalah 
+kegunaan, mengumpulkan data kualitatif dan kuantitatif dan menentukan kepuasan 
+pengguna dengan aplikasi Mei-V. Usability testing dapat digunakan dengan 
+beberapa tahapan, mulai dari menentukan user, melakukan pemilihan fungsi, 
+membuat tugas usability testing, menentukan waktu usability testing, melaksanakan 
+usability testing, melakukan analisa data dengan cara merekam atau mencatat hasil 
+dari usability testing, melakukan pengukuran usability dengan menggunakan 
+kuesioner, dan terakhir melakukan analisis untuk rekomendasi perbaikan sistem ke 
+depannya. 
+Usability testing aplikasi Mei-V ini berbentuk kuisioner dan memiliki 
+beberapa 5 komponen pengujian utama, diantaranya : 
+1. Efficiency 
+
+
+===== PAGE 24 =====
+13 
+ 
+ 
+Paramater kepuasan Teknisi dan Supervisor terhadap ketersediaan 
+informasi riwayat pemeliharaan alat dan kecepatan saat memuatnya.  
+2. Affect 
+Parameter kepuasan Teknisi terhadap kenyamanan saat menggunakan 
+Mei-V untuk melakukan pemeliharaan alat.  
+3. Helpfulness 
+Parameter kepuasan terhadap kemampuan Mei-V dalam membantu 
+Teknisi dalam memelihara alat dengan membaca informasi dari riwayat 
+pemeliharaan alat.  
+4. Control 
+Parameter kepuasan Teknisi dan Supervisor dimana saat dapat 
+menggunakan semua fitur Mei-V dengan mudah.  
+5. Learnability 
+Parameter kepuasan Teknisi dan Supervisor terhadap kemudahan  setiap 
+fitur pada Mei-V dipelajari untuk menyelesaikan masalah pada 
+pemeliharaan alat Telkom Property  
+ 
+ 
+
+
+===== PAGE 25 =====
+14 
+ 
+ 
+ 
+BAB III 
+ANALISIS DAN PERANCANGAN SISTEM 
+Bab ini berisikan rancangan umum dari sistem yang akan dibuat. Bab ini 
+meliputi analisis sistem, spesifikasi kebutuhan, desain perangkat keras dan desain 
+perangkat lunak. 
+3.1 
+Analisis 
+3.1.1 Analisis Permasalahan 
+Berdasarkan pengamatan dan analisis yang penulis lakukan selama kerja praktek 
+di Telkom Property Surabaya Utara selama satu bulan, penulis melihat proses 
+pemeliharaan alat masih dilakukan secara manual dengan menulis dikertas dan 
+supervisor disana sebuah aplikasi yang dapat menampung semua data pemeliharaan 
+tersebut. Menanggapi hal tersebut, penulis mengusulkan sebuah aplikasi untuk 
+menampung semua data pemeliharaan di Telkom Property Surabaya Utara. 
+3.1.2 Deskripsi Umum Sistem 
+ 
+Gambar 3.1 Deskripsi Umum Sistem 
+Admin sebagai pembuat aplikasi perlu membuat username serta password 
+pengguna aplikasi yakni Teknisi dan Supervisor dan setelah akun dibuat, admin 
+memberikannya agar pengguna bisa login.  
+
+
+===== PAGE 26 =====
+15 
+ 
+ 
+Proses pemeliharaan dimulai dari teknisi yang login dan melakukan  scan 
+pada kode QR yang terdapat di alat-alat yang ada lalu melakukan pemeliharaan 
+pada alat tersebut. Teknisi dapat melihat riwayat dan mulai melakukan perbaikan 
+berdasarkan data tersebut. Setelah diperbaiki, Teknisi menulis detail perbaikan 
+baru dan menyimpannya hingga data perbaikannya masuk ke database. Supervisor 
+dapat memantau kinerja teknisi dan kondisi alat dengan melakukan scan kode QR 
+pada alat, login, lalu mengunduh laporan pemeliharaan secara rutin. 
+3.1.3 Spesifikasi Kebutuhan Perangkat Lunak 
+3.1.3.1 Kebutuhan Fungsional 
+ 
+Tabel 3.1 Tabel Kebutuhan Fungsional 
+No. 
+Kebutuhan 
+Fungsional 
+Deskripsi 
+1 
+Menambahkan data Teknisi 
+dan Supervisor 
+Mendaftarkan username dan password 
+untuk Supervisr dan Teknisi Telkom 
+Property 
+2 
+Menguji fungsi aplikasi 
+Melakukan pengujian apakah semua 
+fungsi dapat berjalan nromal 
+3 
+Login 
+Supervisor dan Teknisi melakukan login 
+untuk masuk Mei-V 
+4 
+Melakukan Scan 
+Teknisi 
+melakukan 
+scan 
+untuk 
+melakukan pemeliharaan, Supervisor 
+melakukan 
+scan 
+untuk 
+monitoring 
+kinerja Teknisi 
+5 
+Melihat 
+riyawat 
+pemeliharaan sebelumnya 
+Teknisi melihat riwayat pemeliharaan 
+agar dapat mengetahui kondisi alat 
+sebelumnya 
+6 
+Input 
+update 
+data 
+pemeliharaan 
+Teknisi melakukan pembaruan data 
+pemeliharaan 
+sebagai 
+dasar 
+pemeliharaan selanjutnya 
+
+
+===== PAGE 27 =====
+16 
+ 
+ 
+7 
+Melihat Laporan rutin 
+ Supervisor melihat laporan rutin agar 
+dapat mengetahui kondisi alat dan 
+kinerja para teknisi 
+3.1.3.2 Kebutuhan Non Fungsional 
+Kebutuhan non fungsional yang harus dipenuhi oleh Mei-V sebagai aplikasi 
+pemeliharaan alat adalah sebagai berikut : 
+1) Supervisor dan semua Teknisi perlu mendapatkan file .apk aplikasi dan 
+wajib terinstall. 
+2) Mei-V dapat menampilkan data riwayat pemeliharaan dan bisa diperbarui 
+setiap melakukan pemeliharaan. 
+3) Username Mei-V menggunakan NIP dan password sesuai keinginan 
+pengguna  
+3.1.3.3 Aktor 
+Aktor merupakan beberapa pihak sistem maupun manusia yang terlibat dan 
+berinteraksi secara langsung dengan sistem. Pada aplikasi ini terdapat tiga 
+pengguna yakni Teknisi, Supervisor, dan juga Admin sebagai pembuat aplikasi 
+
+
+===== PAGE 28 =====
+17 
+ 
+ 
+3.1.3.4 Kasus Penggunaan 
+ 
+ 
+Gambar 3.2 Diagram Kasus Penggunaan 
+ 
+Tabel 3.2 Tabel Kasus Penggunaan 
+Kode Kasus 
+Penggunaan 
+Nama 
+Aktor 
+UC-001 
+Menambahkan data Teknisi 
+dan Supervisor 
+Admin 
+UC-002 
+Menguji fungsi aplikasi 
+Admin 
+UC-003 
+Login 
+Teknisi, 
+Supervisor 
+
+
+===== PAGE 29 =====
+18 
+ 
+ 
+UC-004 
+Melakukan Scan 
+Teknisi, 
+Supervisor 
+UC-005 
+Melihat riwayat pemeliharaan 
+sebelumnya 
+Teknisi, 
+Supervisor 
+UC-006 
+Input update detail 
+pemeliharaan 
+Teknisi 
+UC-007 
+Menyimpan hasil 
+pemeliharaan 
+Teknisi 
+UC-008 
+Melihat laporan rutin 
+Supervisor 
+UC-009 
+Logout 
+Teknisi, 
+Supervisor 
+ 
+3.1.3.4.1 Menambahkan data Teknisi dan Supervisor (UC-001) 
+UC-001 ini dapat diakses oleh Admin yang merupakan pembuat aplikasi. 
+Data yang ditambahkan adalah username, password, serta detail lain dari para 
+Teknisi dan Supervisor 
+Tabel 3.3 Tabel Spesifikasi Kasus Penggunaan UC-001 
+Kode Use Case 
+UC-001 
+Nama Use Case 
+Menambahkan data Teknisi dan Supervisor 
+Aktor 
+Admin 
+Deskripsi 
+Admin membuat database akun pengguna 
+Relasi 
+- 
+Kondisi Awal 
+Pengguna belum terdaftar 
+Kondisi Akhir 
+Username dan password pengguna telah terdaftar 
+Alur 
+Kejadian 
+Normal 
+Aktor 
+Sistem 
+1. Memilih tambah 
+database 
+ 
+ 
+2. Menampilkan tabel data 
+yang bisa di isi admin 
+ 
+
+
+===== PAGE 30 =====
+19 
+ 
+ 
+ 
+Gambar 3.3 Aktivitas menambahkan data teknisi dan supervisor 
+3.1.3.4.2 Menguji fungsi aplikasi (UC-002) 
+UC-002 ini dapat dilakukan hanya oleh Admin yang merupakan pembuat 
+aplikasi. Pengujian dilakukan menggunakan metode Usability Testing dan akan 
+menguji beberapa fungsi seperti login dan menu utama. 
+Tabel 3.4 Tabel Spesifikasi Kasus Penggunaan UC-002 
+Kode Use Case 
+UC-002 
+Nama Use Case 
+Menguji fungsi aplikasi 
+Aktor 
+Admin 
+Deskripsi 
+Mengetahui apakah fungsi berjalan 
+dengan normal 
+Relasi 
+- 
+Kondisi Awal 
+Kesalahan aplikasi belum diketahui 
+Kondisi Akhir 
+Kesalahan aplikasi telah diketahui 
+Alur 
+Kejadian 
+Normal 
+Aktor 
+Sistem 
+1. Menemukan 
+kesalahan login 
+ 
+2. Menemukan 
+kesalahan lain 
+ 
+ 
+
+
+===== PAGE 31 =====
+20 
+ 
+ 
+ 
+Gambar 3.4 Aktifitas menguji fungsi aplikasi 
+3.1.3.4.3 Login (UC-003) 
+UC-003 ini dapat dilakukan oleh Supervisor dan juga para Teknisi di 
+Telkom Property yang merupakan pengguna aplikasi. Login berupa id dan 
+password yang berupa NIP dan telah di daftarkan sebelumnya, jadi pengguna 
+tidak perlu melakukan registrasi 
+Tabel 3.5 Tabel Spesifikasi Kasus Penggunaan UC-003 
+Kode Use Case 
+UC-003 
+Nama Use Case 
+Melakukan login pada aplikasi Mei-V 
+Aktor 
+Teknisi dan Supervisor 
+Deskripsi 
+Dengan login, pengguna dapat masuk 
+kedalam aplikasi Mei-V 
+Relasi 
+- 
+Kondisi Awal 
+Kolom username dan password belum terisi 
+Kondisi Akhir 
+Kolom username dan password telah terisi 
+Alur 
+Kejadian 
+Normal 
+Aktor 
+Sistem 
+1. Memilih Kategori 
+ 
+
+
+===== PAGE 32 =====
+21 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gambar 3.5 Aktifitas Login 
+3.1.3.4.4 Melakukan Scan (UC-004) 
+UC-004 ini dapat dilakukan oleh Supervisor dan juga para Teknisi di 
+Telkom Property yang merupakan pengguna aplikasi. Scan barcode berfungsi 
+untuk melihat data riwayat pemeliharaan sebelumnya. 
+Tabel 3.6 Tabel Spesifikasi Kasus Penggunaan UC-004 
+Kode Use Case 
+UC-004 
+Nama Use Case 
+Melakukan Scan pada aplikasi Mei-V 
+Aktor 
+Teknisi dan Supervisor 
+Deskripsi 
+Dengan melakukan scan, pengguna 
+dapat melihat detail alat yang akan 
+dipelihara 
+Relasi 
+- 
+Kondisi Awal 
+Detail 
+alat 
+yang 
+discan 
+belum 
+diketahui 
+Kondisi Akhir 
+Detail alat yang discan ditampilkan 
+Alur 
+Kejadian 
+Normal 
+Aktor 
+Sistem 
+1. Melakukan 
+scan barcode 
+ 
+ 
+2. Memasukkan 
+username 
+password 
+ 
+3. Klik login 
+ 
+
+
+===== PAGE 33 =====
+22 
+ 
+ 
+ 
+2. Data 
+alat 
+muncul 
+ 
+  
+Gambar 3.6 Aktifitas Melakukan Scan 
+3.1.3.4.5 Melihat riwayat pemeliharaan sebelumnya (UC-005) 
+UC-005 ini dapat dilakukan oleh Supervisor dan juga para Teknisi di 
+Telkom Property yang merupakan pengguna aplikasi. Melihat riwayat 
+pemeliharaan ini berfungsi untuk mempermudah supervisor untuk memantau 
+kinerja teknisi dan menghemat waktu kerja teknisi karena tidak perlu mencari 
+kerusakan satu persatu. 
+Tabel 3.7 Tabel Spesifikasi Kasus Penggunaan UC-005 
+Kode Use Case 
+UC-005 
+Nama Use Case 
+Melihat 
+riwayat 
+pemeliharaan 
+sebelumnya 
+Aktor 
+Teknisi dan Supervisor 
+Deskripsi 
+Dengan melihat riyawat pemeliharaan, 
+pengguna dapat melihat kerusakan 
+maupun perbaikan apa yang terjadi di 
+pemeliharaan sebelumnya 
+Relasi 
+- 
+Kondisi Awal 
+Detail riwayat pemeliharaan belum 
+diketahui 
+
+
+===== PAGE 34 =====
+23 
+ 
+ 
+Kondisi Akhir 
+Detail 
+riwayat 
+pemeliharaan 
+ditampilkan 
+Alur 
+Kejadian 
+Normal 
+Sistem 
+Aktor 
+1. Menampilkan 
+detail 
+di 
+textbox 
+ 
+2. Membaca 
+detail 
+di 
+textbox 
+ 
+Gambar 3.7 Aktifitas Melihat riyawat pemeliharaan 
+3.1.3.4.6 Input update detail pemeliharaan (UC-006) 
+UC-006 ini hanya dapat dilakukan para Teknisi di Telkom Property yang 
+merupakan pengguna aplikasi. Melakukan input update detail pemeliharaan ini 
+berfungsi agar saat melakukan pemeliharaan selanjutnya tidak memerlukan banyak 
+waktu untuk mengecek keseluruhan alat satu persatu. 
+Tabel 3.8 Tabel Spesifikasi Kasus Penggunaan UC-006 
+Kode Use Case 
+UC-006 
+Nama Use Case 
+Input update detail pemeliharaan 
+Aktor 
+Teknisi 
+
+
+===== PAGE 35 =====
+24 
+ 
+ 
+Deskripsi 
+Dengan 
+melakukan 
+input 
+detail 
+pemeliharaan, detail pemeliharaan yang 
+baru dapat masuk ke sistem sebagai dasar 
+pemeliharaan selanjutnya 
+Relasi 
+- 
+Kondisi Awal 
+Detail 
+data 
+pemeliharaan 
+belum 
+diperbarui 
+Kondisi Akhir 
+Detail data pemeliharaan telah diperbarui 
+Alur 
+Kejadian 
+Normal 
+Sistem 
+Aktor 
+ 
+1. Melakukan 
+pemeliharaan 
+ 
+ 
+2. Memasukkan 
+update detail 
+pemeliharaan 
+ 
+ 
+Gambar 3.8 Aktifitas Input update detail pemeliharaan 
+ 
+3.1.3.4.7 Menyimpan hasil pemeliharaan (UC-007) 
+UC-007 ini hanya dapat dilakukan para Teknisi di Telkom Property yang 
+merupakan pengguna aplikasi. Melakukan simpan hasil pemeliharaan ini dilakukan 
+agar seluruh detail pemeliharaan yang dilakukan saat ini dapat dimasukkan ke 
+database. 
+
+
+===== PAGE 36 =====
+25 
+ 
+ 
+Tabel 3.9 Tabel Spesifikasi Kasus Penggunaan UC-007 
+Kode Use Case 
+UC-007 
+Nama Use Case 
+Menyimpan hasil pemeliharaan 
+Aktor 
+Teknisi 
+Deskripsi 
+Melakukan penyimpanan data pemeliharaan ke 
+database 
+Relasi 
+- 
+Kondisi Awal 
+Hasil pemeliharaan belum tersimpan 
+Kondisi Akhir 
+Hasil pemeliharaan telah tersimpan di database 
+Alur 
+Kejadian 
+Normal 
+Aktor 
+Sistem 
+1. Melakukan 
+klik 
+Simpan 
+setelah 
+mengisi update 
+ 
+ 
+ 
+2. Database 
+menerima data 
+masuk 
+ 
+ 
+Gambar 3.9 Aktifitas Menyimpan hasil pemeliharaan 
+
+
+===== PAGE 37 =====
+26 
+ 
+ 
+3.1.3.4.8 Melihat laporan rutin (UC-008) 
+UC-008 ini hanya dapat dilakukan para Supervisor di Telkom Property yang 
+merupakan pengguna aplikasi. Melihat laporan rutin pemeliharaan dilakukan untuk 
+memantau para teknisi pemeliharaan alat. Laporan tersebut berupa pdf yang dapat 
+disimpan 
+Tabel 3.10 Tabel Spesifikasi Kasus Penggunaan UC-008 
+Kode Use Case 
+UC-008 
+Nama Use Case 
+Melihat laporan rutin 
+Aktor 
+Supervisor 
+Deskripsi 
+Supervisor melihat laporan rutin pemeliharaan alat 
+Relasi 
+- 
+Kondisi Awal 
+Laporan rutin belum tersedia 
+Kondisi Akhir 
+Laporan rutin tersedia dan bisa diunduh 
+Alur 
+Kejadian 
+Normal 
+Aktor 
+Sistem 
+1. Masuk menu 
+utama 
+ 
+ 
+ 
+2. Klik Laporan rutin 
+ 
+ 
+3. Simpan Laporan 
+ 
+
+
+===== PAGE 38 =====
+27 
+ 
+ 
+ 
+Gambar 3.10 Aktivitas Melihat laporan rutin 
+3.1.3.4.9 Logout (UC-009) 
+UC-009 ini dapat dilakukan Supervisor dan para Teknisi di Telkom 
+Property yang merupakan pengguna aplikasi. Logout dilakukan ketika semua alat 
+sudah dipelihara. 
+Tabel 3.11 Tabel Spesifikasi Kasus Penggunaan UC-009 
+Kode Use Case 
+UC-009 
+Nama Use Case 
+Logout  
+Aktor 
+Supervisor dan Teknisi 
+Deskripsi 
+Logout disaat semua alat telah selesai 
+dipelihara 
+Relasi 
+- 
+Kondisi Awal 
+Pengguna masih login di Mei-V 
+Kondisi Akhir 
+Pengguna telah logout dari Mei-V 
+Alur 
+Kejadian 
+Normal 
+Aktor 
+Sistem 
+1. Melakukan klik 
+pada icon profile 
+ 
+ 
+2. Klik logout 
+ 
+ 
+
+
+===== PAGE 39 =====
+28 
+ 
+ 
+ 
+Gambar 3.11 Aktivitas Logout 
+3.1.3.5 Sequence Diagram 
+ 
+Gambar 3.12 Sequence Diagram 
+ 
+
+
+===== PAGE 40 =====
+29 
+ 
+ 
+3.2 
+Perancangan 
+Bab ini menjelaskan tentang perancangan sistem dari perangkat lunak yang 
+akan dibangun. Spesifikasi kebutuhan terdiri dari kebutuhan fungsional, kebutuhan 
+non fungsional, aktor, dan kasus penggunaan. Berikut adalah spesifikasi kebutuhan 
+dari sistem perangkat lunak yang akan dibangun. 
+3.2.1 Perancangan Arsitektur Sistem 
+ 
+Gambar 3.13 Rancangan Arsitektur Sistem 
+Dalam membuat aplikasi ini, penulis menggunakan bahasa pemroograman 
+Dart. Data alat-alat yang akan dipelihara penulis dapatkan secara manual melalui 
+Supervisor Telkom Property dan dibuatkan database baru di MySQL. Semua data 
+tersebut bisa diambil kembali dari MySQL melalui satu webserver yang terhubung 
+dengan Android yang diterima dalam bentuk json. 
+Tabel 3.12 Tabel Request Web Server 
+No 
+Request 
+Aktor 
+1 
+Login 
+Supervisor dan Teknisi 
+2 
+Menu Utama 
+Supervisor dan Teknisi 
+3 
+User Profile 
+Teknisi 
+5 
+Scan Kode QR 
+Supervisor dan Teknisi 
+6 
+Unduh Laporan Rutin 
+Supervisor 
+7 
+Logout 
+Supervisor dan Teknisi 
+
+
+===== PAGE 41 =====
+30 
+ 
+ 
+3.2.2 Perancangan Basis Data 
+3.2.2.1 Tabel Data User 
+Tabel 3.13 Tabel users 
+Nama Kolom 
+Tipe Data 
+Keterangan 
+username 
+Varchar(10) 
+Primary Key 
+nama_users 
+Varchar (200) 
+Nama Admin 
+role_users 
+Varchar (20) 
+Role Users 
+password 
+Varchar (20) 
+Password Users 
+email_users 
+Varchar (100) 
+Email Users 
+ 
+3.2.2.2 Tabel Data Alat 
+Tabel 3.14 Tabel alat 
+Nama Kolom 
+Tipe Data 
+Keterangan 
+barcode_alat 
+Varchar (10) 
+Primary Key 
+merk_alat 
+Varchar (45) 
+Merk Alat 
+id_kategori 
+int(10) 
+Foreign Key 
+ 
+3.2.2.3 Tabel Data Kategori 
+Tabel 3.15 Tabel kategori 
+Nama Kolom 
+Tipe Data 
+Keterangan 
+id_kategori 
+int(10) 
+Primary Key 
+nama 
+Varchar(25) 
+Nama Kategori 
+ 
+3.2.2.4 Tabel Data Spesifikasi 
+Tabel 3.16 Tabel spesifikasi 
+Nama Kolom 
+Tipe Data 
+Keterangan 
+id_spesifikasi 
+int(10) 
+Primary Key 
+id_kategori 
+int(10) 
+Foreign Key 
+
+
+===== PAGE 42 =====
+31 
+ 
+ 
+nama_spesifikasi 
+Varchar (50) 
+Nama Spesifikasi 
+3.2.2.5 Tabel Data Maintenance 
+Tabel 3.17 Tabel maintenance 
+Nama Kolom 
+Tipe Data 
+Keterangan 
+id_maintenance 
+int(10) 
+Primary Key 
+waktu_maintenance 
+datetime 
+Waktu Maintenance 
+barcode_alat 
+varchar(10) 
+Foreign Key 
+username 
+varchar(10) 
+Foreign Key 
+id_lokasi 
+int(10) 
+Foreign Key 
+catatan 
+Varchar(250) 
+Catatan Maintenance 
+3.2.2.6 Tabel Data Detail Maintenance 
+Tabel 3.18 Tabel detail_maintenance 
+Nama Kolom 
+Tipe Data 
+Keterangan 
+id_maintenance 
+int(10) 
+Primary Key 
+id_spesifikasi 
+int(10) 
+Foreign Key 
+status 
+Varchar(25) 
+Status Maintenance 
+3.2.2.7 Tabel Data Lokasi 
+Tabel 3.20 Tabel lokasi 
+Nama Kolom 
+Tipe Data 
+Keterangan 
+id_lokasi 
+int(10) 
+Primary Key 
+lantai 
+int(3) 
+Lantai 
+nama_lokasi 
+Varchar(200) 
+Nama Lokasi 
+ 
+
+
+===== PAGE 43 =====
+32 
+ 
+ 
+3.2.2.8 Entity Relationship Diagram 
+ 
+Gambar 3.14 Entity Relationship Diagram 
+3.2.2.9 Conceptual Data Model 
+ 
+
+
+===== PAGE 44 =====
+33 
+ 
+ 
+Gambar 3.15 Conceptual Data Model 
+ 
+3.2.2.10 Physical Data Model  
+ 
+Gambar 3.16 Physical Data Model 
+ 
+3.2.3 Perancangan Antarmuka Sistem 
+Dalam pembuatan rancangan aplikasi, tampilan merupakan hal yang 
+pertama kali dilihat pengguna. Antarmuka sistem sangat berperan dalam 
+menjelaskan setiap fitur pada aplikasi. Pada rancangan sistem dari aplikasi yang 
+saya buat, terdapat beberapa antarmuka yang terdiri atas Login, Menu Utama, 
+Pemeliharaan Alat, dan User Profile. 
+ 
+ 
+
+
+===== PAGE 45 =====
+34 
+ 
+ 
+3.2.3.1 Halaman Login 
+Halaman ini digunakan oleh pengguna untuk login kedalam sistem. 
+Pengguna, login menggunakan username yang  hanya dapat diinputkan NIP dan 
+password sesuai keinginan pengguna. 
+ 
+Gambar 3.17 Tampilan Halaman Login 
+ 
+ 
+ 
+ 
+
+
+===== PAGE 46 =====
+35 
+ 
+ 
+3.2.3.2 Halaman Menu Utama 
+Halaman ini digunakan oleh pengguna untuk login kedalam sistem. 
+Pengguna, login menggunakan username yang  hanya dapat diinputkan NIP dan 
+password sesuai keinginan pengguna. 
+ 
+Gambar 3.18 Tampilan Menu Utama 
+ 
+ 
+
+
+===== PAGE 47 =====
+36 
+ 
+ 
+3.2.3.3 Halaman Pemeliharaan Alat 
+Halaman ini digunakan oleh pengguna untuk login kedalam sistem. 
+Pengguna, login menggunakan username yang hanya dapat diinputkan NIP dan 
+password sesuai keinginan pengguna  
+ 
+ 
+Gambar 3.19 Tampilan Halaman Pemeliharaan Alat 
+ 
+ 
+ 
+
+
+===== PAGE 48 =====
+37 
+ 
+ 
+3.2.3.4 Halaman User Profile 
+Halaman ini digunakan oleh pengguna untuk login kedalam sistem. 
+Pengguna, login menggunakan username yang hanya dapat diinputkan NIP dan 
+password sesuai keinginan pengguna. 
+ 
+ 
+Gambar 3.20 Tampilan Halaman User Profile 
+ 
+ 
+
+
+===== PAGE 49 =====
+38 
+ 
+ 
+ 
+BAB IV 
+IMPLEMENTASI 
+Bab ini membahas mengenai implementasi dari aplikasi yang dibuat 
+yakni Mei-V. Bab ini berisi tentang implementasi aplikasi dan 
+implementasi dari bentuk tampilan antarmuka aplikasi. 
+4.1 
+Implementasi Aplikasi  
+implementasi pada bagian ini berkaitan dengan perangkat keras (hardware) dan 
+perangkat lunak (software) untuk mengembangkan aplikasi Mei-V. 
+4.1.1 Perangkat Keras 
+Perangkat Keras (Hardware) disini terbagi menjadi perangkat keras untuk 
+membuat aplikasi dan spesifikasi perangkat keras untuk menjalankan 
+aplikasi. 
+Dibawah ini merupakan spesifikasi perangkat keras yang 
+digunakan untuk membuat aplikasi : 
+a. Prosesor: INTEL Core i5-9300H. 
+b. VGA : NVIDIA® GeForce® RTX™ 1650 4GB GDDR5. 
+c. Memori: 8 GB DDR4. 
+d. Penyimpanan: 256GB SSD. 
+ 
+Dibawah ini merupakan spesifikasi perangkat keras yang 
+digunakan untuk menjalankan sistem: 
+a. Perangkat: Xiaomi Poco X3 NFC 
+b. Chipset: Snapdragon 732G 
+c. Kartu Grafis: Adreno 618 
+d. Memori: 6GB 
+e. Penyimpanan: 64GB 
+ 
+ 
+
+
+===== PAGE 50 =====
+39 
+ 
+ 
+4.1.2 Perangkat Lunak 
+Perangkat Lunak (Software) terbagi menjadi dua spesifikasi yaitu 
+spesifikasi perangkat lunak untuk membangun sistem dan spesifikasi 
+perangkat lunak untuk menjalankan sistem. 
+Berikut adalah spesifikasi perangkat lunak yang digunakan 
+untuk membangun sistem: 
+e. Sistem Operasi Windows 10 64 bit. 
+f. Bahasa pemrograman Java dan PHP. 
+g. IDE: Android Studio. 
+h. Text Editor: Visual Studio Code. 
+i. DBMS: MariaDB versi 10.3.35. 
+j. Web Browser: Mozilla Firefox versi 102.0.1. 
+k. Web Server: XAMPP dengan hosting https://meivtelpro.my.id/ 
+ 
+4.2 
+Implementasi Tampilan Antarmuka Aplikasi 
+Bagian ini merupakan bagian yang menjelaskan halaman antarmuka 
+aplikasi yang dikembangkan, yakni Mei-V. Implementasi antarmuka Mei-
+V terbagi atas beberapa bagian, yakni implementasi halaman antarmuka 
+login, halaman antarmuka menu utama, halaman antarmuka detail alat, 
+halaman antarmuka detail maintenance, halaman antarmuka user profile. 
+Berikut adalah implementasi dari antarmuka sistem. 
+4.2.1 Halaman Antarmuka Login 
+Halaman antarmuka login ini merupakan halaman yang 
+digunakan untuk login oleh admin dan juga para pengguna aplikasi Mei-
+V 
+
+
+===== PAGE 51 =====
+40 
+ 
+ 
+     
+Gambar 4.1 Halaman Antarmuka Login 
+4.2.2 Halaman Antarmuka Home 
+Halaman antarmuka Home ini merupakan halaman yang 
+berfungsi sebagai halaman utama Mei-V. Dibagaian ini terdapat gambar 
+ala tapa saja yang dapat di pelihara, tombol user profile, tombol report, 
+dan juga tombol scan. 
+
+
+===== PAGE 52 =====
+41 
+ 
+ 
+ 
+Gambar 4.2 Halaman Antarmuka Home 
+ 
+ 
+
+
+===== PAGE 53 =====
+42 
+ 
+ 
+4.2.3 Halaman Antarmuka User Profile 
+Halaman antarmuka User Profile ini merupakan halaman yang 
+berisi detail dari setiap profile pengguna Mei-V. Dibagian ini memuat 
+beberapa detail, mulai dari role, nama pengguna, NIP pengguna, dan 
+juga email. 
+ 
+ 
+Gambar 4.3 Halaman Antarmuka User Profile 
+ 
+ 
+
+
+===== PAGE 54 =====
+43 
+ 
+ 
+4.2.4 Halaman Antarmuka Registrasi 
+Halaman antarmuka Registrasi ini merupakan halaman yang 
+digunakan oleh admin untuk melakukan registrasi seluruh akun dari 
+teknisi maupun supervisor. Dibagian ini terdiri atas beberapa bagian 
+yakni nama, email, role, username, dan juga password. 
+ 
+Gambar 4.4 Halaman Antarmuka Registrasi 
+ 
+ 
+
+
+===== PAGE 55 =====
+44 
+ 
+ 
+4.2.5 Halaman Antarmuka Edit Password 
+Halaman antarmuka Edit Password ini merupakan halaman yang 
+digunakan oleh setiap pengguna untuk melakukan perubahan kata sandi 
+mereka. Dibagian ini terdiri atas beberapa bagian yakni password lama, 
+password baru, role, dan juga konfirmasi password. 
+ 
+ 
+Gambar 4.5 Halaman Antarmuka Edit Password 
+ 
+ 
+ 
+
+
+===== PAGE 56 =====
+45 
+ 
+ 
+4.2.6 Halaman Antarmuka Detail Alat 
+Halaman antarmuka Detail Alat ini merupakan halaman yang 
+digunakan oleh setiap pengguna untuk melihat penjelasan pada alat yang 
+akan di maintenance dan lokasi detail dari alat tersebut. Dibagian ini 
+terdiri atas beberapa bagian yakni deskripsi penjelasan alat dan tabel 
+lokasi yang berisi beberapa detail seperti kode barcode alat, merk alat, 
+dan detail lokasi alatnya. 
+ 
+   
+Gambar 4.6 Halaman Antarmuka Detail Alat 
+ 
+ 
+
+
+===== PAGE 57 =====
+46 
+ 
+ 
+4.2.7 Halaman Antarmuka Detail Maintenance 
+Halaman antarmuka Detail Maintenance ini merupakan halaman 
+yang memiliki dua tampilan berbeda dari kedua pengguna, yakni teknisi 
+dan supervisor. Halaman ini digunakan oleh teknisi untuk melakukan 
+input detail maintenance pada setiap alatnya dan supervisor untuk 
+melihat detail kapan terakhir kali maintenance dilakukan. 
+ 
+Gambar 4.7 Halaman Antarmuka Detail Maintenance Teknisi 
+
+
+===== PAGE 58 =====
+47 
+ 
+ 
+ 
+Gambar 4.8 Halaman Antarmuka Detail Maintenance Supervisor 
+4.3 
+Implementasi Kasus Penggunaan 
+Aplikasi Mei-V ini menggunakan Bahasa Pemrograman Java 
+dengan PHP sebagai backend. Dibawah ini merupakan implementasi dari 
+kasus penggunaannya : 
+ 
+4.3.1 Implementasi Kasus Penggunaan Login 
+4.3.1.1 Kode Program PHP login.php 
+Dibawah ini merupakan kode PHP untuk halaman login. Kode 
+PHP ini berfungsi sebagai backend dan menerima data yang dikirimkan 
+melalui Android dan mengembalikan data tersebut dengan format json. 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
+ 
+    $role = $_POST['role']; 
+    $username = $_POST['username']; 
+    $password = $_POST['password']; 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+
+
+===== PAGE 59 =====
+48 
+ 
+ 
+    $sql = "SELECT * FROM users WHERE role_users='$role' AND 
+username='$username' AND password='$password'"; 
+ 
+    $response = mysqli_query($connection, $sql); 
+ 
+    if ( mysqli_num_rows($response) > 0) { 
+ 
+        $row = mysqli_fetch_assoc($response); 
+        $result = array(); 
+        $result[] = $row; 
+ 
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message, 'data'=>$result), JSON_PRETTY_PRINT); 
+        mysqli_close($connection); 
+    }else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+    } 
+} 
+ 
+?> 
+Kode Program 4.1 Kode Program PHP login.php 
+4.3.1.2 Kode Program Java LoginActivity.java 
+Berikut ini merupakan kode program Java dari aktivitas login yang digunakan untuk 
+masuk kedalam aplikasi Mei-V. 
+public class LoginActivity extends AppCompatActivity { 
+    UserPreferences userPreferences; 
+    EditText etusername, etpassword; 
+    Spinner spinnerrole; 
+    String role; 
+    Button loginbutton; 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_login); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+
+
+===== PAGE 60 =====
+49 
+ 
+ 
+        userPreferences = new UserPreferences(this); 
+        if (userPreferences.checkLogin()) { 
+            HashMap<String, String> user = 
+userPreferences.getUserDetail(); 
+            if (user.get(userPreferences.ROLE).equals("Admin")) { 
+                startActivity(new Intent(LoginActivity.this, 
+RegistrasiActivity.class)); 
+                finish(); 
+            } else { 
+                startActivity(new Intent(LoginActivity.this, 
+HomeActivity.class)); 
+                finish(); 
+            } 
+ 
+        } 
+        spinnerrole = findViewById(R.id.spinnerrolelogin); 
+        etusername = findViewById(R.id.etUsername); 
+        etpassword = findViewById(R.id.etPassword); 
+        loginbutton = findViewById(R.id.loginbutton); 
+ 
+        spinnerrole.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                role = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+        loginbutton.setOnClickListener(new View.OnClickListener() { 
+            @Override 
+            public void onClick(View view) { 
+                String role = 
+spinnerrole.getSelectedItem().toString(); 
+                String username_user = 
+etusername.getText().toString().trim(); 
+                String password_user = 
+etpassword.getText().toString().trim(); 
+                if (!username_user.isEmpty() && 
+!password_user.isEmpty()) { 
+                    login(role, username_user, password_user); 
+
+
+===== PAGE 61 =====
+50 
+ 
+ 
+                } 
+            } 
+        }); 
+    } 
+ 
+    private void login(String role, String username_user, String 
+password_user) { 
+        Call<UsersResponses> client = 
+ApiClient.getApiService().getUsers(role, username_user, 
+password_user); 
+        client.enqueue(new Callback<UsersResponses>() { 
+            @Override 
+            public void onResponse(Call<UsersResponses> call, 
+Response<UsersResponses> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        Users users = 
+response.body().getData().get(0); 
+                        userPreferences.createSession(users.getmUser
+name(), users.getNamaUser(), users.getRoleUser(), 
+users.getEmailUser(), users.getmPassword()); 
+                        if (users.getRoleUser().equals("Admin")) { 
+                            startActivity(new 
+Intent(LoginActivity.this, RegistrasiActivity.class)); 
+                            finish(); 
+                        } else { 
+                            startActivity(new 
+Intent(LoginActivity.this, HomeActivity.class)); 
+                            finish(); 
+                        } 
+                    } else { 
+                        toast(" Username dan Password Salah "); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<UsersResponses> call, 
+Throwable t) { 
+                toast(" Jaringan Internet Bermasalah"); 
+            } 
+        }); 
+    } 
+ 
+    private void toast(String text) { 
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); 
+
+
+===== PAGE 62 =====
+51 
+ 
+ 
+    } 
+} 
+Kode Program 4.2 Kode Program Java LoginActivity.java 
+ 
+4.3.2 Implementasi Kasus Penggunaan Menambahkan data Teknisi dan 
+Supervisor  
+4.3.2.1 Kode Program PHP formregistrasi.php 
+Dibawah ini merupakan kode PHP untuk registrasi dan 
+menambahkan data pengguna Mei-V. Kode PHP ini berfungsi sebagai 
+backend dan menerima data yang dikirimkan melalui Android dan 
+mengembalikan data tersebut dengan format json. 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+    $nama = $_GET['nama']; 
+    $email = $_GET['email']; 
+    $role = $_GET['role']; 
+    $username = $_GET['username']; 
+    $password = $_GET['password']; 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "INSERT INTO users (username, nama_users, role_users, 
+password, email_users) 
+    VALUES ('$username', '$nama',  '$role', '$password', '$email')"; 
+    $response = mysqli_query($connection, $sql); 
+     if ($response){ 
+         
+         
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+ 
+    } 
+    else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+
+
+===== PAGE 63 =====
+52 
+ 
+ 
+    } 
+     
+    } 
+?> 
+Kode Program 4.3 Kode Program PHP formregistrasi.php 
+4.3.2.2 Kode Program Java RegistrasiActivity.java 
+Berikut ini merupakan kode program Java dari aktivitas menambahkan data 
+pengguna yang digunakan untuk menambahkan pengguna yakni teknisi dan 
+supervisor. 
+public class RegistrasiActivity extends AppCompatActivity { 
+    EditText etusername, etpassword, etemail, etnama; 
+    Spinner spinnerrole; 
+    String role; 
+    Button tombolregistrasi; 
+    ImageView imageuser; 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_registrasi); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+ 
+        etusername = findViewById(R.id.etregisusername); 
+        etpassword = findViewById(R.id.etregispassword); 
+        etemail = findViewById(R.id.etregisemail); 
+        etnama = findViewById(R.id.etregisnama); 
+        spinnerrole = findViewById(R.id.spinnerroleregis); 
+        imageuser = findViewById(R.id.image_user); 
+        tombolregistrasi = findViewById(R.id.tomboldaftar); 
+ 
+        spinnerrole.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                role = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+
+
+===== PAGE 64 =====
+53 
+ 
+ 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+        tombolregistrasi.setOnClickListener(new 
+View.OnClickListener() { 
+            @Override 
+            public void onClick(View view) { 
+                String username_user = 
+etusername.getText().toString().trim(); 
+                String email_user = 
+etemail.getText().toString().trim(); 
+                String password_user = 
+etpassword.getText().toString().trim(); 
+                String nama_user = 
+etnama.getText().toString().trim(); 
+                if (!username_user.isEmpty() && 
+!password_user.isEmpty()) { 
+                    registrasi(nama_user, email_user, role, 
+username_user, password_user); 
+                } 
+            } 
+        }); 
+        imageuser.setOnClickListener(new View.OnClickListener() { 
+            @Override 
+            public void onClick(View view) { 
+                Intent intent = new Intent(RegistrasiActivity.this, 
+UserProfileActivity.class); 
+                startActivity(intent); 
+            } 
+        }); 
+ 
+    } 
+    private void registrasi(String nama, String email, String role, 
+String username, String password) { 
+        Call<InputData> client = 
+ApiClient.getApiService().registrasiuser(nama, email, role, 
+username, password); 
+        client.enqueue(new Callback<InputData>() { 
+            @Override 
+            public void onResponse(Call<InputData> call, 
+Response<InputData> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getMessage() == "success") { 
+                        toast(" Pendaftaran Berhasil "); 
+                        recreate(); 
+
+
+===== PAGE 65 =====
+54 
+ 
+ 
+                    } 
+                } else { 
+                    toast(" Pendaftaran Gagal "); 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<InputData> call, Throwable t) 
+{ 
+                toast(" Koneksi Internet Bermasalah"); 
+            } 
+        }); 
+    } 
+    private void toast(String s) { 
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show(); 
+    } 
+} 
+Kode Program 4.4 Kode Program Java RegistrasiActivity.java 
+ 
+4.3.3 Implementasi Kasus Penggunaan Melakukan Scan 
+4.3.3.1 Kode Program PHP cari_id_alat.php 
+Dibawah ini merupakan kode PHP untuk tombol scan barcode 
+pada alat yang nantinya akan digunakan oleh pengguna Mei-V yakni 
+supervisor dan teknisi. Kode PHP ini berfungsi sebagai backend dan 
+menerima data yang dikirimkan melalui Android dan mengembalikan data 
+tersebut dengan format json. 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+    $barcode = $_GET['barcode']; 
+    
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "SELECT * FROM alat, kategori WHERE alat.id_kategori=kategori.id_kategori and 
+barcode_alat='$barcode'"; 
+ 
+    $response = mysqli_query($connection, $sql); 
+ 
+    if ( mysqli_num_rows($response) > 0) { 
+
+
+===== PAGE 66 =====
+55 
+ 
+ 
+ 
+        $row = mysqli_fetch_assoc($response); 
+        $result = array(); 
+        $result[] = $row; 
+ 
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 'message'=>$message, 'data'=>$result), 
+JSON_PRETTY_PRINT); 
+        mysqli_close($connection); 
+    }else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 'message'=>$message), 
+JSON_PRETTY_PRINT); 
+    } 
+} 
+ 
+?> 
+Kode Program 4.5 Kode Program PHP cari_id_alat.php 
+ 
+4.3.4 Implementasi Kasus Penggunaan Melihat Riwayat Pemeliharaan 
+Sebelumnya 
+4.3.4.1 Kode Program PHP history_maintenance.php 
+Dibawah ini merupakan kode PHP untuk melihat riwayat 
+pemeliharaan alat yang sebelumnya dilakukan. Kode PHP ini berfungsi 
+sebagai backend dan menerima data yang dikirimkan melalui Android dan 
+mengembalikan data tersebut dengan format json. 
+<?php 
+ 
+$barcode = $_GET['barcode']; 
+ 
+require_once 'connection.php'; 
+header('Content-Type: application/json; charset=utf-8'); 
+ 
+$sql = "SELECT * FROM view_maintenance WHERE barcode_alat='$barcode' 
+order by waktu_maintenance desc"; 
+$response = mysqli_query($connection, $sql); 
+ 
+if ( mysqli_num_rows($response) > 0) { 
+ 
+     
+
+
+===== PAGE 67 =====
+56 
+ 
+ 
+    $result = array(); 
+    $maintenance = array(); 
+    $currid = 0; 
+    $catatan = ""; 
+    while($row = mysqli_fetch_assoc($response)) 
+    { 
+        if($currid!=$row['id_maintenance']){ 
+            $maintenance['catatan'] =$catatan; 
+            if($currid!=0) $result[] = $maintenance; 
+            $currid=$row['id_maintenance'];   
+            $catatan = ""; 
+            $maintenance = array(); 
+            $maintenance['waktu'] =$row['waktu_maintenance']; 
+            $maintenance['users'] =$row['nama_users']; 
+            $catatan .= "Ruang: ".$row['nama_lokasi']."\n"; 
+            $catatan .= "Catatan: ".$row['catatan']."\n"; 
+        } 
+        $catatan .= $row['nama_spesifikasi'].": 
+".$row['status']."\n"; 
+    } 
+ 
+    $status = "1"; 
+    $message = "success"; 
+    echo json_encode(array('status'=>$status, 'message'=>$message, 
+'data'=>$result), JSON_PRETTY_PRINT); 
+    mysqli_close($connection); 
+}else { 
+    $status = "0"; 
+    $message = "error"; 
+    echo json_encode(array('status'=>$status, 'message'=>$message), 
+JSON_PRETTY_PRINT); 
+} 
+ 
+?> 
+Kode Program 4.6 Kode Program PHP history_maintenance.php 
+4.3.5 Implementasi Kasus Penggunaan Input Detail Pemeliharaan 
+4.3.5.1 Input Data AC 
+4.3.5.1.1 Kode Program PHP input_data_ac 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+
+
+===== PAGE 68 =====
+57 
+ 
+ 
+    $waktu_maintenance = $_GET['waktu_maintenance']; 
+    $barcode = $_GET['barcode']; 
+    $username = $_GET['username']; 
+    $id_lokasi = $_GET['id_lokasi']; 
+    $catatan = $_GET['catatan']; 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "INSERT INTO maintenance (waktu_maintenance, barcode_alat, username, 
+id_lokasi, catatan) 
+    VALUES ('$waktu_maintenance', '$barcode',  '$username', '$id_lokasi', '$catatan')"; 
+    $response = mysqli_query($connection, $sql); 
+     if ($response){ 
+        $sql = "SELECT MAX(id_maintenance) MAX FROM maintenance"; 
+      $response = mysqli_query($connection, $sql); 
+      $row = mysqli_fetch_assoc($response); 
+      $last_id = intval($row['MAX']); 
+         
+         
+        if(isset($_GET['suhu_ac'])) { 
+            $suhu_ac = $_GET['suhu_ac']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, id_spesifikasi, status) 
+VALUES ($last_id, 1, '$suhu_ac')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['tekanan_ac'])) { 
+            $tekanan_ac = $_GET['tekanan_ac']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, id_spesifikasi, status) 
+VALUES ($last_id, 2, '$tekanan_ac')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['ampere_ac'])) { 
+            $ampere = $_GET['ampere_ac']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, id_spesifikasi, status) 
+VALUES ($last_id, 3, '$ampere')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['kondisi_ac'])) { 
+            $kondisi_ac = $_GET['kondisi_ac']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, id_spesifikasi, status) 
+VALUES ($last_id, 4, '$kondisi_ac')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+ 
+        $status = "1"; 
+
+
+===== PAGE 69 =====
+58 
+ 
+ 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 'message'=>$message), 
+JSON_PRETTY_PRINT); 
+ 
+    } 
+    else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 'message'=>$message), 
+JSON_PRETTY_PRINT); 
+    } 
+     
+    } 
+?> 
+ 
+Kode Program 4.7 Kode Program PHP input_data_ac 
+ 
+4.3.5.1.2 Kode Program Java MaintenanceACActivity.java 
+public class MaintenanceACActivity extends AppCompatActivity { 
+    UserPreferences userPreferences; 
+    TextView tvjamdigital; 
+    RecyclerView recyclerView; 
+    ImageView tombolkembali; 
+    LinearLayout linear; 
+    EditText ettekanan, etsuhu, etampere, etruang, etkondisi; 
+    Spinner spinnerruangac, spinnerkondisiac; 
+    String barcode, kondisiac, ruang; 
+    HashMap<String, String> maplokasi = new HashMap<String, 
+String>(); 
+    ArrayList<String> listlokasi = new ArrayList<>(); 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_maintenance_ac); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+        Bundle extras = getIntent().getExtras(); 
+        if (extras.getString("nama") != null && 
+extras.getString("barcode") != null) { 
+            barcode = extras.getString("barcode"); 
+
+
+===== PAGE 70 =====
+59 
+ 
+ 
+            FilterMaintenance(barcode); 
+        } 
+        spinnerkondisiac = findViewById(R.id.detailkondisiac); 
+        spinnerruangac = findViewById(R.id.detailruangac); 
+        ettekanan = findViewById(R.id.detailtekanan); 
+        etsuhu = findViewById(R.id.detailsuhu); 
+        etampere = findViewById(R.id.detailampere); 
+        tvjamdigital = findViewById(R.id.tanggalsekarangac); 
+        recyclerView = findViewById(R.id.recycletabel); 
+        Button submitac = findViewById(R.id.submitac); 
+        tombolkembali = findViewById(R.id.backhomeac); 
+        linear = findViewById(R.id.linear); 
+        blink(); 
+        getLokasi(); 
+        userPreferences = new UserPreferences(this); 
+        HashMap<String,String> user = 
+userPreferences.getUserDetail(); 
+        if (user.get(userPreferences.ROLE).equals("Supervisor")){ 
+            linear.setVisibility(View.GONE); 
+ 
+        } 
+ 
+        spinnerkondisiac.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                kondisiac = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+            } 
+        }); 
+ 
+        spinnerruangac.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                ruang = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+
+
+===== PAGE 71 =====
+60 
+ 
+ 
+            public void onNothingSelected(AdapterView<?> parent) { 
+            } 
+        }); 
+ 
+        submitac.setOnClickListener(new View.OnClickListener() { 
+            public void onClick(View v) { 
+                String tekanan = ettekanan.getText().toString(); 
+                String suhu = etsuhu.getText().toString(); 
+                String ampere = etampere.getText().toString(); 
+                String lokasi = 
+maplokasi.get(spinnerruangac.getSelectedItem().toString());//mengamb
+il id lokasi dr nama lokasi 
+                String barcode_ac = barcode; 
+                String user = 
+userPreferences.getUserDetail().get(UserPreferences.USERNAME); 
+                String catatan = ((EditText) 
+findViewById(R.id.textboxac)).getText().toString(); 
+                String waktu = tvjamdigital.getText().toString(); 
+                postData(waktu, barcode_ac, user, lokasi, catatan, 
+suhu, tekanan, ampere, kondisiac); 
+            } 
+        }); 
+        tombolkembali.setOnClickListener(new View.OnClickListener() 
+{ 
+            @Override 
+            public void onClick(View view) { 
+                onBackPressed(); 
+            } 
+        }); 
+    } 
+ 
+    private void getLokasi() { 
+        Call<LokasiResponse> client = 
+ApiClient.getApiService().getLokasi(); 
+        client.enqueue(new Callback<LokasiResponse>() { 
+            @Override 
+            public void onResponse(Call<LokasiResponse> call, 
+Response<LokasiResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        List<Lokasi> data = 
+response.body().getData(); 
+ 
+                        for (int i = 0; i < data.size(); i++) { 
+                            Lokasi lok = data.get(i); 
+                            listlokasi.add(lok.getNamaLokasi()); 
+
+
+===== PAGE 72 =====
+61 
+ 
+ 
+                            maplokasi.put(lok.getNamaLokasi(), 
+lok.getIdLokasi()); 
+                        } 
+                        ArrayAdapter<String> arrayAdapter = new 
+ArrayAdapter<>(MaintenanceACActivity.this, 
+android.R.layout.simple_spinner_item, listlokasi); 
+                        arrayAdapter.setDropDownViewResource(android
+.R.layout.simple_spinner_dropdown_item); 
+                        spinnerruangac.setAdapter(arrayAdapter); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<LokasiResponse> call, 
+Throwable t) { 
+              showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void postData(String waktu_maintenance, String barcode, 
+String username, String lokasi, String catatan, String suhu_ac, 
+String tekanan_ac, String ampere, String kondisi_ac) { 
+        Call<InputData> client = 
+ApiClient.getApiService().inputDataAC(waktu_maintenance, barcode, 
+username, lokasi, catatan, suhu_ac, tekanan_ac, ampere, kondisi_ac); 
+        client.enqueue(new Callback<InputData>() { 
+            @Override 
+            public void onResponse(Call<InputData> call, 
+Response<InputData> response) { 
+                if (response.isSuccessful()) { 
+                    if 
+(response.body().getMessage().equals("success")) { 
+                        showToast("Input Data Sukses"); 
+                        startActivity(getIntent()); 
+                        finish(); 
+                    } 
+                } 
+                else { 
+                    showToast("Data masih kosong !"); 
+                } 
+            } 
+ 
+            @Override 
+
+
+===== PAGE 73 =====
+62 
+ 
+ 
+            public void onFailure(Call<InputData> call, Throwable t) 
+{ 
+              showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void blink() { 
+        final Handler hander = new Handler(); 
+        new Thread(new Runnable() { 
+            @Override 
+            public void run() { 
+                try { 
+                    Thread.sleep(550); 
+                } catch (InterruptedException e) { 
+                    e.printStackTrace(); 
+                } 
+                hander.post(new Runnable() { 
+                    @Override 
+                    public void run() { 
+                        Date today = new Date(); 
+//                        SimpleDateFormat formatter = new 
+SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss"); 
+                        SimpleDateFormat formatter = new 
+SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+                        tvjamdigital.setText(formatter.format(today)
+); 
+                        blink(); 
+                    } 
+                }); 
+            } 
+        }).start(); 
+    } 
+ 
+    private void FilterMaintenance(String barcode) { 
+        Call<HistoryMaintenanceResponse> client = 
+ApiClient.getApiService().getHistoryMaintenance(barcode); 
+        client.enqueue(new Callback<HistoryMaintenanceResponse>() { 
+            @Override 
+            public void onResponse(Call<HistoryMaintenanceResponse> 
+call, Response<HistoryMaintenanceResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        showRecycleview(response.body().getData()); 
+                    } 
+
+
+===== PAGE 74 =====
+63 
+ 
+ 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<HistoryMaintenanceResponse> 
+call, Throwable t) { 
+            } 
+        }); 
+    } 
+ 
+    private void showRecycleview(List<HistoryMaintenance> data) { 
+        ListTableAdapter listTableAdapter = new ListTableAdapter(); 
+        listTableAdapter.setListMaintenance(data); 
+        listTableAdapter.notifyDataSetChanged(); 
+        recyclerView.setLayoutManager(new 
+LinearLayoutManager(this)); 
+        recyclerView.setHasFixedSize(true); 
+        recyclerView.setAdapter(listTableAdapter); 
+    } 
+ 
+    private void showToast(String text) { 
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); 
+    } 
+    @Override 
+    public void onBackPressed() { 
+        super.onBackPressed(); 
+        Intent intent = new Intent(MaintenanceACActivity.this, 
+HomeActivity.class); 
+        startActivity(intent); 
+    } 
+} 
+Kode Program 4.8 Kode Program Java MaintenanceACActivity.java 
+ 
+ 
+4.3.5.2 Input Data Alarm 
+4.3.5.2.1 Kode Program PHP input_data_alarm 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+    $waktu_maintenance = $_GET['waktu_maintenance']; 
+    $barcode = $_GET['barcode']; 
+
+
+===== PAGE 75 =====
+64 
+ 
+ 
+    $username = $_GET['username']; 
+    $id_lokasi = $_GET['id_lokasi']; 
+    $catatan = $_GET['catatan']; 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "INSERT INTO maintenance (waktu_maintenance, 
+barcode_alat, username, id_lokasi, catatan) 
+    VALUES ('$waktu_maintenance', '$barcode',  '$username', 
+'$id_lokasi', '$catatan')"; 
+ 
+    $response = mysqli_query($connection, $sql); 
+    if ($response){ 
+          $sql = "SELECT MAX(id_maintenance) MAX FROM maintenance"; 
+      $response = mysqli_query($connection, $sql); 
+      $row = mysqli_fetch_assoc($response); 
+      $last_id = intval($row['MAX']); 
+ 
+        if(isset($_GET['smoke_test'])) { 
+            $smoke_test = $_GET['smoke_test']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 23, '$smoke_test')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['heat_test'])) { 
+            $heat_test = $_GET['heat_test']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 24, '$heat_test')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['cek_batre'])) { 
+            $cek_batre = $_GET['cek_batre']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 25, '$cek_batre')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+         
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+ 
+    } 
+    else { 
+        $status = "0"; 
+
+
+===== PAGE 76 =====
+65 
+ 
+ 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+    } 
+     
+} 
+?> 
+Kode Program 4.9 Kode Program PHP input_data_alarm 
+ 
+4.3.5.2.2 Kode Program Java MaintenanceAlarmActivity.java 
+public class MaintenanceAlarmActivity extends AppCompatActivity { 
+    UserPreferences userPreferences; 
+    RecyclerView recyclerView; 
+    Spinner spinnerruang, spinnersmoketest, spinnerheattest, 
+spinnercekbatre; 
+    String barcode, smoketest, heattest, cekbatre; 
+    TextView tvjamdigital; 
+    ImageView tombolkembali; 
+    LinearLayout linear; 
+    Button submitalarm; 
+    HashMap<String, String> maplokasi = new HashMap<String, 
+String>(); 
+    ArrayList<String> listlokasi = new ArrayList<>(); 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_maintenance_alarm); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+        userPreferences = new UserPreferences(this); 
+        Bundle extras = getIntent().getExtras(); 
+        if (extras.getString("nama") != null && 
+extras.getString("barcode") != null) { 
+            barcode = extras.getString("barcode"); 
+            FilterMaintenance(barcode); 
+ 
+        } 
+ 
+        spinnersmoketest = findViewById(R.id.detailsmoketest); 
+        spinnerheattest = findViewById(R.id.detailheattest); 
+
+
+===== PAGE 77 =====
+66 
+ 
+ 
+        spinnerruang = findViewById(R.id.detailruangalarm); 
+        spinnercekbatre = 
+findViewById(R.id.detailkondisibatrealarm); 
+        tvjamdigital = findViewById(R.id.tanggalsekarangalarm); 
+        recyclerView = findViewById(R.id.recycletabel); 
+        tombolkembali = findViewById(R.id.backhomealarm); 
+        submitalarm = findViewById(R.id.submitalarm); 
+        linear = findViewById(R.id.linear); 
+        blink(); 
+        getLokasi(); 
+        userPreferences = new UserPreferences(this); 
+        HashMap<String, String> user = 
+userPreferences.getUserDetail(); 
+        if (user.get(userPreferences.ROLE).equals("Supervisor")) { 
+            linear.setVisibility(View.GONE); 
+ 
+        } 
+ 
+        spinnersmoketest.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                smoketest = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+            } 
+        }); 
+ 
+        spinnerheattest.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                heattest = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+            } 
+        }); 
+ 
+
+
+===== PAGE 78 =====
+67 
+ 
+ 
+        spinnercekbatre.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                cekbatre = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+            } 
+        }); 
+ 
+        submitalarm.setOnClickListener(new View.OnClickListener() { 
+            public void onClick(View v) { 
+ 
+                String lokasi = 
+maplokasi.get(spinnerruang.getSelectedItem().toString());//mengambil 
+id lokasi dr nama lokasi 
+                String barcode_alarm = barcode; 
+                String user = 
+userPreferences.getUserDetail().get(UserPreferences.USERNAME); 
+                String catatan = ((EditText) 
+findViewById(R.id.textboxalarm)).getText().toString(); 
+                String waktu = tvjamdigital.getText().toString(); 
+                postData(waktu, barcode_alarm, user, lokasi, 
+catatan, smoketest, heattest, cekbatre); 
+            } 
+        }); 
+        tombolkembali.setOnClickListener(new View.OnClickListener() 
+{ 
+            @Override 
+            public void onClick(View view) { 
+                onBackPressed(); 
+            } 
+        }); 
+    } 
+ 
+    private void getLokasi() { 
+        Call<LokasiResponse> client = 
+ApiClient.getApiService().getLokasi(); 
+        client.enqueue(new Callback<LokasiResponse>() { 
+            @Override 
+            public void onResponse(Call<LokasiResponse> call, 
+Response<LokasiResponse> response) { 
+
+
+===== PAGE 79 =====
+68 
+ 
+ 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        List<Lokasi> data = 
+response.body().getData(); 
+ 
+                        for (int i = 0; i < data.size(); i++) { 
+                            Lokasi lok = data.get(i); 
+                            listlokasi.add(lok.getNamaLokasi()); 
+                            maplokasi.put(lok.getNamaLokasi(), 
+lok.getIdLokasi()); 
+                        } 
+                        ArrayAdapter<String> arrayAdapter = new 
+ArrayAdapter<>(MaintenanceAlarmActivity.this, 
+android.R.layout.simple_spinner_item, listlokasi); 
+                        arrayAdapter.setDropDownViewResource(android
+.R.layout.simple_spinner_dropdown_item); 
+                        spinnerruang.setAdapter(arrayAdapter); 
+ 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<LokasiResponse> call, 
+Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void postData(String waktu_maintenance, String barcode, 
+String username, String lokasi, String catatan, String smoke_test, 
+String heat_test, String cek_batre) { 
+        Call<InputData> client = 
+ApiClient.getApiService().inputDataAlarm(waktu_maintenance, barcode, 
+username, lokasi, catatan, smoke_test, heat_test, cek_batre); 
+        client.enqueue(new Callback<InputData>() { 
+            @Override 
+            public void onResponse(Call<InputData> call, 
+Response<InputData> response) { 
+                if (response.isSuccessful()) { 
+                    if 
+(response.body().getMessage().equals("success")) { 
+                        showToast("Input Data Sukses"); 
+                        startActivity(getIntent()); 
+
+
+===== PAGE 80 =====
+69 
+ 
+ 
+                        finish(); 
+                    } else { 
+                        showToast(" Data masih kosong! "); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<InputData> call, Throwable t) 
+{ 
+                showToast("Koneksi Internet bermasalah"); 
+            } 
+        }); 
+    } 
+ 
+    private void blink() { 
+        final Handler hander = new Handler(); 
+        new Thread(new Runnable() { 
+            @Override 
+            public void run() { 
+                try { 
+                    Thread.sleep(550); 
+                } catch (InterruptedException e) { 
+                    e.printStackTrace(); 
+                } 
+                hander.post(new Runnable() { 
+                    @Override 
+                    public void run() { 
+                        Date today = new Date(); 
+                        SimpleDateFormat formatter = new 
+SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+                        tvjamdigital.setText(formatter.format(today)
+); 
+                        blink(); 
+                    } 
+                }); 
+            } 
+        }).start(); 
+    } 
+ 
+    private void FilterMaintenance(String barcode) { 
+        Call<HistoryMaintenanceResponse> client = 
+ApiClient.getApiService().getHistoryMaintenance(barcode); 
+        client.enqueue(new Callback<HistoryMaintenanceResponse>() { 
+            @Override 
+
+
+===== PAGE 81 =====
+70 
+ 
+ 
+            public void onResponse(Call<HistoryMaintenanceResponse> 
+call, Response<HistoryMaintenanceResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        showRecycleview(response.body().getData()); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<HistoryMaintenanceResponse> 
+call, Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void showRecycleview(List<HistoryMaintenance> data) { 
+        ListTableAdapter listTableAdapter = new ListTableAdapter(); 
+        listTableAdapter.setListMaintenance(data); 
+        listTableAdapter.notifyDataSetChanged(); 
+        recyclerView.setLayoutManager(new 
+LinearLayoutManager(this)); 
+        recyclerView.setHasFixedSize(true); 
+        recyclerView.setAdapter(listTableAdapter); 
+ 
+    } 
+ 
+    private void showToast(String text) { 
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); 
+    } 
+ 
+    @Override 
+    public void onBackPressed() { 
+        super.onBackPressed(); 
+        Intent intent = new Intent(MaintenanceAlarmActivity.this, 
+HomeActivity.class); 
+        startActivity(intent); 
+    } 
+} 
+Kode Program 4.10 Kode Program Java MaintenanceAlarmActivity.java 
+ 
+
+
+===== PAGE 82 =====
+71 
+ 
+ 
+4.3.5.3 Input Data APAR 
+4.3.5.3.1 Kode Program PHP input_data_apar 
+ <?php 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+    $waktu_maintenance = $_GET['waktu_maintenance']; 
+    $barcode = $_GET['barcode']; 
+    $username = $_GET['username']; 
+    $id_lokasi = $_GET['id_lokasi']; 
+    $catatan = $_GET['catatan']; 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "INSERT INTO maintenance (waktu_maintenance, 
+barcode_alat, username, id_lokasi, catatan) 
+    VALUES ('$waktu_maintenance', '$barcode',  '$username', 
+'$id_lokasi', '$catatan')"; 
+ 
+    $response = mysqli_query($connection, $sql); 
+    if ($response){ 
+          $sql = "SELECT MAX(id_maintenance) MAX FROM maintenance"; 
+      $response = mysqli_query($connection, $sql); 
+      $row = mysqli_fetch_assoc($response); 
+      $last_id = intval($row['MAX']); 
+ 
+        if(isset($_GET['tekanan'])) { 
+            $tekanan = $_GET['tekanan']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 23, '$tekanan')"; 
+            echo $sql; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['selang'])) { 
+            $selang = $_GET['selang']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 24, '$selang')"; 
+            echo $sql; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['nossel'])) { 
+            $nossel = $_GET['nossel']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 25, '$nossel')"; 
+
+
+===== PAGE 83 =====
+72 
+ 
+ 
+            echo $sql; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+         
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+ 
+    } 
+    else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+    } 
+} 
+?> 
+Kode Program 4.11 Kode Program PHP input_data_apar 
+4.3.5.3.2 Kode Program Java MaintenanceAPARActivity.java 
+ 
+public class MaintenanceAPARActivity extends AppCompatActivity { 
+    UserPreferences userPreferences; 
+    TextView tvjamdigital; 
+    ImageView tombolkembali; 
+    RecyclerView recyclerView; 
+    LinearLayout linear; 
+    Spinner spinnerruang, spinnernossel, spinnerselang, 
+spinnertekanan; 
+    String barcode, nossel, tekanan, selang, ruang; 
+    HashMap<String, String> maplokasi = new HashMap<String, 
+String>(); 
+    ArrayList<String> listlokasi = new ArrayList<>(); 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_maintenance_apar); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+ 
+
+
+===== PAGE 84 =====
+73 
+ 
+ 
+        Bundle extras = getIntent().getExtras(); 
+        if (extras.getString("nama") != null && 
+extras.getString("barcode") != null) { 
+            barcode = extras.getString("barcode"); 
+            FilterMaintenance(barcode); 
+        } 
+        spinnernossel = findViewById(R.id.detailnosselapar); 
+        spinnerselang = findViewById(R.id.detailselangapar); 
+        spinnertekanan = findViewById(R.id.detailtekananapar); 
+        spinnerruang = findViewById(R.id.detailruangapar); 
+        tvjamdigital = findViewById(R.id.tanggalsekarangapar); 
+        recyclerView = findViewById(R.id.recycletabel); 
+        Button submitapar = findViewById(R.id.submitapar); 
+        tombolkembali = findViewById(R.id.backhomeapar); 
+        linear = findViewById(R.id.linear); 
+        blink(); 
+        getLokasi(); 
+ 
+        userPreferences = new UserPreferences(this); 
+        HashMap<String, String> user = 
+userPreferences.getUserDetail(); 
+        if (user.get(userPreferences.ROLE).equals("Supervisor")) { 
+            linear.setVisibility(View.GONE); 
+ 
+        } 
+ 
+        spinnertekanan.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                tekanan = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+ 
+        spinnerselang.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+
+
+===== PAGE 85 =====
+74 
+ 
+ 
+                selang = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+ 
+        spinnernossel.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                nossel = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+            } 
+        }); 
+ 
+        spinnerruang.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                ruang = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+            } 
+        }); 
+ 
+        submitapar.setOnClickListener(new View.OnClickListener() { 
+            public void onClick(View v) { 
+ 
+                String lokasi = 
+maplokasi.get(spinnerruang.getSelectedItem().toString());//mengambil 
+id lokasi dr nama lokasi 
+                String barcode_apar = barcode; 
+
+
+===== PAGE 86 =====
+75 
+ 
+ 
+                String user = 
+userPreferences.getUserDetail().get(UserPreferences.USERNAME); 
+                String catatan = ((EditText) 
+findViewById(R.id.textboxapar)).getText().toString(); 
+                String waktu = tvjamdigital.getText().toString(); 
+                postData(waktu, barcode_apar, user, lokasi, catatan, 
+tekanan, selang, nossel); 
+            } 
+        }); 
+        tombolkembali.setOnClickListener(new View.OnClickListener() 
+{ 
+            @Override 
+            public void onClick(View view) { 
+                onBackPressed(); 
+            } 
+        }); 
+    } 
+ 
+    private void getLokasi() { 
+        Call<LokasiResponse> client = 
+ApiClient.getApiService().getLokasi(); 
+        client.enqueue(new Callback<LokasiResponse>() { 
+            @Override 
+            public void onResponse(Call<LokasiResponse> call, 
+Response<LokasiResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        List<Lokasi> data = 
+response.body().getData(); 
+ 
+                        for (int i = 0; i < data.size(); i++) { 
+                            Lokasi lok = data.get(i); 
+                            listlokasi.add(lok.getNamaLokasi()); 
+                            maplokasi.put(lok.getNamaLokasi(), 
+lok.getIdLokasi()); 
+                        } 
+                        ArrayAdapter<String> arrayAdapter = new 
+ArrayAdapter<>(MaintenanceAPARActivity.this, 
+android.R.layout.simple_spinner_item, listlokasi); 
+                        arrayAdapter.setDropDownViewResource(android
+.R.layout.simple_spinner_dropdown_item); 
+                        spinnerruang.setAdapter(arrayAdapter); 
+                    } 
+                } 
+            } 
+ 
+
+
+===== PAGE 87 =====
+76 
+ 
+ 
+            @Override 
+            public void onFailure(Call<LokasiResponse> call, 
+Throwable t) { 
+                Log.e("LOGIN", t.getMessage()); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void postData(String waktu_maintenance, String barcode, 
+String username, String lokasi, String catatan, String tekanan, 
+String selang, String nossel) { 
+        Call<InputData> client = 
+ApiClient.getApiService().inputDataAPAR(waktu_maintenance, barcode, 
+username, lokasi, catatan, tekanan, selang, nossel); 
+        client.enqueue(new Callback<InputData>() { 
+            @Override 
+            public void onResponse(Call<InputData> call, 
+Response<InputData> response) { 
+                if (response.isSuccessful()) { 
+                    if 
+(response.body().getMessage().equals("success")) { 
+                        showToast("Input Data Sukses"); 
+                        startActivity(getIntent()); 
+                        finish(); 
+                    } 
+                } else { 
+                    showToast("Data masih kosong !"); 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<InputData> call, Throwable t) 
+{ 
+                showToast("Koneksi Internet bermasalah"); 
+            } 
+        }); 
+    } 
+ 
+    private void blink() { 
+        final Handler hander = new Handler(); 
+        new Thread(new Runnable() { 
+            @Override 
+            public void run() { 
+                try { 
+                    Thread.sleep(550); 
+
+
+===== PAGE 88 =====
+77 
+ 
+ 
+                } catch (InterruptedException e) { 
+                    e.printStackTrace(); 
+                } 
+                hander.post(new Runnable() { 
+                    @Override 
+                    public void run() { 
+                        Date today = new Date(); 
+//                        SimpleDateFormat formatter = new 
+SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss"); 
+                        SimpleDateFormat formatter = new 
+SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+                        tvjamdigital.setText(formatter.format(today)
+); 
+                        blink(); 
+                    } 
+                }); 
+            } 
+        }).start(); 
+    } 
+ 
+    private void FilterMaintenance(String barcode) { 
+        Call<HistoryMaintenanceResponse> client = 
+ApiClient.getApiService().getHistoryMaintenance(barcode); 
+        client.enqueue(new Callback<HistoryMaintenanceResponse>() { 
+            @Override 
+            public void onResponse(Call<HistoryMaintenanceResponse> 
+call, Response<HistoryMaintenanceResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        showRecycleview(response.body().getData()); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<HistoryMaintenanceResponse> 
+call, Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+            } 
+        }); 
+    } 
+ 
+    private void showRecycleview(List<HistoryMaintenance> data) { 
+        ListTableAdapter listTableAdapter = new ListTableAdapter(); 
+        listTableAdapter.setListMaintenance(data); 
+        listTableAdapter.notifyDataSetChanged(); 
+
+
+===== PAGE 89 =====
+78 
+ 
+ 
+        recyclerView.setLayoutManager(new 
+LinearLayoutManager(this)); 
+        recyclerView.setHasFixedSize(true); 
+        recyclerView.setAdapter(listTableAdapter); 
+ 
+    } 
+ 
+    private void showToast(String text) { 
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); 
+    } 
+ 
+    @Override 
+    public void onBackPressed() { 
+        super.onBackPressed(); 
+        Intent intent = new Intent(MaintenanceAPARActivity.this, 
+HomeActivity.class); 
+        startActivity(intent); 
+    } 
+} 
+Kode Program 4.12 Kode Program Java MaintenanceAPARActivity.java 
+4.3.5.4 Input Data Panel Listrik 
+4.3.5.4.1 Kode Program PHP input_data_panel 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+    $waktu_maintenance = $_GET['waktu_maintenance']; 
+    $barcode = $_GET['barcode']; 
+    $username = $_GET['username']; 
+    $id_lokasi = $_GET['id_lokasi']; 
+    $catatan = $_GET['catatan']; 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "INSERT INTO maintenance (waktu_maintenance, 
+barcode_alat, username, id_lokasi, catatan) 
+    VALUES ('$waktu_maintenance', '$barcode',  '$username', 
+'$id_lokasi', '$catatan')"; 
+    $response = mysqli_query($connection, $sql); 
+     if ($response){ 
+        $sql = "SELECT MAX(id_maintenance) MAX FROM maintenance"; 
+      $response = mysqli_query($connection, $sql); 
+      $row = mysqli_fetch_assoc($response); 
+
+
+===== PAGE 90 =====
+79 
+ 
+ 
+      $last_id = intval($row['MAX']); 
+         
+         
+        if(isset($_GET['voltage_rs'])) { 
+            $voltage_rs = $_GET['voltage_rs']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 13, '$voltage_rs')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['voltage_rt'])) { 
+            $voltage_rt = $_GET['voltage_rt']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 14, '$voltage_rt')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['voltage_st'])) { 
+            $voltage_st = $_GET['voltage_st']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 15, '$voltage_st')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['ampere_rs'])) { 
+            $ampere_rs = $_GET['ampere_rs']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 16, '$ampere_rs')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+          if(isset($_GET['ampere_rt'])) { 
+            $ampere_rt = $_GET['ampere_rt']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 17, '$ampere_rt')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+          if(isset($_GET['ampere_st'])) { 
+            $ampere_st = $_GET['ampere_st']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 18, '$ampere_st')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['kondisi_baut'])) { 
+            $kondisi_baut = $_GET['kondisi_baut']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 19, '$kondisi_baut')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+ 
+
+
+===== PAGE 91 =====
+80 
+ 
+ 
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+ 
+    } 
+    else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+    } 
+     
+    } 
+?> 
+ 
+ 
+Kode Program 4.13 Kode Program PHP input_data_panel 
+ 
+4.3.5.4.2 Kode Program Java MaintenancePanelListrikActivity.java 
+public class MaintenancePanelListrikActivity extends 
+AppCompatActivity { 
+    UserPreferences userPreferences; 
+    TextView tvjamdigital; 
+    ImageView tombolkembali; 
+    RecyclerView recyclerView; 
+    LinearLayout linear; 
+    EditText etvoltagers, etvoltagert, etvoltagest, etamperers, 
+etamperert, etamperest; 
+    Spinner spinnerruang, spinnerkondisibaut; 
+    String barcode, kondisi_baut, ruang; 
+    HashMap<String, String> maplokasi = new HashMap<String, 
+String>(); 
+    ArrayList<String> listlokasi = new ArrayList<>(); 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_maintenance_panel_listrik); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+
+
+===== PAGE 92 =====
+81 
+ 
+ 
+        Bundle extras = getIntent().getExtras(); 
+        if (extras.getString("nama") != null && 
+extras.getString("barcode") != null) { 
+            barcode = extras.getString("barcode"); 
+            FilterMaintenance(barcode); 
+        } 
+        spinnerkondisibaut = 
+findViewById(R.id.detailkondisibautpanellistrik); 
+        spinnerruang = findViewById(R.id.detailruangpanel); 
+        etvoltagers = findViewById(R.id.detailvoltagers); 
+        etvoltagert = findViewById(R.id.detailvoltagert); 
+        etvoltagest = findViewById(R.id.detailvoltagest); 
+        etamperers = findViewById(R.id.detailamperers); 
+        etamperert = findViewById(R.id.detailamperert); 
+        etamperest = findViewById(R.id.detailamperest); 
+        tvjamdigital = 
+findViewById(R.id.tanggalsekarangpanellistrik); 
+        recyclerView = findViewById(R.id.recycletabel); 
+        linear = findViewById(R.id.linear); 
+        tombolkembali = findViewById(R.id.backhomepanellistrik); 
+        Button submitpanel = findViewById(R.id.submitpanel); 
+        blink(); 
+        getLokasi(); 
+        userPreferences = new UserPreferences(this); 
+        HashMap<String,String> user = 
+userPreferences.getUserDetail(); 
+        if (user.get(userPreferences.ROLE).equals("Supervisor")){ 
+            linear.setVisibility(View.GONE); 
+ 
+        } 
+ 
+        spinnerruang.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                ruang = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+ 
+
+
+===== PAGE 93 =====
+82 
+ 
+ 
+        spinnerkondisibaut.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                kondisi_baut = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+ 
+        submitpanel.setOnClickListener(new View.OnClickListener() { 
+            public void onClick(View v) { 
+                String voltage_rs = 
+etvoltagers.getText().toString(); 
+                String voltage_rt = 
+etvoltagert.getText().toString(); 
+                String voltage_st = 
+etvoltagest.getText().toString(); 
+                String ampere_rs = etamperers.getText().toString(); 
+                String ampere_rt = etamperert.getText().toString(); 
+                String ampere_st = etamperest.getText().toString(); 
+                String lokasi = 
+maplokasi.get(spinnerruang.getSelectedItem().toString());//mengambil 
+id lokasi dr nama lokasi 
+                String barcodepanel = barcode; 
+                String user = 
+userPreferences.getUserDetail().get(UserPreferences.USERNAME); 
+                String catatan = ((EditText) 
+findViewById(R.id.textboxpanellistrik)).getText().toString(); 
+                String waktu = tvjamdigital.getText().toString(); 
+                postData(waktu, barcodepanel, user, lokasi, catatan, 
+voltage_rs, voltage_rt, voltage_st, ampere_rs, ampere_rt, ampere_st, 
+kondisi_baut); 
+            } 
+        }); 
+        tombolkembali.setOnClickListener(new View.OnClickListener() 
+{ 
+            @Override 
+            public void onClick(View view) { 
+                onBackPressed(); 
+            } 
+
+
+===== PAGE 94 =====
+83 
+ 
+ 
+        }); 
+    } 
+ 
+    private void getLokasi() { 
+        Call<LokasiResponse> client = 
+ApiClient.getApiService().getLokasi(); 
+        client.enqueue(new Callback<LokasiResponse>() { 
+            @Override 
+            public void onResponse(Call<LokasiResponse> call, 
+Response<LokasiResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        List<Lokasi> data = 
+response.body().getData(); 
+ 
+                        for (int i = 0; i < data.size(); i++) { 
+                            Lokasi lok = data.get(i); 
+                            listlokasi.add(lok.getNamaLokasi()); 
+                            maplokasi.put(lok.getNamaLokasi(), 
+lok.getIdLokasi()); 
+                        } 
+                        ArrayAdapter<String> arrayAdapter = new 
+ArrayAdapter<>(MaintenancePanelListrikActivity.this, 
+android.R.layout.simple_spinner_item, listlokasi); 
+                        arrayAdapter.setDropDownViewResource(android
+.R.layout.simple_spinner_dropdown_item); 
+                        spinnerruang.setAdapter(arrayAdapter); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<LokasiResponse> call, 
+Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void postData(String waktu_maintenance, String barcode, 
+String username, String lokasi, String catatan, String voltage_rs, 
+String voltage_rt, String voltage_st, String ampere_rs, String 
+ampere_rt, String ampere_st, String kondisi_baut) { 
+        Call<InputData> client = 
+ApiClient.getApiService().inputDataPanel(waktu_maintenance, barcode, 
+
+
+===== PAGE 95 =====
+84 
+ 
+ 
+username, lokasi, catatan, voltage_rs, voltage_rt, voltage_st, 
+ampere_rs, ampere_rt, ampere_st, kondisi_baut); 
+        client.enqueue(new Callback<InputData>() { 
+            @Override 
+            public void onResponse(Call<InputData> call, 
+Response<InputData> response) { 
+                if (response.isSuccessful()) { 
+                    if 
+(response.body().getMessage().equals("success")) { 
+                        showToast("Input Data Sukses"); 
+                        startActivity(getIntent()); 
+                        finish(); 
+                    } 
+                } 
+                else { 
+                    showToast("Data masih kosong !"); 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<InputData> call, Throwable t) 
+{ 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void blink() { 
+        final Handler hander = new Handler(); 
+        new Thread(new Runnable() { 
+            @Override 
+            public void run() { 
+                try { 
+                    Thread.sleep(550); 
+                } catch (InterruptedException e) { 
+                    e.printStackTrace(); 
+                } 
+                hander.post(new Runnable() { 
+                    @Override 
+                    public void run() { 
+                        Date today = new Date(); 
+//                        SimpleDateFormat formatter = new 
+SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss"); 
+                        SimpleDateFormat formatter = new 
+SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+
+
+===== PAGE 96 =====
+85 
+ 
+ 
+                        tvjamdigital.setText(formatter.format(today)
+); 
+                        blink(); 
+                    } 
+                }); 
+            } 
+        }).start(); 
+    } 
+ 
+    private void FilterMaintenance(String barcode) { 
+        Call<HistoryMaintenanceResponse> client = 
+ApiClient.getApiService().getHistoryMaintenance(barcode); 
+        client.enqueue(new Callback<HistoryMaintenanceResponse>() { 
+            @Override 
+            public void onResponse(Call<HistoryMaintenanceResponse> 
+call, Response<HistoryMaintenanceResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        showRecycleview(response.body().getData()); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<HistoryMaintenanceResponse> 
+call, Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+            } 
+        }); 
+    } 
+ 
+    private void showRecycleview(List<HistoryMaintenance> data) { 
+        ListTableAdapter listTableAdapter = new ListTableAdapter(); 
+        listTableAdapter.setListMaintenance(data); 
+        listTableAdapter.notifyDataSetChanged(); 
+        recyclerView.setLayoutManager(new 
+LinearLayoutManager(this)); 
+        recyclerView.setHasFixedSize(true); 
+        recyclerView.setAdapter(listTableAdapter); 
+ 
+    } 
+ 
+    private void showToast(String text) { 
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); 
+    } 
+    @Override 
+
+
+===== PAGE 97 =====
+86 
+ 
+ 
+    public void onBackPressed() { 
+        super.onBackPressed(); 
+        Intent intent = new 
+Intent(MaintenancePanelListrikActivity.this, HomeActivity.class); 
+        startActivity(intent); 
+    } 
+} 
+Kode Program 4.14 Kode Program Java MaintenancePanelListrik.java 
+ 
+4.3.5.5 Input Data Hydrant 
+4.3.5.5.1 Kode Program PHP input_data_hyrant 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+    $waktu_maintenance = $_GET['waktu_maintenance']; 
+    $barcode = $_GET['barcode']; 
+    $username = $_GET['username']; 
+    $id_lokasi = $_GET['id_lokasi']; 
+    $catatan = $_GET['catatan']; 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "INSERT INTO maintenance (waktu_maintenance, 
+barcode_alat, username, id_lokasi, catatan) 
+    VALUES ('$waktu_maintenance', '$barcode',  '$username', 
+'$id_lokasi', '$catatan')"; 
+    $response = mysqli_query($connection, $sql); 
+     if ($response){ 
+        $sql = "SELECT MAX(id_maintenance) MAX FROM maintenance"; 
+      $response = mysqli_query($connection, $sql); 
+      $row = mysqli_fetch_assoc($response); 
+      $last_id = intval($row['MAX']); 
+         
+         
+        if(isset($_GET['tekanan'])) { 
+            $suhu_ac = $_GET['tekanan']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 1, '$tekanan')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['fungsi'])) { 
+
+
+===== PAGE 98 =====
+87 
+ 
+ 
+            $tekanan_ac = $_GET['fungsi']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, 
+id_spesifikasi, status) VALUES ($last_id, 2, '$fungsi')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        
+ 
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+ 
+    } 
+    else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 
+'message'=>$message), JSON_PRETTY_PRINT); 
+    } 
+     
+    } 
+?> 
+ 
+Kode Program 4.15 Kode Program PHP input_data_hydrant 
+ 
+4.3.5.5.2 Kode Program Java MaintenanceHydrantActivity.java 
+public class MaintenanceHydrantActivity extends AppCompatActivity { 
+ 
+    UserPreferences userPreferences; 
+    RecyclerView recyclerView; 
+    Spinner spinnerruang, spinnerfungsi; 
+    EditText ettekanan; 
+    String barcode, ruang, fungsi; 
+    TextView tvjamdigital; 
+    ImageView tombolkembali; 
+    LinearLayout linear; 
+    HashMap<String, String> maplokasi = new HashMap<String, 
+String>(); 
+    ArrayList<String> listlokasi = new ArrayList<>(); 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+
+
+===== PAGE 99 =====
+88 
+ 
+ 
+        setContentView(R.layout.activity_maintenance_hydrant); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+        Bundle extras = getIntent().getExtras(); 
+        if (extras.getString("nama") != null && 
+extras.getString("barcode") != null) { 
+            barcode = extras.getString("barcode"); 
+            FilterMaintenance(barcode); 
+        } 
+        spinnerruang = findViewById(R.id.detailruanghydrant); 
+        spinnerfungsi = findViewById(R.id.detailfungsihydrant); 
+        ettekanan = findViewById(R.id.detailtekananhydrant); 
+        tvjamdigital = findViewById(R.id.tanggalsekaranghydrant); 
+        recyclerView = findViewById(R.id.recycletabel); 
+        tombolkembali = findViewById(R.id.backhomehydrant); 
+        linear = findViewById(R.id.linear); 
+        Button submithydrant = findViewById(R.id.submithydrant); 
+        blink(); 
+        getLokasi(); 
+        userPreferences = new UserPreferences(this); 
+        HashMap<String,String> user = 
+userPreferences.getUserDetail(); 
+        if (user.get(userPreferences.ROLE).equals("Supervisor")){ 
+            linear.setVisibility(View.GONE); 
+ 
+        } 
+ 
+        spinnerruang.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                ruang = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+ 
+
+
+===== PAGE 100 =====
+89 
+ 
+ 
+        submithydrant.setOnClickListener(new View.OnClickListener() 
+{ 
+            public void onClick(View v) { 
+                String tekanan = ettekanan.getText().toString(); 
+                String lokasi = 
+maplokasi.get(spinnerruang.getSelectedItem().toString());//mengambil 
+id lokasi dr nama lokasi 
+                String barcode_ac = barcode; 
+                String user = 
+userPreferences.getUserDetail().get(UserPreferences.USERNAME); 
+                String catatan = ((EditText) 
+findViewById(R.id.textboxac)).getText().toString(); 
+                String waktu = tvjamdigital.getText().toString(); 
+ 
+                postData(waktu, barcode_ac, user, lokasi, catatan, 
+tekanan, fungsi); 
+            } 
+        }); 
+        tombolkembali.setOnClickListener(new View.OnClickListener() 
+{ 
+            @Override 
+            public void onClick(View view) { 
+                onBackPressed(); 
+            } 
+        }); 
+    } 
+ 
+    private void getLokasi() { 
+        Call<LokasiResponse> client = 
+ApiClient.getApiService().getLokasi(); 
+        client.enqueue(new Callback<LokasiResponse>() { 
+            @Override 
+            public void onResponse(Call<LokasiResponse> call, 
+Response<LokasiResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        List<Lokasi> data = 
+response.body().getData(); 
+ 
+                        for (int i = 0; i < data.size(); i++) { 
+                            Lokasi lok = data.get(i); 
+                            listlokasi.add(lok.getNamaLokasi()); 
+                            maplokasi.put(lok.getNamaLokasi(), 
+lok.getIdLokasi()); 
+                        } 
+
+
+===== PAGE 101 =====
+90 
+ 
+ 
+                        ArrayAdapter<String> arrayAdapter = new 
+ArrayAdapter<>(MaintenanceHydrantActivity.this, 
+android.R.layout.simple_spinner_item, listlokasi); 
+                        arrayAdapter.setDropDownViewResource(android
+.R.layout.simple_spinner_dropdown_item); 
+                        spinnerruang.setAdapter(arrayAdapter); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<LokasiResponse> call, 
+Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void postData(String waktu_maintenance, String barcode, 
+String username, String lokasi, String catatan, String tekanan, 
+String fungsi) { 
+        Call<InputData> client = 
+ApiClient.getApiService().inputDataHydrant(waktu_maintenance, 
+barcode, username, lokasi, catatan, tekanan, fungsi); 
+        client.enqueue(new Callback<InputData>() { 
+            @Override 
+            public void onResponse(Call<InputData> call, 
+Response<InputData> response) { 
+                if (response.isSuccessful()) { 
+                    if 
+(response.body().getMessage().equals("success")) { 
+                        showToast("Input Data Sukses"); 
+                        startActivity(getIntent()); 
+                        finish(); 
+                    } 
+                } 
+                else { 
+                    showToast("Data masih kosong !"); 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<InputData> call, Throwable t) 
+{ 
+                showToast("Koneksi Internet bermasalah"); 
+
+
+===== PAGE 102 =====
+91 
+ 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void blink() { 
+        final Handler hander = new Handler(); 
+        new Thread(new Runnable() { 
+            @Override 
+            public void run() { 
+                try { 
+                    Thread.sleep(550); 
+                } catch (InterruptedException e) { 
+                    e.printStackTrace(); 
+                } 
+                hander.post(new Runnable() { 
+                    @Override 
+                    public void run() { 
+                        Date today = new Date(); 
+                        SimpleDateFormat formatter = new 
+SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+                        tvjamdigital.setText(formatter.format(today)
+); 
+                        blink(); 
+                    } 
+                }); 
+            } 
+        }).start(); 
+    } 
+ 
+    private void FilterMaintenance(String barcode) { 
+        Call<HistoryMaintenanceResponse> client = 
+ApiClient.getApiService().getHistoryMaintenance(barcode); 
+        client.enqueue(new Callback<HistoryMaintenanceResponse>() { 
+            @Override 
+            public void onResponse(Call<HistoryMaintenanceResponse> 
+call, Response<HistoryMaintenanceResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        showRecycleview(response.body().getData()); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<HistoryMaintenanceResponse> 
+call, Throwable t) { 
+
+
+===== PAGE 103 =====
+92 
+ 
+ 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void showRecycleview(List<HistoryMaintenance> data) { 
+        ListTableAdapter listTableAdapter = new ListTableAdapter(); 
+        listTableAdapter.setListMaintenance(data); 
+        listTableAdapter.notifyDataSetChanged(); 
+        recyclerView.setLayoutManager(new 
+LinearLayoutManager(this)); 
+        recyclerView.setHasFixedSize(true); 
+        recyclerView.setAdapter(listTableAdapter); 
+ 
+    } 
+ 
+    private void showToast(String text) { 
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); 
+    } 
+ 
+    @Override 
+    public void onBackPressed() { 
+        super.onBackPressed(); 
+        Intent intent = new Intent(MaintenanceHydrantActivity.this, 
+HomeActivity.class); 
+        startActivity(intent); 
+    } 
+ 
+} 
+Kode Program 4.16 Kode Program Java MaintenanceHydrantActivity.java 
+ 
+4.3.5.6 Input Data Penangkal Petir 
+4.3.5.6.1 Kode Program PHP input_data_petir 
+<?php 
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') { 
+ 
+    $waktu_maintenance = $_GET['waktu_maintenance']; 
+    $barcode = $_GET['barcode']; 
+    $username = $_GET['username']; 
+    $id_lokasi = $_GET['id_lokasi']; 
+    $catatan = $_GET['catatan']; 
+
+
+===== PAGE 104 =====
+93 
+ 
+ 
+ 
+    require_once 'connection.php'; 
+    header('Content-Type: application/json; charset=utf-8'); 
+ 
+    $sql = "INSERT INTO maintenance (waktu_maintenance, barcode_alat, username, 
+id_lokasi, catatan) 
+    VALUES ('$waktu_maintenance', '$barcode',  '$username', '$id_lokasi', '$catatan')"; 
+    $response = mysqli_query($connection, $sql); 
+     if ($response){ 
+        $sql = "SELECT MAX(id_maintenance) MAX FROM maintenance"; 
+      $response = mysqli_query($connection, $sql); 
+      $row = mysqli_fetch_assoc($response); 
+      $last_id = intval($row['MAX']); 
+         
+         
+        if(isset($_GET['kondisi_Baut'])) { 
+            $kondisi_Baut = $_GET['kondisi_Baut']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, id_spesifikasi, status) 
+VALUES ($last_id, 11, '$kondisi_Baut')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+        if(isset($_GET['grouding_test'])) { 
+            $grouding_test = $_GET['grouding_test']; 
+            $sql = "INSERT INTO detail_maintenance (id_maintenance, id_spesifikasi, status) 
+VALUES ($last_id, 12, '$grouding_test')"; 
+            $response = mysqli_query($connection, $sql); 
+        } 
+ 
+        $status = "1"; 
+        $message = "success"; 
+        echo json_encode(array('status'=>$status, 'message'=>$message), 
+JSON_PRETTY_PRINT); 
+ 
+    } 
+    else { 
+        $status = "0"; 
+        $message = "error"; 
+        echo json_encode(array('status'=>$status, 'message'=>$message), 
+JSON_PRETTY_PRINT); 
+    } 
+     
+    } 
+?> 
+ 
+Kode Program 4.17 Kode Program PHP input_data_petir.php 
+
+
+===== PAGE 105 =====
+94 
+ 
+ 
+4.3.5.6.2 Kode Program Java MaintenancePenangkalPetirActivity.java 
+public class MaintenancePenangkalPetirActivity extends 
+AppCompatActivity { 
+    UserPreferences userPreferences; 
+    TextView tvjamdigital; 
+    ImageView tombolkembali; 
+    RecyclerView recyclerView; 
+    EditText etgroundingtest; 
+    Spinner spinnerruang, spinnerkondisibaut; 
+    String barcode, kondisi_baut, ruang; 
+    LinearLayout linear; 
+    HashMap<String, String> maplokasi = new HashMap<String, 
+String>(); 
+    ArrayList<String> listlokasi = new ArrayList<>(); 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_maintenance_penangkal_petir
+); 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE
+_NIGHT_NO); 
+        if (getSupportActionBar() != null) { 
+            getSupportActionBar().hide(); 
+        } 
+ 
+        Bundle extras = getIntent().getExtras(); 
+        if (extras.getString("nama") != null && 
+extras.getString("barcode") != null) { 
+            barcode = extras.getString("barcode"); 
+            FilterMaintenance(extras.getString("barcode")); 
+            FilterMaintenance(barcode); 
+        } 
+ 
+        spinnerkondisibaut = 
+findViewById(R.id.detailkondisibautpenangkalpetir); 
+        spinnerruang = findViewById(R.id.detailruangpetir); 
+        etgroundingtest = findViewById(R.id.detailgroundingtest); 
+        tvjamdigital = 
+findViewById(R.id.tanggalsekarangpenangkalpetir); 
+        recyclerView = findViewById(R.id.recycletabel); 
+        tombolkembali = findViewById(R.id.backhomepenangkalpetir); 
+        Button submitpetir = findViewById(R.id.submitpetir); 
+        linear = findViewById(R.id.linear); 
+        blink(); 
+
+
+===== PAGE 106 =====
+95 
+ 
+ 
+        getLokasi(); 
+        userPreferences = new UserPreferences(this); 
+        HashMap<String,String> user = 
+userPreferences.getUserDetail(); 
+        if (user.get(userPreferences.ROLE).equals("Supervisor")){ 
+            linear.setVisibility(View.GONE); 
+ 
+        } 
+ 
+        spinnerkondisibaut.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                kondisi_baut = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+ 
+        spinnerruang.setOnItemSelectedListener(new 
+AdapterView.OnItemSelectedListener() { 
+            @Override 
+            public void onItemSelected(AdapterView<?> parent, View 
+view, int position, long id) { 
+                ruang = 
+parent.getItemAtPosition(position).toString(); 
+            } 
+ 
+            @Override 
+            public void onNothingSelected(AdapterView<?> parent) { 
+ 
+            } 
+        }); 
+ 
+        submitpetir.setOnClickListener(new View.OnClickListener() { 
+            public void onClick(View v) { 
+                String grounding_test = 
+etgroundingtest.getText().toString(); 
+                String lokasi = 
+maplokasi.get(spinnerruang.getSelectedItem().toString());//mengambil 
+id lokasi dr nama lokasi 
+
+
+===== PAGE 107 =====
+96 
+ 
+ 
+                String barcode_petir = barcode; 
+                String user = 
+userPreferences.getUserDetail().get(UserPreferences.USERNAME); 
+                String catatan = ((EditText) 
+findViewById(R.id.textboxpanangkalpetir)).getText().toString(); 
+                String waktu = tvjamdigital.getText().toString(); 
+                postData(waktu, barcode_petir, user, lokasi, 
+catatan, kondisi_baut, grounding_test); 
+            } 
+        }); 
+        tombolkembali.setOnClickListener(new View.OnClickListener() 
+{ 
+            @Override 
+            public void onClick(View view) { 
+                onBackPressed(); 
+            } 
+        }); 
+ 
+    } 
+ 
+    private void getLokasi() { 
+        Call<LokasiResponse> client = 
+ApiClient.getApiService().getLokasi(); 
+        client.enqueue(new Callback<LokasiResponse>() { 
+            @Override 
+            public void onResponse(Call<LokasiResponse> call, 
+Response<LokasiResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        List<Lokasi> data = 
+response.body().getData(); 
+ 
+                        for (int i = 0; i < data.size(); i++) { 
+                            Lokasi lok = data.get(i); 
+                            listlokasi.add(lok.getNamaLokasi()); 
+                            maplokasi.put(lok.getNamaLokasi(), 
+lok.getIdLokasi()); 
+                        } 
+                        ArrayAdapter<String> arrayAdapter = new 
+ArrayAdapter<>(MaintenancePenangkalPetirActivity.this, 
+android.R.layout.simple_spinner_item, listlokasi); 
+                        arrayAdapter.setDropDownViewResource(android
+.R.layout.simple_spinner_dropdown_item); 
+                        spinnerruang.setAdapter(arrayAdapter); 
+                    } 
+                } 
+
+
+===== PAGE 108 =====
+97 
+ 
+ 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<LokasiResponse> call, 
+Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void postData(String waktu_maintenance, String barcode, 
+String username, String lokasi, String catatan, String kondisi_baut, 
+String grounding_test) { 
+        Call<InputData> client = 
+ApiClient.getApiService().inputDataPetir(waktu_maintenance, barcode, 
+username, lokasi, catatan, kondisi_baut, grounding_test); 
+        client.enqueue(new Callback<InputData>() { 
+            @Override 
+            public void onResponse(Call<InputData> call, 
+Response<InputData> response) { 
+                if (response.isSuccessful()) { 
+                    if 
+(response.body().getMessage().equals("success")) { 
+                        showToast("Input Data Sukses"); 
+                        startActivity(getIntent()); 
+                        finish(); 
+                    } 
+                } 
+                else { 
+                    showToast("Data masih kosong !"); 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<InputData> call, Throwable t) 
+{ 
+                showToast("Koneksi Internet bermasalah"); 
+            } 
+        }); 
+    } 
+ 
+    private void blink() { 
+        final Handler hander = new Handler(); 
+        new Thread(new Runnable() { 
+            @Override 
+
+
+===== PAGE 109 =====
+98 
+ 
+ 
+            public void run() { 
+                try { 
+                    Thread.sleep(550); 
+                } catch (InterruptedException e) { 
+                    e.printStackTrace(); 
+                } 
+                hander.post(new Runnable() { 
+                    @Override 
+                    public void run() { 
+                        Date today = new Date(); 
+                        SimpleDateFormat formatter = new 
+SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+                        tvjamdigital.setText(formatter.format(today)
+); 
+                        blink(); 
+                    } 
+                }); 
+            } 
+        }).start(); 
+    } 
+ 
+    private void FilterMaintenance(String barcode) { 
+        Call<HistoryMaintenanceResponse> client = 
+ApiClient.getApiService().getHistoryMaintenance(barcode); 
+        client.enqueue(new Callback<HistoryMaintenanceResponse>() { 
+            @Override 
+            public void onResponse(Call<HistoryMaintenanceResponse> 
+call, Response<HistoryMaintenanceResponse> response) { 
+                if (response.isSuccessful()) { 
+                    if (response.body().getData() != null) { 
+                        showRecycleview(response.body().getData()); 
+                    } 
+                } 
+            } 
+ 
+            @Override 
+            public void onFailure(Call<HistoryMaintenanceResponse> 
+call, Throwable t) { 
+                showToast("Koneksi Internet bermasalah"); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void showRecycleview(List<HistoryMaintenance> data) { 
+        ListTableAdapter listTableAdapter = new ListTableAdapter(); 
+
+
+===== PAGE 110 =====
+99 
+ 
+ 
+        listTableAdapter.setListMaintenance(data); 
+        listTableAdapter.notifyDataSetChanged(); 
+        recyclerView.setLayoutManager(new 
+LinearLayoutManager(this)); 
+        recyclerView.setHasFixedSize(true); 
+        recyclerView.setAdapter(listTableAdapter); 
+ 
+    } 
+ 
+    private void showToast(String text) { 
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); 
+    } 
+    @Override 
+    public void onBackPressed() { 
+        super.onBackPressed(); 
+        Intent intent = new 
+Intent(MaintenancePenangkalPetirActivity.this, HomeActivity.class); 
+        startActivity(intent); 
+    } 
+} 
+Kode Program 4.18 Kode Program Java 
+MaintenancePenangkalPetirAcivity.java 
+ 
+4.3.6 Implementasi Kasus Penggunaan Melihat Laporan Rutin 
+4.3.6.1 Kode Program PHP download_report.php 
+<?php 
+$periode_awal = $_GET['periodeawal']; 
+$periode_akhir = $_GET['periodeakhir']; 
+require_once 'connection.php'; 
+require_once 'dompdf/autoload.inc.php'; 
+use Dompdf\Dompdf; 
+ 
+header('Content-Type: application/json; charset=utf-8'); 
+ 
+ $sql = "SELECT * FROM detail_view WHERE waktu_maintenance between 
+'$periode_awal' AND '$periode_akhir' order by waktu_maintenance 
+desc"; 
+$response = mysqli_query($connection, $sql); 
+if ($response) { 
+ 
+    $dompdf = new Dompdf(); 
+    $html = '<center><h3>Report Maintenance Alat SBU 
+'.$periode_awal.' - '.$periode_akhir.'</h3></center><hr/><br/>';  
+    $html .= '<table border="1" width="100%"> 
+
+
+===== PAGE 111 =====
+100 
+ 
+ 
+           <tr> 
+             <th>Waktu</th> 
+             <th>Alat</th> 
+             <th>Teknisi</th> 
+             <th>Lokasi</th> 
+             <th>Kondisi</th> 
+             <th>Catatan</th> 
+           </tr>'; 
+           $currID = ""; 
+    while($row = mysqli_fetch_array($response)) 
+    { 
+      $print = false; 
+      if($currID!=$row['id_maintenance']){ 
+        if($currID!="") $print = true; 
+        $currID=$row['id_maintenance']; 
+      }else{ 
+        $content .= $row['nama_spesifikasi']." : 
+".$row['status']."<br>"; 
+        $waktu_maintenance = $row['waktu_maintenance']; 
+        $barcode_alat = 
+$row['nama_kategori']."<br>".$row['merk_alat']."<br>".$row['barcode_
+alat']; 
+        $nama_users = $row['nama_users']; 
+        $nama_lokasi = $row['nama_lokasi']; 
+        $catatan = $row['catatan']; 
+      } 
+       
+      if($print){ 
+        $html .= " 
+       <tr> 
+         <td>".$waktu_maintenance."</td> 
+         <td>".$barcode_alat."</td> 
+         <td>".$nama_users."</td> 
+         <td>".$nama_lokasi."</td> 
+         <td>".$content."</td> 
+         <td>".$catatan."</td> 
+        
+       </tr>"; 
+        
+        $content = $row['nama_spesifikasi']." : 
+".$row['status']."<br>"; 
+      } 
+        
+    } 
+     
+    $html .= "</html>"; 
+
+
+===== PAGE 112 =====
+101 
+ 
+ 
+    $dompdf->loadHtml($html); 
+    // Setting ukuran dan orientasi kertas 
+    $dompdf->setPaper('A4', 'potrait'); 
+    // Rendering dari HTML Ke PDF 
+    $dompdf->render(); 
+    // Melakukan output file Pdf 
+    $dompdf->stream('laporan_maintenance.pdf'); 
+} else { 
+    $status = "0"; 
+    $message = "error"; 
+    echo json_encode(array('status'=>$status, 'message'=>$message), 
+JSON_PRETTY_PRINT); 
+} 
+?> 
+Kode Program 4.19 Kode Program PHP download_report.php 
+ 
+4.3.6.2 Kode Program Java DownloadReportActivity 
+public class DownloadReportActivity extends AppCompatActivity { 
+    Button tomboldownload; 
+    EditText periodeawal, periodeakhir; 
+ 
+    @Override 
+    protected void onCreate(Bundle savedInstanceState) { 
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.activity_waktu_report); 
+        periodeawal = findViewById(R.id.etperiodeawal); 
+        periodeakhir = findViewById(R.id.etperiodeakhir); 
+        tomboldownload = findViewById(R.id.tomboldownload); 
+ 
+        periodeawal.setOnClickListener(new View.OnClickListener() { 
+            @Override 
+            public void onClick(View view) { 
+                setCalendar("periode awal"); 
+            } 
+        }); 
+        periodeakhir.setOnClickListener(new View.OnClickListener() { 
+            @Override 
+            public void onClick(View view) { 
+                setCalendar("periode akhir"); 
+            } 
+        }); 
+ 
+        tomboldownload.setOnClickListener(new View.OnClickListener() 
+{ 
+
+
+===== PAGE 113 =====
+102 
+ 
+ 
+            @Override 
+            public void onClick(View view) { 
+                downloadreport(periodeawal.getText().toString(), 
+periodeakhir.getText().toString()); 
+ 
+            } 
+        }); 
+    } 
+ 
+    private void setCalendar(String edittext) { 
+        Calendar calendar = Calendar.getInstance(); 
+        DatePickerDialog.OnDateSetListener date = new 
+DatePickerDialog.OnDateSetListener() { 
+            @Override 
+            public void onDateSet(DatePicker datePicker, int year, 
+int month, int dayOfMonth) { 
+                calendar.set(Calendar.YEAR, year); 
+                calendar.set(Calendar.MONTH, month); 
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth); 
+ 
+                updateCalendar(); 
+            } 
+ 
+            private void updateCalendar() { 
+                String Format = "YYYY-MM-dd"; 
+                SimpleDateFormat sdf = new SimpleDateFormat(Format, 
+Locale.US); 
+                if (edittext.equals("periode awal")) { 
+                    periodeawal.setText(sdf.format(calendar.getTime(
+))); 
+                } else { 
+                    periodeakhir.setText(sdf.format(calendar.getTime
+())); 
+                } 
+ 
+            } 
+        }; 
+        new DatePickerDialog(DownloadReportActivity.this, date, 
+calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 
+calendar.get(Calendar.DAY_OF_MONTH)).show(); 
+    } 
+ 
+    private void downloadreport(String start_date, String end_date) 
+{ 
+        Log.e("start_date", start_date); 
+        Log.e("end_date", end_date); 
+
+
+===== PAGE 114 =====
+103 
+ 
+ 
+        String url = 
+"https://meivtelpro.my.id/download_report.php?periodeawal=" + 
+start_date + "&periodeakhir=" + end_date; 
+        Intent i = new Intent(Intent.ACTION_VIEW); 
+        i.setData(Uri.parse(url)); 
+        startActivity(i); 
+    } 
+ 
+    private void toast(String s) { 
+    } 
+} 
+Kode Program 4.20 Kode Program Java DownloadReport.java 
+4.3.7 Implementasi Kasus Penggunaan Logout 
+4.3.7.1 Kode Program Java Logout 
+logout.setOnClickListener(new View.OnClickListener() { 
+    @Override 
+    public void onClick(View view) { 
+        userPreferences.logout(); 
+        Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class); 
+        startActivity(intent); 
+    } 
+}); 
+Kode Program 4.21 Kode Program Java logout 
+ 
+ 
+
+
+===== PAGE 115 =====
+104 
+ 
+ 
+ 
+BAB V 
+PENGUJIAN DAN EVALUASI 
+Bab ini berisikan pengujian dan evaluasi dari sistem yang 
+dikembangkan. Bab ini meliputi lingkungan, pengujian fungsionalitas, 
+pengujian unit, pengujian penerimaan pengguna dan evaluasi pengujian. 
+5.1 
+Pengujian Aplikasi 
+Pengujian dari tiap – tiap skenario dilakukan pada lingkungan 
+sebagai berikut : 
+a. Perangkat : Xiaomi Poco X3 NFC 
+b. Sistem Operasi : Android 11 
+c. Memori : 6GB 
+d. Penyimpanan : 64GB 
+ 
+5.2 
+Pengujian Fungsionalitas 
+Pengujian fungsionalitas yang dilakukan menggunakan metode 
+black-box testing. Metode ini melakukan validasi apakah sesuai dengan 
+hasil yang diperkirakan atau tidak.. Dibawah ini merupakan pengujian 
+pada sistem Mei-V 
+5.2.1 Pengujian Fungsionalitas Login dan Logout Mei-V 
+Pengujian fungsionalitas ini menguji bagian login dan logout aplikasi Mei-V 
+Tabel 5.1 Tabel Pengujian Fungsionalitas Login dan Logout 
+Test ID Skenario Pengujian 
+Hasil 
+Kesimpulan 
+T01 
+Melakukan login dengan 
+data users yang telah dibuat 
+sebelumnya dengan data 
+yang benar 
+Pengguna berhasil 
+login 
+Berhasil 
+T02 
+Melakukan login dengan data
+users yang telah dibuat 
+sebelumnya dengan data 
+yang salah 
+Pengguna 
+gagal 
+login 
+Berhasil 
+
+
+===== PAGE 116 =====
+105 
+ 
+ 
+T03 
+Melakukan 
+logout 
+pada 
+halaman user profile 
+Pengguna berhasil 
+logout 
+Berhasil 
+ 
+5.2.2 Pengujian Fungsionalitas Register pengguna Mei-V 
+Pengujian fungsionalitas ini menguji bagian registrasi pengguna aplikasi Mei-V 
+Tabel 5.2 Tabel Pengujian Fungsionalitas Register 
+Test ID Skenario Pengujian 
+Hasil 
+Kesimpulan 
+T01 
+Melakukan pendaftaran 
+pengguna  
+Pengguna baru 
+berhasil 
+didaftarkan 
+Berhasil 
+T02 
+Melakukan login dengan data
+users yang telah dibuat 
+sebelumnya dengan data 
+yang salah 
+Pengguna 
+gagal 
+login 
+Berhasil 
+ 
+ 
+5.2.3 Pengujian Fungsionalitas Masuk Detail Alat  
+Pengujian fungsionalitas ini menguji gambar detail alat yang ada pada halaman 
+utama Mei-V 
+Tabel 5.3 Tabel Pengujian Fungsionalitas Masuk Detail Alat 
+Test ID Skenario Pengujian 
+Hasil Pengujian 
+Kesimpulan 
+T01 
+Melakukan klik pada 
+gambar alat di halaman 
+utama 
+Pengguna masuk 
+ke detail alat sesuai 
+gambar yang di 
+klik 
+Berhasil 
+ 
+5.2.4 Pengujian Fungsionalitas Scan Barcode 
+Pengujian fungsionalitas ini menguji tombol scan barcode aplikasi Mei-V 
+Tabel 5.4 Tabel Pengujian Fungsionalitas Scan Barcode 
+Test ID Skenario Pengujian 
+Hasil Pengujian 
+Kesimpulan 
+
+
+===== PAGE 117 =====
+106 
+ 
+ 
+T01 
+Melakukan scan alat melalui 
+halaman utama dengan 
+barcode yang sesuai 
+Hasil scan berhasil 
+ditampilkan 
+Berhasil 
+T02 
+Melakukan scan alat melalui 
+halaman utama dengan 
+barcode yang salah 
+Scan gagal dan 
+muncul output data 
+tidak ditemukan 
+Berhasil 
+ 
+5.2.5 Pengujian Fungsionalitas Input Detail Maintenance 
+Pengujian fungsionalitas ini menguji halaman Input Detail Maintenance aplikasi 
+Mei-V 
+Tabel 5.5 Tabel Pengujian Fungsionalitas Input Detail Maintenance 
+Test ID Skenario Pengujian 
+Hasil Pengujian 
+Kesimpulan 
+T01 
+Melakukan input detail 
+maintenance dengan data 
+yang telah terisi 
+Detail maintenance 
+berhasil diinputkan 
+Berhasil 
+T02 
+Melakukan input saat 
+detailnya masih kosong tanpa 
+data 
+Input data error 
+dan muncul output 
+“Data masih 
+kosong” 
+Berhasil 
+ 
+5.3 
+Pengujian Penggunaan pada Telkom Property Surabaya Utara 
+Berikut adalah hasil pengujian penerimaan pada pengguna Mei-V 
+yakni Supervisor dan Teknisi Telkom Property melalui sebuah kuesioner 
+yang di isi oleh beberapa responden. Dibawah ini merupakan list 
+pertanyaan apa saja yang ada pada google form pengujian penggunaan ini: 
+Tabel 5.6 Tabel Pertanyaan Pengujian Penggunaan 
+No 
+Pertanyaan 
+Skor 
+1 
+2 
+3 
+4 
+5 
+1 
+Pengguna dapat login dengan akun yang 
+diberikan sesuai role masing-masing 
+2 
+Tampilan setiap halaman Mei-V kurang 
+menarik 
+
+
+===== PAGE 118 =====
+107 
+ 
+ 
+3 
+Fitur Scan Barcode menuju pada halaman alat 
+yang tepat 
+4 
+Fitur Scan Barcode pada Mei-V mengalami 
+masalah saat digunakan 
+5 
+Fitur pada Halaman Maintenance Alat dapat 
+digunakan dengan baik 
+6 
+Terdapat kesalahan spesifikasi alat pada 
+halaman Detail Maintenance Alat 
+7 
+Hasil maintenance alat sebelumnya dapat 
+tampil dengan baik pada Tabel History 
+Maintenance 
+8 
+Hasil yang ditampilkan tabel History 
+Maintenance tidak sesuai dengan riwayat 
+maintenance sebelumnya 
+9 
+Setiap fitur pada Mei-V telah terintegrasi 
+dengan baik dengan database 
+10 
+Banyak fitur aplikasi Mei-V yang tidak 
+konsisten 
+ 
+Dari kuesioner pengujian System Usability Scale atau SUS diatas, cara 
+menghitung untuk menemukan hasilnya adalah sebagai berikut : 
+a) Pada nomor ganjil, kurangi 1 skor  
+b) Pada nomor genap, 5 dikurangi nilai skor nya 
+c) Jumlahkan seluruh nilai baru dari skor totalnya, lalu kalikan dengan 
+2,5. 
+Pada pengujian penggunaan ini, jumlah total responden yang berpartisipasi adalah 5 
+orang, dengan detail 4 Teknisi dan 1 Supervisor Telkom Property Surabaya Utara. 
+Berikut adalah hasil pengujian penggunaan dari aplikasi Mei-V. 
+ 
+ 
+ 
+
+
+===== PAGE 119 =====
+108 
+ 
+ 
+Tabel 5.7 Tabel Hasil Pengujian Penggunaan Pengguna  
+Responden 
+Pertanyaan nomor 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+10 
+1 
+3 
+2 
+4 
+3 
+3 
+3 
+3 
+3 
+4 
+3 
+2 
+4 
+4 
+3 
+3 
+3 
+3 
+3 
+3 
+4 
+3 
+3 
+4 
+3 
+4 
+4 
+3 
+3 
+4 
+3 
+3 
+3 
+4 
+4 
+3 
+3 
+4 
+3 
+3 
+3 
+3 
+3 
+3 
+5 
+4 
+3 
+3 
+3 
+3 
+3 
+4 
+3 
+4 
+3 
+ 
+Berdasarkan data yang diperoleh dari kelima responden diatas, penulis melakukan 
+analis data dengan metode SUS dan menghasilkan: 
+Tabel 5.8 Tabel Hasil Perhitungan Pengujian Penggunaan 
+Responden 
+Pertanyaan nomor 
+Total 
+Nilai 
+SUS 
+Rata-
+Rata 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+10 
+1 
+3 
+2 
+4 
+3 
+3 
+3 
+3 
+3 
+4 
+3 
+32 
+80 
+85.5 
+2 
+4 
+4 
+3 
+3 
+3 
+3 
+3 
+3 
+4 
+3 
+35 
+87.5 
+3 
+4 
+3 
+4 
+4 
+3 
+3 
+4 
+3 
+3 
+3 
+34 
+85 
+4 
+4 
+3 
+3 
+4 
+3 
+3 
+3 
+3 
+3 
+3 
+32 
+80 
+5 
+4 
+3 
+3 
+3 
+3 
+3 
+4 
+3 
+4 
+3 
+38 
+95 
+ 
+5.4 
+Evaluasi Pengujian 
+Mei-V telah melalui beberapa metode pengujian. Dari pengujian 
+fungsionalitas yang telah dilakukan dengan metode black-box testing, 
+maka hasil yang diperoleh  dari pengujian fungsionalitas dengan metode 
+black-box testing menunjukkan bahwa fungsi-fungsi pada aplikasi Mei-V 
+dapat berjalan sesuai harapan. Berdasarkan hasil Usability testing 
+meggunakan kuisioner yang diberikan pada empat teknisi dan satu 
+supervisor Telkom Property, skor perhitungan yang didapat dari metode 
+SUS adalah 85.5%. 
+ 
+
+
+===== PAGE 120 =====
+109 
+ 
+ 
+ 
+BAB VI 
+KESIMPULAN DAN SARAN 
+Bab ini berisikan kesimpulan dan saran aplikasi Mei-V yang dapat 
+diambil dari hasil pengujian yang dilakukan sebagai jawaban dari rumusan 
+masalah  yang diuraikan. 
+6.1 
+Kesimpulan 
+Berikut adalah kesimpulan yang berhasil didapatkan dari hasil pengujian: 
+1. Aplikasi Mei-V berbasis Android berhasil dibuat. 
+2. Aplikasi Mei-V berhasil diintegrasikan melalui API yang 
+dibangun dengan Bahasa pemrograman PHP dan seluruh data 
+yang didapatkan berasal dari database yang dibuat dan di simpan 
+pada hosting https://meivtelpro.my.id/ , sehingga setiap data yang 
+di masukkan melalui aplikasi, dapat terhubung dan di kelola 
+dengan baik. 
+ 
+6.2 
+Saran 
+Berikut adalah saran yang dapat digunakan sebagai pengembangan 
+aplikasi di masa mendatang :  
+1. Penambahan fitur Notifikasi untuk mengingatkan para teknisi 
+untuk melakukan maintenance dalam jangka waktu tertentu, dan 
+juga mengingatkan supervisor untuk melakukan download report 
+nya 
+ 
+ 
+ 
+ 
+ 
+
+
+===== PAGE 121 =====
+110 
+ 
+ 
+DAFTAR PUSTAKA 
+[1] MISRIANI, Merley, et al. Perancangan Manajemen Pemeliharaan Gedung 
+Dekanat Fakultas Kedokteran Universitas Andalas. Fondasi: Jurnal Teknik 
+Sipil, 2020, 9.1.  
+[2] RAHMAN, 
+Taufik, 
+et 
+al. 
+SISTEM 
+INFORMASI 
+MANAJEMEN 
+PEMELIHARAAN FASILITAS GEDUNG KAMPUS BERBASIS WEBSITE 
+STUDI KASUS STMIK MUSIRAWAS LUBUKLINGGAU. JUTIM (Jurnal 
+Teknik Informatika Musirawas), 2019, 4.1: 59-69.  
+[3] WARDANA, 
+Rizki 
+Prasetya. 
+EVALUASI 
+PEMASANGAN 
+DAN 
+PEMELIHARAAN 
+ALAT PEMADAM 
+API RINGAN 
+DI GRESIK 
+EVALUATION 
+OF 
+INSTALLATION 
+AND 
+MAINTENANCE 
+OF 
+PORTABLE FIRE EXTINGUISHER IN GRESIK. The Indonesian Journal Of 
+Occupational Safety and Health, 2018, 7.3: 261-272. 
+[4] BUDIMAN, Arief; SUNARIYO, Sunariyo; JUPRIYADI, Jupriyadi. Sistem 
+Informasi Monitoring dan Pemeliharaan Penggunaan SCADA (Supervisory 
+Control and Data Acquisition). Jurnal Tekno Kompak, 2021, 15.2: 168-179. 
+[5] NEYFA, Bella Chintya, et al. Perancangan Aplikasi E-Canteen Berbasis 
+Android Dengan Menggunakan Metode Object Oriented Analysis & Design 
+(OOAD). Jurnal Penelitian Komunikasi dan Opini Publik, 2016, 20.1. 
+[6] UTOMO, Aryo Nur; ALFARIDZI, Muhammad. Perancangan Sistem Informasi 
+Pada Percetakan Cv Citra Kencana Jakarta Timur Berbasis Web. Jurnal 
+Rekayasa Informasi, 2018, 7.1. 
+[7] WARMAN, Indra; RAMDANIANSYAH, 
+Rizki. Analisis Perbandingan 
+Kinerja Query Database Management System (Dbms) Antara Mysql 5.7. 16 
+Dan Mariadb 10.1. Jurnal Teknoif Teknik Informatika Institut Teknologi 
+Padang, 2018, 6.1: 32-41. 
+[8] HARUMY, T. Henny Febriana. Sistem Informasi Absensi Pada Pt. Cospar 
+Sentosa Jaya Menggunakan Bahasa Pemprograman Java. Jurnal Teknik dan 
+Informatika, 2018, 5.1: 63-70. 
+
+
+===== PAGE 122 =====
+111 
+ 
+ 
+[9] ORLANDO, Eriek. Aplikasi Pengajuan Cuti Pada Human Resource 
+Management Menggunakan PHP dan MYSQL (Studi Kasus Pada PT. 
+INTILOKA). Jurnal Ilmiah Komputasi, 2017, 16.3: 275-284. 
+[10] 
+USADA, Elisa; ISNAWATI, Anggun Fitrian; FATIMAH, Dewi. Rancang 
+Bangun Aplikasi Pembayaran Sekolah Menggunakan Java Dan MySQL 
+Berbasis Client Server Di SMA Yos Sudarso Cilacap. Jurnal Infotel, 2010, 2.2: 
+33-46.  
+[11] 
+YUSUF, Raka; KUSNIYATI, Harni; NURAMELIA, Yurike. Aplikasi 
+Diagnosis Gangguan Kecemasan Menggunakan Metode Forward Chaining 
+Berbasis Web dengan PHP dan MYSQL. Studia Informatika: Jurnal Sistem 
+Informasi, 2016, 9.1. 
+[12] 
+IRSAN, Muhammad. Rancang bangun aplikasi mobile notifikasi berbasis 
+android untuk mendukung kinerja di instansi pemerintahan. JustIN (Jurnal 
+Sistem dan Teknologi Informasi), 2015, 3.1: 115-120. 
+[13] 
+SRIWULANDARI, 
+Aisyah; HIDAYATI, 
+Hetti; PUDJOATMOJO, 
+Bambang. Analisis dan Evaluasi Aspek Usability Pada Web HRMIS Telkom 
+University Menggunakan Usability Testing. eProceedings of Engineering, 
+2014, 1.1. 
+
+
+===== PAGE 123 =====
+112 
+ 
+ 
+ 

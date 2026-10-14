@@ -1,0 +1,43 @@
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "ringkasan": {
+      "total": 12,
+      "overdue": 4,
+      "jatuh_tempo_hari_ini": 3
+    },
+    "daftar": [
+      {
+        "barcode_alat": "AC-001",
+        "merk_alat": "Daikin 2PK",
+        "nama_kategori": "AC",
+        "nama_lokasi": "Ruang Server",
+        "lantai": 2,
+        "terlambat_hari": 6,
+        "status": "overdue",
+        "terakhir_maintenance": "2026-06-10 08:12:00"
+      },
+      {
+        "barcode_alat": "PL-002",
+        "merk_alat": "Schneider iPRD",
+        "nama_kategori": "Panel",
+        "nama_lokasi": "Ruang ME",
+        "lantai": 7,
+        "terlambat_hari": 0,
+        "status": "jatuh_tempo",
+        "terakhir_maintenance": "2026-06-24 09:00:00"
+      },
+      {
+        "barcode_alat": "APAR-004",
+        "merk_alat": "Yamato 6Kg",
+        "nama_kategori": "APAR",
+        "nama_lokasi": "Aula Besar",
+        "lantai": 7,
+        "terlambat_hari": 2,
+        "status": "overdue",
+        "terakhir_maintenance": null
+      }
+    ]
+  }
+}

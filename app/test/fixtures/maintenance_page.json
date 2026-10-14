@@ -1,0 +1,363 @@
+{
+  "code": 200,
+  "data": {
+    "current_page": 1,
+    "data": [
+      {
+        "id_maintenance": 28,
+        "waktu_maintenance": "2026-10-13T13:15:00.000000Z",
+        "barcode_alat": "AC-001",
+        "username": "12345",
+        "id_lokasi": 5,
+        "id_kategori": 1,
+        "catatan": "Uji idempotency otomatis",
+        "kondisi_keseluruhan": "baik",
+        "client_uuid": "e469c7a9-5ea6-4f49-a62f-c16ad6b08d1c",
+        "created_at": "2026-10-13T20:03:08.000000Z",
+        "updated_at": "2026-10-13T20:03:08.000000Z",
+        "nama_kategori": "AC",
+        "merk_alat": "Daikin 2PK",
+        "nama_users": "Admin Mei-V",
+        "nama_lokasi": "Aula Besar",
+        "lantai": 7,
+        "detail": [
+          {
+            "id": 177,
+            "id_maintenance": 28,
+            "id_spesifikasi": 1,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Voltage R-S",
+            "satuan": "V"
+          },
+          {
+            "id": 178,
+            "id_maintenance": 28,
+            "id_spesifikasi": 2,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Voltage S-T",
+            "satuan": "V"
+          },
+          {
+            "id": 179,
+            "id_maintenance": 28,
+            "id_spesifikasi": 3,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Voltage T-R",
+            "satuan": "V"
+          },
+          {
+            "id": 180,
+            "id_maintenance": 28,
+            "id_spesifikasi": 4,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Ampere R",
+            "satuan": "A"
+          },
+          {
+            "id": 181,
+            "id_maintenance": 28,
+            "id_spesifikasi": 5,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Ampere S",
+            "satuan": "A"
+          },
+          {
+            "id": 182,
+            "id_maintenance": 28,
+            "id_spesifikasi": 6,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Ampere T",
+            "satuan": "A"
+          },
+          {
+            "id": 183,
+            "id_maintenance": 28,
+            "id_spesifikasi": 7,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Freon Pressure",
+            "satuan": "PSI"
+          },
+          {
+            "id": 184,
+            "id_maintenance": 28,
+            "id_spesifikasi": 8,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:08.000000Z",
+            "updated_at": "2026-10-13T20:03:08.000000Z",
+            "nama_spesifikasi": "Bersih/Tidak",
+            "satuan": null
+          }
+        ]
+      },
+      {
+        "id_maintenance": 29,
+        "waktu_maintenance": "2026-10-13T13:15:00.000000Z",
+        "barcode_alat": "AC-001",
+        "username": "12345",
+        "id_lokasi": 5,
+        "id_kategori": 1,
+        "catatan": "Uji idempotency otomatis",
+        "kondisi_keseluruhan": "baik",
+        "client_uuid": "a07235ba-0a5a-4340-82f5-f03a27e3f0bd",
+        "created_at": "2026-10-13T20:03:28.000000Z",
+        "updated_at": "2026-10-13T20:03:28.000000Z",
+        "nama_kategori": "AC",
+        "merk_alat": "Daikin 2PK",
+        "nama_users": "Admin Mei-V",
+        "nama_lokasi": "Aula Besar",
+        "lantai": 7,
+        "detail": [
+          {
+            "id": 185,
+            "id_maintenance": 29,
+            "id_spesifikasi": 1,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Voltage R-S",
+            "satuan": "V"
+          },
+          {
+            "id": 186,
+            "id_maintenance": 29,
+            "id_spesifikasi": 2,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Voltage S-T",
+            "satuan": "V"
+          },
+          {
+            "id": 187,
+            "id_maintenance": 29,
+            "id_spesifikasi": 3,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Voltage T-R",
+            "satuan": "V"
+          },
+          {
+            "id": 188,
+            "id_maintenance": 29,
+            "id_spesifikasi": 4,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Ampere R",
+            "satuan": "A"
+          },
+          {
+            "id": 189,
+            "id_maintenance": 29,
+            "id_spesifikasi": 5,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Ampere S",
+            "satuan": "A"
+          },
+          {
+            "id": 190,
+            "id_maintenance": 29,
+            "id_spesifikasi": 6,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Ampere T",
+            "satuan": "A"
+          },
+          {
+            "id": 191,
+            "id_maintenance": 29,
+            "id_spesifikasi": 7,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Freon Pressure",
+            "satuan": "PSI"
+          },
+          {
+            "id": 192,
+            "id_maintenance": 29,
+            "id_spesifikasi": 8,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:03:28.000000Z",
+            "updated_at": "2026-10-13T20:03:28.000000Z",
+            "nama_spesifikasi": "Bersih/Tidak",
+            "satuan": null
+          }
+        ]
+      },
+      {
+        "id_maintenance": 21,
+        "waktu_maintenance": "2026-10-08T08:45:00.000000Z",
+        "barcode_alat": "HY-003",
+        "username": "67890",
+        "id_lokasi": 5,
+        "id_kategori": 6,
+        "catatan": "Pemeriksaan ulang setelah perbaikan.",
+        "kondisi_keseluruhan": "baik",
+        "client_uuid": "seed-HY-003-1",
+        "created_at": "2026-10-13T20:00:56.000000Z",
+        "updated_at": "2026-10-13T20:00:56.000000Z",
+        "nama_kategori": "Hydrant",
+        "merk_alat": "Ozeki Landing Valve",
+        "nama_users": "Teknisi A",
+        "nama_lokasi": "Aula Besar",
+        "lantai": 7,
+        "detail": [
+          {
+            "id": 126,
+            "id_maintenance": 21,
+            "id_spesifikasi": 34,
+            "status": "7",
+            "created_at": "2026-10-13T20:00:56.000000Z",
+            "updated_at": "2026-10-13T20:00:56.000000Z",
+            "nama_spesifikasi": "Tekanan Air",
+            "satuan": "Bar"
+          },
+          {
+            "id": 127,
+            "id_maintenance": 21,
+            "id_spesifikasi": 35,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:00:56.000000Z",
+            "updated_at": "2026-10-13T20:00:56.000000Z",
+            "nama_spesifikasi": "Kondisi Selang",
+            "satuan": null
+          },
+          {
+            "id": 128,
+            "id_maintenance": 21,
+            "id_spesifikasi": 36,
+            "status": "Rusak",
+            "created_at": "2026-10-13T20:00:56.000000Z",
+            "updated_at": "2026-10-13T20:00:56.000000Z",
+            "nama_spesifikasi": "Kondisi Nozzle",
+            "satuan": null
+          },
+          {
+            "id": 129,
+            "id_maintenance": 21,
+            "id_spesifikasi": 37,
+            "status": "Baik",
+            "created_at": "2026-10-13T20:00:56.000000Z",
+            "updated_at": "2026-10-13T20:00:56.000000Z",
+            "nama_spesifikasi": "Kondisi Valve",
+            "satuan": null
+          },
+          {
+            "id": 130,
+            "id_maintenance": 21,
+            "id_spesifikasi": 38,
+            "status": "Setengah",
+            "created_at": "2026-10-13T20:00:56.000000Z",
+            "updated_at": "2026-10-13T20:00:56.000000Z",
+            "nama_spesifikasi": "Level Air Reservoir",
+            "satuan": null
+          }
+        ]
+      }
+    ],
+    "first_page_url": "http://127.0.0.1:8123/api/v1/maintenance?page=1",
+    "from": 1,
+    "last_page": 10,
+    "last_page_url": "http://127.0.0.1:8123/api/v1/maintenance?page=10",
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "page": null,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=1",
+        "label": "1",
+        "page": 1,
+        "active": true
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=2",
+        "label": "2",
+        "page": 2,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=3",
+        "label": "3",
+        "page": 3,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=4",
+        "label": "4",
+        "page": 4,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=5",
+        "label": "5",
+        "page": 5,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=6",
+        "label": "6",
+        "page": 6,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=7",
+        "label": "7",
+        "page": 7,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=8",
+        "label": "8",
+        "page": 8,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=9",
+        "label": "9",
+        "page": 9,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=10",
+        "label": "10",
+        "page": 10,
+        "active": false
+      },
+      {
+        "url": "http://127.0.0.1:8123/api/v1/maintenance?page=2",
+        "label": "Next &raquo;",
+        "page": 2,
+        "active": false
+      }
+    ],
+    "next_page_url": "http://127.0.0.1:8123/api/v1/maintenance?page=2",
+    "path": "http://127.0.0.1:8123/api/v1/maintenance",
+    "per_page": 3,
+    "prev_page_url": null,
+    "to": 3,
+    "total": 29
+  },
+  "message": "OK"
+}

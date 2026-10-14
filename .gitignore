@@ -1,0 +1,54 @@
+# ============================================================
+# Mei-V2 — .gitignore tingkat repo
+# Aturan spesifik per-subfolder ada di app/.gitignore dan
+# backend/.gitignore. Berkas ini hanya menangkap sisa-sisanya.
+# ============================================================
+
+# --- Backend: hasil skrip setup-backend.ps1 ---
+backend/composer.phar
+backend/database/*.sqlite
+backend/database/*.sqlite-journal
+backend/database/*.sqlite-wal
+backend/database/*.sqlite-shm
+backend/storage/logs/*.log
+backend/php.ini.meiv-backup
+
+# --- App: artefak build ---
+app/build/
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/android/.gradle/
+app/android/local.properties
+app/android/key.properties
+app/android/app/debug/
+app/android/app/profile/
+app/android/app/release/
+app/**/*.log
+
+# --- Editor & OS ---
+.idea/
+.vscode/
+*.iml
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Toolchain portabel (diunduh lokal, tidak ikut di-commit) ---
+tools/php/
+tools/dl/
+tools/modelcheck/.dart_tool/
+tools/modelcheck/pubspec.lock
+tools/*-result.txt
+tools/*-catch.txt
+tools/*.txt
+tools/__pycache__/
+__pycache__/
+*.pyc
+
+# --- Artefak analisis/kompilasi sementara ---
+app/.dart_tool/*.dill
+
+# --- Laporan crash Flutter (dibuat otomatis saat flutter CLI gagal) ---
+app/flutter_*.log

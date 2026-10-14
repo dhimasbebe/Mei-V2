@@ -1,0 +1,32 @@
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "data": [
+      {
+        "id_audit": 12,
+        "actor_username": "12345",
+        "aksi": "update",
+        "entitas": "alat",
+        "entitas_id": "AC-001",
+        "detail": "{\"merk_alat\":\"Daikin 2PK\"}",
+        "ip_address": "127.0.0.1",
+        "created_at": "2026-07-15 09:00:00"
+      },
+      {
+        "id_audit": 11,
+        "actor_username": "12345",
+        "aksi": "delete",
+        "entitas": "users",
+        "entitas_id": "67893",
+        "detail": null,
+        "ip_address": "127.0.0.1",
+        "created_at": "2026-07-15 08:40:00"
+      }
+    ],
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 20,
+    "total": 2
+  }
+}

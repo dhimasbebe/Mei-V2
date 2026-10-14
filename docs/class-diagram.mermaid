@@ -1,0 +1,171 @@
+classDiagram
+    class User {
+        +String username
+        +Role role
+        +String? token
+        +String? id_lokasi
+        +fromJson(json) User
+        +toJson() Map
+    }
+
+    class Role {
+        <<enum>>
+        teknisi
+        supervisor
+        admin
+    }
+
+    class Alat {
+        +String barcode
+        +String nama
+        +String tipe
+        +String id_lokasi
+        +fromJson(json) Alat
+    }
+
+    class Lokasi {
+        +String id_lokasi
+        +String nama_lokasi
+        +fromJson(json) Lokasi
+    }
+
+    class MaintenanceRecord {
+        <<abstract>>
+        +String waktu_maintenance
+        +String barcode
+        +String username
+        +String id_lokasi
+        +String catatan
+        +EquipmentType tipe
+        +params() Map~String,dynamic~
+    }
+
+    class AcMaintenance {
+        +num suhu_ac
+        +num tekanan_ac
+        +num ampere_ac
+        +String kondisi_ac
+    }
+
+    class PetirMaintenance {
+        +String kondisi_baut
+        +num grounding_test
+    }
+
+    class PanelMaintenance {
+        +num voltage_rs
+        +num voltage_rt
+        +num voltage_st
+        +num ampere_rs
+        +num ampere_rt
+        +num ampere_st
+        +String kondisi_baut
+    }
+
+    class ArMaintenance {
+        +num tekanan
+        +String selang
+        +String nossel
+    }
+
+    class AlarmMaintenance {
+        +bool smoke_test
+        +bool heat_test
+        +bool cek_batre
+    }
+
+    class HydrantMaintenance {
+        +num tekanan
+        +String fungsi
+    }
+
+    class DashboardKpi {
+        +int total_maintenance
+        +num completion_rate
+        +int total_alat
+        +int overdue_count
+        +num? delta_prev_period
+        +fromJson(json) DashboardKpi
+    }
+
+    class TrendPoint {
+        +String tanggal
+        +int jumlah
+    }
+
+    class DistributionItem {
+        +String label
+        +int value
+        +num? completion_rate
+    }
+
+    class OverdueItem {
+        +String barcode
+        +String nama
+        +String tipe
+        +String nama_lokasi
+        +int hari_lewat
+        +String? maintenance_terakhir
+    }
+
+    class PagedResult~T~ {
+        +List~T~ items
+        +int page
+        +int per_page
+        +int total
+    }
+
+    class AuthRepository {
+        <<interface>>
+        +login(role, username, password) Future~User~
+        +register(...) Future~void~
+        +updatePassword(...) Future~void~
+        +logout() Future~void~
+    }
+
+    class AlatRepository {
+        <<interface>>
+        +findByBarcode(barcode) Future~Alat~
+        +getDetail(nama) Future~Alat~
+        +listAlat(query, id_lokasi) Future~List~Alat~~
+        +listLokasi() Future~List~Lokasi~~
+    }
+
+    class MaintenanceRepository {
+        <<interface>>
+        +submit(MaintenanceRecord) Future~void~
+        +historyByBarcode(barcode) Future~List~MaintenanceRecord~~
+    }
+
+    class DashboardRepository {
+        <<interface>>
+        +kpi(awal, akhir) Future~DashboardKpi~
+        +trend(hari) Future~List~TrendPoint~~
+        +distribution(dimensi) Future~List~DistributionItem~~
+        +recordsPaged(filter) Future~PagedResult~MaintenanceRecord~~
+        +overdue() Future~List~OverdueItem~~
+    }
+
+    class ReportRepository {
+        <<interface>>
+        +downloadReport(awal, akhir) Future~Uint8List~
+    }
+
+    MaintenanceRecord <|-- AcMaintenance
+    MaintenanceRecord <|-- PetirMaintenance
+    MaintenanceRecord <|-- PanelMaintenance
+    MaintenanceRecord <|-- ArMaintenance
+    MaintenanceRecord <|-- AlarmMaintenance
+    MaintenanceRecord <|-- HydrantMaintenance
+    User "1" --> "1" Role : role
+    Alat "1" --> "1" Lokasi : id_lokasi
+    MaintenanceRecord --> Alat : barcode
+    MaintenanceRecord --> User : username
+    DashboardKpi "1" o-- "*" TrendPoint : 近30天
+    DashboardKpi "1" o-- "*" DistributionItem : 类型/lokasi
+    DashboardKpi "1" o-- "*" OverdueItem : 逾期清单
+    AuthRepository <|.. data 层实现
+    AlatRepository <|.. data 层实现
+    MaintenanceRepository <|.. data 层实现
+    DashboardRepository <|.. data 层实现
+    ReportRepository <|.. data 层实现

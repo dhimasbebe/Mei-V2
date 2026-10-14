@@ -1,0 +1,36 @@
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "data": [
+      {
+        "id_maintenance": 60,
+        "waktu_maintenance": "2026-05-20 08:00:00",
+        "barcode_alat": "AC-001",
+        "username": "67890",
+        "id_lokasi": 5,
+        "id_kategori": 1,
+        "catatan": "Pemeriksaan rutin.",
+        "kondisi_keseluruhan": "baik",
+        "status_verifikasi": "menunggu",
+        "nama_kategori": "AC",
+        "merk_alat": "Daikin 2PK",
+        "nama_users": "Teknisi A",
+        "nama_lokasi": "Aula Besar",
+        "lantai": 7,
+        "detail": [
+          {
+            "id_spesifikasi": 1,
+            "status": "Baik",
+            "nama_spesifikasi": "Voltage R-S",
+            "satuan": "V"
+          }
+        ]
+      }
+    ],
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 20,
+    "total": 1
+  }
+}

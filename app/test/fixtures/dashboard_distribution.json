@@ -1,0 +1,41 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "label": "AC",
+      "jumlah": 3,
+      "icon_asset": "assets/images/ac.png"
+    },
+    {
+      "label": "Penangkal Petir",
+      "jumlah": 2,
+      "icon_asset": "assets/images/penangkal_petir.png"
+    },
+    {
+      "label": "Panel Listrik",
+      "jumlah": 3,
+      "icon_asset": "assets/images/panel_listrik.png"
+    },
+    {
+      "label": "APAR",
+      "jumlah": 3,
+      "icon_asset": "assets/images/apar.png"
+    },
+    {
+      "label": "Fire Alarm",
+      "jumlah": 3,
+      "icon_asset": "assets/images/fire_alarm.png"
+    },
+    {
+      "label": "Hydrant",
+      "jumlah": 3,
+      "icon_asset": "assets/images/hydrant.png"
+    },
+    {
+      "label": "Genset",
+      "jumlah": 4,
+      "icon_asset": "assets/images/genset.png"
+    }
+  ],
+  "message": "OK"
+}

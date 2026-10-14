@@ -1,0 +1,8 @@
+# Database lokal SQLite — JANGAN di-commit.
+#
+# Pola `*.sqlite*` sengaja lebih longgar dari `*.sqlite`: berkas pendamping
+# SQLite (journal/wal/shm) dan salinan cadangan manual (mis.
+# `database.sqlite.bak-*` yang dibuat saat memperbaiki migrasi) harus ikut
+# terabaikan. Nama cadangan tidak berakhir dengan `.sqlite`, sehingga pola
+# lama membiarkannya lolos ke commit.
+*.sqlite*

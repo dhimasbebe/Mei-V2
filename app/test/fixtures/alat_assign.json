@@ -1,0 +1,10 @@
+{
+  "code": 200,
+  "message": "Alat ditugaskan.",
+  "data": {
+    "barcode_alat": "AC-001",
+    "penanggung_jawab": "67890",
+    "nama_penanggung_jawab": "Teknisi A",
+    "ditugaskan_pada": "2026-07-15 10:10:00"
+  }
+}

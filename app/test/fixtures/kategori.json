@@ -1,0 +1,83 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "id_kategori": 1,
+      "nama": "AC",
+      "deskripsi": "Air Conditioner",
+      "maintenance_cycle_days": 30,
+      "icon_asset": "assets/images/ac.png",
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z",
+      "alat_count": 3,
+      "jumlah_alat": 3
+    },
+    {
+      "id_kategori": 2,
+      "nama": "Penangkal Petir",
+      "deskripsi": "Lightning Protection System",
+      "maintenance_cycle_days": 90,
+      "icon_asset": "assets/images/penangkal_petir.png",
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z",
+      "alat_count": 2,
+      "jumlah_alat": 2
+    },
+    {
+      "id_kategori": 3,
+      "nama": "Panel Listrik",
+      "deskripsi": "Electrical Panel",
+      "maintenance_cycle_days": 30,
+      "icon_asset": "assets/images/panel_listrik.png",
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z",
+      "alat_count": 3,
+      "jumlah_alat": 3
+    },
+    {
+      "id_kategori": 4,
+      "nama": "APAR",
+      "deskripsi": "Alat Pemadam Api Ringan",
+      "maintenance_cycle_days": 30,
+      "icon_asset": "assets/images/apar.png",
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z",
+      "alat_count": 3,
+      "jumlah_alat": 3
+    },
+    {
+      "id_kategori": 5,
+      "nama": "Fire Alarm",
+      "deskripsi": "Smoke Detector & Alarm",
+      "maintenance_cycle_days": 30,
+      "icon_asset": "assets/images/fire_alarm.png",
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z",
+      "alat_count": 3,
+      "jumlah_alat": 3
+    },
+    {
+      "id_kategori": 6,
+      "nama": "Hydrant",
+      "deskripsi": "Fire Hydrant System",
+      "maintenance_cycle_days": 30,
+      "icon_asset": "assets/images/hydrant.png",
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z",
+      "alat_count": 3,
+      "jumlah_alat": 3
+    },
+    {
+      "id_kategori": 7,
+      "nama": "Genset",
+      "deskripsi": "Generator Set",
+      "maintenance_cycle_days": 30,
+      "icon_asset": "assets/images/genset.png",
+      "created_at": "2026-10-13T20:00:48.000000Z",
+      "updated_at": "2026-10-13T20:00:48.000000Z",
+      "alat_count": 4,
+      "jumlah_alat": 4
+    }
+  ],
+  "message": "OK"
+}

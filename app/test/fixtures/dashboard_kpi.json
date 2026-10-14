@@ -1,0 +1,14 @@
+{
+  "code": 200,
+  "data": {
+    "total_alat": 21,
+    "total_kategori": 7,
+    "pemeliharaan_bulan_ini": 9,
+    "pemeliharaan_tepat_waktu": 13,
+    "alat_overdue": 8,
+    "teknisi_aktif": 1,
+    "persen_tepat_waktu": 61.9,
+    "rata_rata_interval_hari": 45.5
+  },
+  "message": "OK"
+}

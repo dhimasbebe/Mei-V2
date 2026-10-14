@@ -1,0 +1,330 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_tokens.dart';
+import '../../../domain/models/dashboard.dart';
+import '../../../domain/models/maintenance.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/maintenance_provider.dart';
+import '../../widgets/app_card.dart';
+import '../../widgets/app_text_field.dart';
+import '../../widgets/empty_state.dart';
+import '../../widgets/error_view.dart';
+import '../../widgets/filter_chip_bar.dart';
+import '../../widgets/skeleton.dart';
+import '../../widgets/status_badge.dart';
+
+/// Layar Riwayat Maintenance.
+///
+/// Teknisi hanya melihat riwayat miliknya sendiri; Supervisor dan Admin
+/// melihat riwayat seluruh teknisi (pemisahan data per role).
+class RiwayatScreen extends ConsumerStatefulWidget {
+  const RiwayatScreen({super.key});
+
+  @override
+  ConsumerState<RiwayatScreen> createState() => _RiwayatScreenState();
+}
+
+class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
+  final TextEditingController _cari = TextEditingController();
+  String _status = 'Semua';
+
+  @override
+  void initState() {
+    super.initState();
+    Future<void>.microtask(_muat);
+  }
+
+  @override
+  void dispose() {
+    _cari.dispose();
+    super.dispose();
+  }
+
+  Future<void> _muat() {
+    final bool teknisi = ref.read(authProvider).user?.isTeknisi ?? false;
+    return ref.read(maintenanceListProvider.notifier).load(
+          barcodeAlat: _cari.text.trim().isEmpty ? null : _cari.text.trim(),
+          username: teknisi ? ref.read(authProvider).user?.username : null,
+          statusVerifikasi: _status == 'Semua' ? null : _status.toLowerCase(),
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AsyncValue<PagedResult<Maintenance>> async =
+        ref.watch(maintenanceListProvider);
+
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.sm,
+          ),
+          child: Column(
+            children: <Widget>[
+              AppTextField(
+                controller: _cari,
+                hint: 'Cari kode alat...',
+                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                onSubmitted: (_) => _muat(),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              FilterChipBar(
+                items: const <String>[
+                  'Semua',
+                  'Menunggu',
+                  'Disetujui',
+                  'Ditolak',
+                ],
+                selected: <String>[_status],
+                multi: false,
+                onChanged: (List<String> pilih) {
+                  setState(() => _status = pilih.isEmpty ? 'Semua' : pilih.last);
+                  _muat();
+                },
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: async.when(
+            data: (PagedResult<Maintenance> result) => _daftar(result),
+            loading: () => const Padding(
+              padding: EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                children: <Widget>[
+                  SkeletonListTile(),
+                  SkeletonListTile(),
+                  SkeletonListTile(),
+                ],
+              ),
+            ),
+            error: (Object e, _) => ErrorView(
+              message: 'Gagal memuat riwayat.\n$e',
+              onRetry: _muat,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _daftar(PagedResult<Maintenance> result) {
+    if (result.data.isEmpty) {
+      return EmptyState(
+        icon: Icons.history,
+        title: 'Belum ada riwayat',
+        message: _cari.text.trim().isEmpty && _status == 'Semua'
+            ? 'Riwayat pemeliharaan akan muncul di sini setelah teknisi mengirim laporan.'
+            : 'Tidak ada riwayat yang cocok dengan pencarian atau filter.',
+      );
+    }
+
+    return RefreshIndicator(
+      color: AppColors.primary,
+      onRefresh: _muat,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        itemCount: result.data.length +
+            (result.currentPage < result.lastPage ? 1 : 0),
+        itemBuilder: (BuildContext context, int index) {
+          if (index == result.data.length) {
+            return Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Center(
+                child: TextButton(
+                  onPressed: () =>
+                      ref.read(maintenanceListProvider.notifier).nextPage(),
+                  child: const Text('Muat lebih banyak'),
+                ),
+              ),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.md),
+            child: _KartuRiwayat(m: result.data[index]),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _KartuRiwayat extends StatelessWidget {
+  const _KartuRiwayat({required this.m});
+
+  final Maintenance m;
+
+  @override
+  Widget build(BuildContext context) {
+    final (Color warna, Color soft, IconData ikon, String label) status =
+        switch (m.statusVerifikasiTampil.toLowerCase()) {
+      'disetujui' => (
+          AppColors.verifikasiDisetujui,
+          AppColors.verifikasiDisetujuiSoft,
+          Icons.check_circle_outline,
+          'Disetujui',
+        ),
+      'ditolak' => (
+          AppColors.verifikasiDitolak,
+          AppColors.verifikasiDitolakSoft,
+          Icons.cancel_outlined,
+          'Ditolak',
+        ),
+      _ => (
+          AppColors.verifikasiMenunggu,
+          AppColors.verifikasiMenungguSoft,
+          Icons.hourglass_empty,
+          'Menunggu',
+        ),
+    };
+
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  m.waktuTampil,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              StatusBadge(
+                label: status.$4,
+                color: status.$1,
+                softColor: status.$2,
+                icon: status.$3,
+                dense: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            '${m.barcodeAlat} • ${m.namaKategori ?? '-'}',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Row(
+            children: <Widget>[
+              const Icon(
+                Icons.person_outline,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                m.namaUsers ?? m.username ?? '-',
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  m.namaLokasi ?? '-',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (m.detailRingkas.isNotEmpty) ...<Widget>[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              m.detailRingkas,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11,
+                height: 1.5,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+          if (m.komentarVerifikasi != null &&
+              m.komentarVerifikasi!.isNotEmpty) ...<Widget>[
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: status.$2,
+                borderRadius: BorderRadius.circular(AppRadius.xs),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Icon(Icons.rate_review_outlined, size: 16, color: status.$1),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      m.komentarVerifikasi!,
+                      style: TextStyle(fontSize: 11, color: status.$1),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          if (m.catatan != null && m.catatan!.isNotEmpty) ...<Widget>[
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(AppRadius.xs),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Icon(
+                    Icons.notes,
+                    size: 16,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      m.catatan!,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}

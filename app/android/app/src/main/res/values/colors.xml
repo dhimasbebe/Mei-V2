@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palet asli Mei-V (colors.xml versi lama) -->
+    <color name="mei_red">#CB2400</color>
+    <color name="mei_black">#000000</color>
+    <color name="mei_table_border">#AFAFAF</color>
+</resources>

@@ -1,0 +1,62 @@
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "data": [
+      {
+        "id_maintenance": 88,
+        "waktu_maintenance": "2026-07-15 09:20:00",
+        "barcode_alat": "APAR-004",
+        "username": "67890",
+        "nama_users": "Teknisi A",
+        "nama_kategori": "APAR",
+        "nama_lokasi": "Aula Besar",
+        "lantai": 7,
+        "kondisi_keseluruhan": "kurang_baik",
+        "status_verifikasi": "menunggu",
+        "catatan": "Perlu verifikasi tekanan.",
+        "merk_alat": "Yamato 6Kg",
+        "detail": [
+          {
+            "id_spesifikasi": 40,
+            "nama_spesifikasi": "Tekanan",
+            "status": "Kurang",
+            "satuan": "Bar"
+          },
+          {
+            "id_spesifikasi": 41,
+            "nama_spesifikasi": "Kondisi Selang",
+            "status": "Baik",
+            "satuan": null
+          }
+        ]
+      },
+      {
+        "id_maintenance": 87,
+        "waktu_maintenance": "2026-07-14 16:05:00",
+        "barcode_alat": "AC-001",
+        "username": "67891",
+        "nama_users": "Teknisi B",
+        "nama_kategori": "AC",
+        "nama_lokasi": "Ruang Server",
+        "lantai": 2,
+        "kondisi_keseluruhan": "rusak",
+        "status_verifikasi": "menunggu",
+        "catatan": "Freon perlu diisi ulang.",
+        "merk_alat": "Daikin 2PK",
+        "detail": [
+          {
+            "id_spesifikasi": 1,
+            "nama_spesifikasi": "Voltage R-S",
+            "status": "Baik",
+            "satuan": "V"
+          }
+        ]
+      }
+    ],
+    "current_page": 1,
+    "last_page": 3,
+    "per_page": 20,
+    "total": 47
+  }
+}

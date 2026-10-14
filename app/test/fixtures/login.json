@@ -1,0 +1,13 @@
+{
+  "code": 200,
+  "data": {
+    "token": "2|HaMkRM7tBOauxWwCdglWFl7doC0BXCqKcDU6hfRI3ea9eedf",
+    "user": {
+      "username": "12345",
+      "nama_users": "Admin Mei-V",
+      "role_users": "Admin",
+      "email_users": "admin@meiv.test"
+    }
+  },
+  "message": "OK"
+}

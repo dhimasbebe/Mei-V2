@@ -1,0 +1,99 @@
+%% Mei-V Flutter — 核心流程时序图（3 条）
+%% ① 扫码→查设备→填表→提交  ② Dashboard 打开→KPI→图表→筛选下钻  ③ 登录与会话恢复
+
+sequenceDiagram
+    autonumber
+    actor U as Teknisi
+    participant CS as CaptureScreen
+    participant AC as AlatRepository(data 层)
+    participant API as ApiClient(dio)
+    participant PHP1 as cari_id_alat.php
+    participant MF as MaintenanceFormScreen
+    participant MC as MaintenanceRepository
+    participant PHP2 as input_data_{tipe}.php
+
+    U->>CS: 点击「Scan Barcode」/ 输入条码兜底
+    CS->>AC: findByBarcode(code)
+    AC->>API: GET cari_id_alat.php?barcode=
+    API->>PHP1: 请求
+    PHP1-->>API: 设备 JSON (nama, tipe, id_lokasi)
+    API-->>AC: Result<Alat>
+    AC-->>CS: Alat
+    CS->>U: 跳转 DetailAlatScreen(设备信息)
+    U->>MF: 点击「Mulai Maintenance」
+    MF->>MF: 按 Alat.tipe 加载 form_schema（6 选 1），自动填充公共字段
+    U->>MF: 填参数 + catatan → 提交
+    MF->>MF: schema 校验（必填/数值/阈值警告）
+    MF->>MC: submit(MaintenanceRecord)
+    MC->>API: POST input_data_{tipe}.php
+    API->>PHP2: 携带 Authorization
+    PHP2-->>API: 成功/失败
+    API-->>MC: Result
+    alt 成功
+        MC-->>MF: ok
+        MF-->>U: Toast + 返回 History 列表
+    else 失败
+        MC-->>MF: AppException
+        MF-->>U: 错误提示（P1：存入 hive 草稿可重试）
+    end
+
+sequenceDiagram
+    autonumber
+    actor M as Supervisor
+    participant WS as WebShell(Sidebar/TopBar)
+    participant OV as OverviewPage
+    participant DR as DashboardRepository
+    participant API as ApiClient(dio)
+    participant PHP as dashboard_*.php(新增)
+    participant RC as RecordsPage
+
+    M->>WS: 登录成功 → 跳 Overview
+    WS->>OV: 进入总览（默认近 30 天区间）
+    par 并行拉取
+        OV->>DR: kpi(awal, akhir)
+        DR->>API: GET dashboard_kpi.php
+        API->>PHP: Bearer token (role 校验)
+        PHP-->>API: {code,data:{KPI 4 指标}}
+        API-->>OV: DashboardKpi → 渲染 4 张 KPI 卡
+    and
+        OV->>DR: trend(30)+distribution(tipe)+distribution(lokasi)+overdue()
+        DR->>API: GET dashboard_trend / dashboard_distribution / dashboard_overdue
+        API->>PHP: Bearer token
+        PHP-->>API: JSON arrays
+        API-->>OV: 折线/柱状/条形 + 逾期红色警示列表
+    end
+    M->>WS: TopBar 改全局日期范围
+    WS->>OV: onFilterChanged(awal, akhir)
+    OV->>DR: kpi/trend/distribution(新区间)
+    DR-->>OV: 刷新图表（<3s）
+    M->>RC: Sidebar 进入「维护记录」
+    RC->>DR: recordsPaged(page=1, per_page=20, filter)
+    DR->>API: GET maintenance_paged.php?...
+    API->>PHP: Bearer token（Teknisi 时后端强制 username 条件）
+    PHP-->>API: PagedResult JSON
+    API-->>RC: 表格渲染 + 分页器
+    RC->>M: 点击 lokasi 条形图下钻 → 带 id_lokasi 过滤 Records
+
+sequenceDiagram
+    autonumber
+    participant SP as SplashScreen
+    participant SS as SessionStore
+    participant LG as LoginScreen
+    participant AR as AuthRepository
+    participant API as ApiClient
+    participant PHP as login.php
+
+    SP->>SS: 读 secure_storage token + User
+    alt 有 token 且未过期
+        SS-->>SP: User
+        SP->>SP: 按 role 直达 Home(WebShell)
+    else 无 token
+        SP->>LG: 跳登录
+        LG->>AR: login(role, username, password)
+        AR->>API: POST login.php (form)
+        API->>PHP: 凭据
+        PHP-->>API: token + user
+        AR->>SS: 持久化 token
+        AR-->>LG: User
+        LG->>LG: go_router 按 role 路由（guards.dart）
+    end

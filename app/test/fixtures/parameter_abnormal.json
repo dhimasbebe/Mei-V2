@@ -1,0 +1,22 @@
+{
+  "code": 200,
+  "message": "OK",
+  "data": [
+    {
+      "barcode_alat": "PL-002",
+      "nama_spesifikasi": "Tegangan R-N",
+      "nilai": "198",
+      "satuan": "V",
+      "ambang": ">=215",
+      "waktu": "2026-07-14 11:00:00"
+    },
+    {
+      "barcode_alat": "AC-001",
+      "nama_spesifikasi": "Freon Pressure",
+      "nilai": "55",
+      "satuan": "PSI",
+      "ambang": ">=60",
+      "waktu": "2026-07-13 09:30:00"
+    }
+  ]
+}

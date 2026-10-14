@@ -1,0 +1,18 @@
+{
+  "code": 200,
+  "data": {
+    "barcode_alat": "AC-001",
+    "merk_alat": "Daikin 2PK",
+    "id_kategori": 1,
+    "id_lokasi": 5,
+    "created_at": "2026-10-13T20:00:50.000000Z",
+    "updated_at": "2026-10-13T20:00:50.000000Z",
+    "terakhir_maintenance": "2026-10-13T20:15:00+07:00",
+    "nama_kategori": "AC",
+    "deskripsi": "Air Conditioner",
+    "nama_lokasi": "Aula Besar",
+    "lantai": 7,
+    "maintenance_cycle_days": 30
+  },
+  "message": "OK"
+}
