@@ -20,16 +20,33 @@
 import 'dart:convert';
 import 'dart:io';
 
+// Model domain lama.
 import '../../app/lib/domain/models/alat.dart';
 import '../../app/lib/domain/models/audit_log.dart';
 import '../../app/lib/domain/models/dashboard.dart';
 import '../../app/lib/domain/models/kategori.dart';
 import '../../app/lib/domain/models/lokasi.dart';
 import '../../app/lib/domain/models/maintenance.dart';
+import '../../app/lib/domain/models/pengingat.dart';
 import '../../app/lib/domain/models/spesifikasi.dart';
 import '../../app/lib/domain/models/tugas.dart';
 import '../../app/lib/domain/models/user.dart';
 import '../../app/lib/domain/models/verifikasi.dart';
+
+// Modul logika murni fitur tahap 3 (TANPA package:flutter).
+import '../../app/lib/core/audit/audit_aksi.dart';
+import '../../app/lib/core/audit/audit_detail.dart';
+import '../../app/lib/core/charts/chart_range.dart';
+import '../../app/lib/core/gesture/swipe_action.dart';
+import '../../app/lib/core/media/photo_policy.dart';
+import '../../app/lib/core/motion/app_motion.dart';
+import '../../app/lib/core/notif/notif_schedule.dart';
+import '../../app/lib/core/offline/draft_queue.dart';
+import '../../app/lib/core/offline/draft_status.dart';
+import '../../app/lib/core/offline/retry_policy.dart';
+import '../../app/lib/core/search/search_history.dart';
+import '../../app/lib/core/theme/app_palette_spec.dart';
+import '../../app/lib/core/theme/theme_mode_codec.dart';
 
 /// Folder fixture, relatif terhadap root paket ini.
 const String _fixtureDir = '../../app/test/fixtures';
@@ -460,6 +477,411 @@ void main() {
     print('        ${a.barcodeAlat.padRight(9)} ${a.namaSpesifikasi.padRight(20)} '
         '${a.nilaiDenganAmbang}');
   }
+
+  // ====================================================================
+  // FITUR TAHAP 3 — MODUL LOGIKA MURNI (T01)
+  // ====================================================================
+
+  DraftRecord draft(String uuid, String barcode,
+          {Map<int, String> checklist = const <int, String>{},
+          List<String> foto = const <String>[]}) =>
+      DraftRecord(
+        clientUuid: uuid,
+        barcodeAlat: barcode,
+        idLokasi: 5,
+        idKategori: 1,
+        checklist: checklist,
+        catatan: 'Catatan $barcode',
+        kondisiKeseluruhan: 'baik',
+        waktuMaintenance: DateTime.parse('2026-07-15T09:00:00.000Z'),
+        fotoPaths: foto,
+      );
+
+  // --------------------------------------------------------------------
+  section('14. OFFLINE — DraftStatus / DraftQueue / RetryPolicy');
+  // --------------------------------------------------------------------
+  // AC-A7 — tepat 5 nilai enum.
+  check('AC-A7 DraftStatus tepat 5 nilai', DraftStatus.values.length == 5,
+      DraftStatus.values.map((DraftStatus s) => s.name).join(','));
+  check('AC-A7 kode string stabil',
+      DraftStatus.menungguSinkron.code == 'menunggu_sinkron' &&
+          DraftStatus.ditahan.code == 'ditahan');
+  check('AC-A7 fromCode round-trip',
+      DraftStatus.fromCode('terkirim') == DraftStatus.terkirim);
+  check('AC-A7 fromCode tak dikenal -> menungguSinkron',
+      DraftStatus.fromCode('xxx') == DraftStatus.menungguSinkron &&
+          DraftStatus.fromCode(null) == DraftStatus.menungguSinkron);
+  check('AC-A7 hanya menungguSinkron boleh diulang otomatis',
+      DraftStatus.menungguSinkron.bolehDiulangOtomatis &&
+          !DraftStatus.ditolakServer.bolehDiulangOtomatis &&
+          !DraftStatus.ditahan.bolehDiulangOtomatis &&
+          !DraftStatus.sedangKirim.bolehDiulangOtomatis);
+
+  // AC-A1 — enqueue menambah & count bertambah.
+  final DraftQueue q = DraftQueue();
+  check('AC-A1 antrean baru kosong', q.count == 0 && q.nextPending == null);
+  q.enqueue(draft('u1', 'AC-001'));
+  check('AC-A1 enqueue menambah count', q.count == 1, 'count=${q.count}');
+  check('AC-A1 nextPending mengembalikan draf', q.nextPending?.clientUuid == 'u1');
+
+  // AC-A2 — uuid berbeda, barcode sama -> dua entri.
+  q.enqueue(draft('u2', 'AC-001'));
+  check('AC-A2 uuid beda barcode sama -> 2 entri', q.count == 2, 'count=${q.count}');
+
+  // AC-A3 — uuid sama -> dedupe.
+  q.enqueue(draft('u1', 'AC-001'));
+  check('AC-A3 uuid sama -> tidak digandakan', q.count == 2, 'count=${q.count}');
+
+  // AC-A12 — draf belum lengkap pun tersimpan (checklist kosong).
+  final DraftQueue q12 = DraftQueue();
+  q12.enqueue(draft('belum-lengkap', 'GS-001'));
+  check('AC-A12 draf belum lengkap tersimpan sebelum kirim', q12.count == 1);
+
+  // AC-A4 — round-trip serialize/deserialize identik.
+  final DraftQueue q4 = DraftQueue()
+    ..enqueue(draft('a4-uuid', 'AC-003',
+        checklist: <int, String>{1: 'Baik', 2: 'Rusak'},
+        foto: <String>['/tmp/f1.jpg', '/tmp/f2.jpg']));
+  final DraftQueue q4b = DraftQueue.deserialize(q4.serialize());
+  final DraftRecord d4 = q4b.items.first;
+  check('AC-A4 round-trip count', q4b.count == q4.count);
+  check('AC-A4 round-trip clientUuid', d4.clientUuid == 'a4-uuid', d4.clientUuid);
+  check('AC-A4 round-trip barcode', d4.barcodeAlat == 'AC-003', d4.barcodeAlat);
+  check('AC-A4 round-trip idLokasi/idKategori',
+      d4.idLokasi == 5 && d4.idKategori == 1);
+  check('AC-A4 round-trip checklist', d4.checklist[1] == 'Baik' && d4.checklist[2] == 'Rusak',
+      d4.checklist.toString());
+  check('AC-A4 round-trip catatan/kondisi',
+      d4.catatan == 'Catatan AC-003' && d4.kondisiKeseluruhan == 'baik');
+  check('AC-A4 round-trip fotoPaths', d4.fotoPaths.length == 2, d4.fotoPaths.toString());
+  check('AC-A4 deserialize(null) -> kosong', DraftQueue.deserialize(null).count == 0);
+  check('AC-A4 deserialize(rusak) -> kosong tanpa exception',
+      DraftQueue.deserialize('{bukan json').count == 0);
+
+  // AC-A10 — gagal unggah -> menungguSinkron, clientUuid dipertahankan.
+  final DraftQueue q10 = DraftQueue()..enqueue(draft('a10-uuid', 'AC-001'));
+  q10.markSending('a10-uuid');
+  final bool ok10 = q10.onUploadFailed('a10-uuid', 'koneksi putus');
+  check('AC-A10 onUploadFailed true', ok10);
+  check('AC-A10 status kembali menungguSinkron',
+      q10.items.first.status == DraftStatus.menungguSinkron,
+      q10.items.first.status.code);
+  check('AC-A10 clientUuid dipertahankan', q10.items.first.clientUuid == 'a10-uuid');
+  check('AC-A10 pesanError tersimpan', q10.items.first.pesanError == 'koneksi putus');
+
+  // AC-A11 — backoff eksponensial dibatasi.
+  final List<int> delays = <int>[
+    for (int i = 0; i < 6; i++) RetryPolicy.nextDelay(i).inSeconds
+  ];
+  check('AC-A11 pola 5,10,20,40,60,60', delays.join(',') == '5,10,20,40,60,60',
+      delays.join(','));
+  check('AC-A11 tidak pernah melebihi batas atas',
+      List<int>.generate(40, (int i) => RetryPolicy.nextDelay(i).inSeconds)
+          .every((int s) => s <= RetryPolicy.max.inSeconds));
+  check('AC-A11 attempt negatif = attempt 0',
+      RetryPolicy.nextDelay(-1) == RetryPolicy.base);
+  check('AC-A11 attempt besar tetap dibatasi',
+      RetryPolicy.nextDelay(99) == RetryPolicy.max);
+
+  // AC-A13 — kirim ganda dicegah.
+  final DraftQueue q13 = DraftQueue()..enqueue(draft('a13-uuid', 'AC-001'));
+  check('AC-A13 markSending pertama true', q13.markSending('a13-uuid'));
+  check('AC-A13 markSending kedua false (sedangKirim)', !q13.markSending('a13-uuid'));
+  q13.onSent('a13-uuid', 77);
+  check('AC-A13 markSending setelah terkirim false', !q13.markSending('a13-uuid'));
+  check('AC-A13 onSent menyimpan idMaintenanceServer',
+      q13.items.first.idMaintenanceServer == 77);
+
+  // AC-A14 — 422 -> ditolakServer, pesan disimpan, tidak diulang.
+  final DraftQueue q14 = DraftQueue()..enqueue(draft('a14-uuid', 'AC-001'));
+  final bool ok14 = q14.onRejected('a14-uuid', <String, List<String>>{
+    'id_lokasi': <String>['Lokasi tidak valid'],
+  });
+  check('AC-A14 onRejected true', ok14);
+  check('AC-A14 status ditolakServer', q14.items.first.status == DraftStatus.ditolakServer);
+  check('AC-A14 pesanError memuat alasan',
+      (q14.items.first.pesanError ?? '').contains('Lokasi tidak valid'),
+      '${q14.items.first.pesanError}');
+  check('AC-A14 tidak dijadwalkan ulang (nextPending null)', q14.nextPending == null);
+
+  // AC-A15 — 401 -> ditahan, seluruh antrean berhenti, perluLoginUlang.
+  final DraftQueue q15 = DraftQueue()
+    ..enqueue(draft('a15-1', 'AC-001'))
+    ..enqueue(draft('a15-2', 'AC-002'));
+  check('AC-A15 perluLoginUlang false sebelum 401', !q15.perluLoginUlang);
+  q15.onUnauthorized('a15-1');
+  check('AC-A15 status ditahan', q15.items.first.status == DraftStatus.ditahan);
+  check('AC-A15 perluLoginUlang true', q15.perluLoginUlang);
+  check('AC-A15 nextPending tetap draf lain (tak beruntun)',
+      q15.nextPending?.clientUuid == 'a15-2');
+
+  // AC-A16 — 403 -> ditolakServer "Tidak berhak", tidak diulang.
+  final DraftQueue q16 = DraftQueue()..enqueue(draft('a16-uuid', 'AC-001'));
+  q16.onRejected('a16-uuid', <String, List<String>>{
+    'role': <String>['Tidak berhak'],
+  });
+  check('AC-A16 status ditolakServer', q16.items.first.status == DraftStatus.ditolakServer);
+  check('AC-A16 pesan memuat "Tidak berhak"',
+      (q16.items.first.pesanError ?? '').contains('Tidak berhak'),
+      '${q16.items.first.pesanError}');
+  check('AC-A16 tidak diulang otomatis',
+      q16.items.first.status.bolehDiulangOtomatis == false);
+
+  // AC-A18 — FIFO: nextPending = menungguSinkron tertua.
+  final DraftQueue q18 = DraftQueue()
+    ..enqueue(draft('a18-1', 'AC-001'))
+    ..enqueue(draft('a18-2', 'AC-002'))
+    ..enqueue(draft('a18-3', 'AC-003'));
+  check('AC-A18 nextPending = tertua', q18.nextPending?.clientUuid == 'a18-1');
+  q18.markSending('a18-1');
+  check('AC-A18 setelah tertua terkirim -> berikutnya',
+      q18.nextPending?.clientUuid == 'a18-2');
+  q18.onSent('a18-2', 1);
+  check('AC-A18 lompati terkirim', q18.nextPending?.clientUuid == 'a18-3');
+
+  // toMaintenancePayload — kontrak POST /maintenance.
+  final Map<String, dynamic> mp = draft('p1', 'AC-001',
+          checklist: <int, String>{1: 'Baik'})
+      .toMaintenancePayload();
+  check('payload client_uuid & barcode_alat',
+      mp['client_uuid'] == 'p1' && mp['barcode_alat'] == 'AC-001');
+  check('payload detail = daftar {id_spesifikasi,status}',
+      mp['detail'] is List && (mp['detail'] as List<dynamic>).length == 1 &&
+          (mp['detail'] as List<dynamic>).first['id_spesifikasi'] == 1);
+
+  // --------------------------------------------------------------------
+  section('15. NOTIFIKASI — PengingatPayload & NotifSchedule');
+  // --------------------------------------------------------------------
+  // AC-B4 — PengingatPayload.fromJson memetakan fixture; daftar == ringkasan.
+  final PengingatPayload pr =
+      PengingatPayload.fromJson(fx('pengingat.json')['data'] as Map<String, dynamic>);
+  check('AC-B4 ringkasan.jatuhTempo == 3', pr.ringkasan.jatuhTempo == 3,
+      '${pr.ringkasan.jatuhTempo}');
+  check('AC-B4 ringkasan.terlambat == 2', pr.ringkasan.terlambat == 2,
+      '${pr.ringkasan.terlambat}');
+  check('AC-B4 ringkasan.menungguVerifikasi == 0', pr.ringkasan.menungguVerifikasi == 0);
+  check('AC-B4 daftar terparse', pr.daftar.length == 5, 'n=${pr.daftar.length}');
+  check('AC-B4 jumlah daftar == total ringkasan',
+      pr.totalDaftar == pr.ringkasan.total,
+      'daftar=${pr.totalDaftar} ringkasan=${pr.ringkasan.total}');
+  check('AC-B4 item terlambat terdeteksi',
+      pr.daftar.where((PengingatItem i) => i.terlambat).length == 2);
+  check('AC-B4 jatuh_tempo ter-parse',
+      pr.daftar.first.jatuhTempo != null, '${pr.daftar.first.jatuhTempo}');
+
+  // AC-B5 — NotifSchedule.dailyAt(hour:7) harian jam 7 Asia/Jakarta.
+  final NotifSchedule ns = NotifSchedule.dailyAt(hour: 7);
+  check('AC-B5 hour == 7', ns.hour == 7, '${ns.hour}');
+  check('AC-B5 minute == 0', ns.minute == 0, '${ns.minute}');
+  check('AC-B5 timezone == Asia/Jakarta', ns.timezone == NotifSchedule.zona,
+      ns.timezone);
+  check('AC-B5 harian == true', ns.harian);
+  check('AC-B5 round-trip toJson/fromJson',
+      NotifSchedule.fromJson(ns.toJson()).totalMenit == ns.totalMenit);
+
+  // --------------------------------------------------------------------
+  section('16. FOTO — PhotoPolicy');
+  // --------------------------------------------------------------------
+  // AC-C9 — canAdd.
+  check('AC-C9 canAdd(0..4) true',
+      List<int>.generate(5, (int i) => i).every(PhotoPolicy.canAdd));
+  check('AC-C9 canAdd(5) false', !PhotoPolicy.canAdd(5));
+  check('AC-C9 canAdd(6) false', !PhotoPolicy.canAdd(6));
+  check('AC-C9 maxFotos == 5', PhotoPolicy.maxFotos == 5);
+  // AC-C10 — acceptSize.
+  check('AC-C10 acceptSize(1) true', PhotoPolicy.acceptSize(1));
+  check('AC-C10 acceptSize(5MB) true', PhotoPolicy.acceptSize(PhotoPolicy.maxBytes));
+  check('AC-C10 acceptSize(5MB+1) false',
+      !PhotoPolicy.acceptSize(PhotoPolicy.maxBytes + 1));
+  check('AC-C10 acceptSize(0) false', !PhotoPolicy.acceptSize(0));
+  // Resize netral-format.
+  check('resize: 4000x3000 -> sisi <= 1600',
+      PhotoPolicy.targetDimensi(4000, 3000).first == 1600,
+      PhotoPolicy.targetDimensi(4000, 3000).toString());
+  check('resize: rasio dipertahankan',
+      PhotoPolicy.targetDimensi(4000, 3000).last == 1200,
+      PhotoPolicy.targetDimensi(4000, 3000).toString());
+  check('resize: kecil tidak diubah',
+      PhotoPolicy.targetDimensi(800, 600).join('x') == '800x600');
+  check('resize: tahap sisi 1600/1280/1024',
+      PhotoPolicy.tahapSisi().join(',') == '1600,1280,1024');
+
+  // --------------------------------------------------------------------
+  section('17. AUDIT — AuditDetail & AuditAksi');
+  // --------------------------------------------------------------------
+  // AC-D5 — format nilai biasa & diff.
+  check('AC-D5 map biasa -> "kunci: nilai"',
+      AuditDetail.format('{"merk_alat":"Daikin"}').join('|') == 'merk_alat: Daikin',
+      AuditDetail.format('{"merk_alat":"Daikin"}').join('|'));
+  check('AC-D5 diff {lama,baru} -> "kunci: lama → baru"',
+      AuditDetail.format('{"status":{"lama":"menunggu","baru":"disetujui"}}')
+              .join('|') ==
+          'status: menunggu → disetujui',
+      AuditDetail.format('{"status":{"lama":"menunggu","baru":"disetujui"}}').join('|'));
+  check('AC-D5 diff {from,to} juga dikenali',
+      AuditDetail.format('{"x":{"from":"A","to":"B"}}').join('|') == 'x: A → B');
+  check('AC-D5 null/kosong -> daftar kosong',
+      AuditDetail.format(null).isEmpty && AuditDetail.format('  ').isEmpty);
+  // AC-D6 — JSON tidak valid -> teks mentah tanpa exception.
+  final List<String> d6 = AuditDetail.format('{bukan json');
+  check('AC-D6 JSON tidak valid -> 1 baris mentah',
+      d6.length == 1 && d6.first == '{bukan json', d6.join('|'));
+  check('AC-D6 array (bukan objek) -> teks mentah',
+      AuditDetail.format('[1,2,3]').join('|') == '[1,2,3]');
+  // AC-D7 — label aksi.
+  check('AC-D7 label(verify) == "Verifikasi"', AuditAksi.label('verify') == 'Verifikasi');
+  check('AC-D7 label(create) == "Buat"', AuditAksi.label('create') == 'Buat');
+  check('AC-D7 label tak dikenal -> teks asli',
+      AuditAksi.label('foo_bar') == 'foo_bar');
+  check('AC-D7 label case-insensitive', AuditAksi.label('VERIFY') == 'Verifikasi');
+  // AC-D8 — AuditLogEntry.fromJson memetakan fixture audit-log.
+  check('AC-D8 AuditLogEntry.fromJson memetakan fixture',
+      audit.data.isNotEmpty && audit.data.first.idAudit == 12 && aFirst.detail != null,
+      'n=${audit.data.length}');
+  check('AC-D8 format detail audit fixture',
+      AuditDetail.format(aFirst.detail).join('|') == 'merk_alat: Daikin 2PK',
+      AuditDetail.format(aFirst.detail).join('|'));
+
+  // --------------------------------------------------------------------
+  section('18. TEMA — PaletteSpec & ThemeModeCodec');
+  // --------------------------------------------------------------------
+  // AC-E1 — light != dark untuk token permukaan.
+  check('AC-E1 background light != dark',
+      PaletteSpec.value(PaletteTheme.light, 'background') !=
+          PaletteSpec.value(PaletteTheme.dark, 'background'));
+  check('AC-E1 textPrimary light != dark',
+      PaletteSpec.value(PaletteTheme.light, 'textPrimary') !=
+          PaletteSpec.value(PaletteTheme.dark, 'textPrimary'));
+  // AC-E2 — brand konstan.
+  check('AC-E2 primary == 0xFFCB2400 di kedua tema',
+      PaletteSpec.value(PaletteTheme.light, 'primary') == 0xFFCB2400 &&
+          PaletteSpec.value(PaletteTheme.dark, 'primary') == 0xFFCB2400);
+  // AC-E3 — satu sumber kebenaran (== AppColors.primary).
+  check('AC-E3 primary == AppColors.primary (0xFFCB2400)',
+      PaletteSpec.value(PaletteTheme.light, 'primary') == 0xFFCB2400);
+  check('AC-E3 tokens memuat semua kunci palet',
+      PaletteSpec.tokens.containsAll(PaletteSpec.light.keys) &&
+          PaletteSpec.tokens.containsAll(PaletteSpec.dark.keys));
+  // AC-E4 — kontras teks >= 4.5 di kedua tema.
+  final double crLight = PaletteSpec.contrastRatio(
+      PaletteSpec.value(PaletteTheme.light, 'textPrimary'),
+      PaletteSpec.value(PaletteTheme.light, 'background'));
+  final double crDark = PaletteSpec.contrastRatio(
+      PaletteSpec.value(PaletteTheme.dark, 'textPrimary'),
+      PaletteSpec.value(PaletteTheme.dark, 'background'));
+  check('AC-E4 kontras light >= 4.5', crLight >= 4.5, crLight.toStringAsFixed(2));
+  check('AC-E4 kontras dark >= 4.5', crDark >= 4.5, crDark.toStringAsFixed(2));
+  check('AC-E4 kontras hitam/putih == 21', () {
+    final double c = PaletteSpec.contrastRatio(0xFF000000, 0xFFFFFFFF);
+    return (c - 21.0).abs() < 0.01;
+  }());
+  // AC-E5 — ThemeModeCodec.
+  check('AC-E5 fromString(dark) == "dark"', ThemeModeCodec.fromString('dark') == 'dark');
+  check('AC-E5 fromString(null) == "system"', ThemeModeCodec.fromString(null) == 'system');
+  check('AC-E5 fromString(x) == "system"', ThemeModeCodec.fromString('x') == 'system');
+  check('AC-E5 round-trip stabil',
+      ThemeModeCodec.fromString(ThemeModeCodec.toStorage('Light')) == 'light');
+
+  // --------------------------------------------------------------------
+  section('19. ANIMASI — AppMotion');
+  // --------------------------------------------------------------------
+  // AC-F2 — durasi 200..300 ms untuk seluruh rute terdaftar.
+  check('AC-F2 semua pageId terdaftar dalam rentang 200-300',
+      AppMotion.durations.keys.every((String id) {
+        final int ms = AppMotion.transitionMs(id);
+        return ms >= 200 && ms <= 300;
+      }),
+      AppMotion.durations.entries
+          .map((MapEntry<String, int> e) => '${e.key}=${e.value}')
+          .join(','));
+  check('AC-F2 pageId tak dikenal tetap dalam rentang',
+      AppMotion.transitionMs('halaman-baru') >= 200 &&
+          AppMotion.transitionMs('halaman-baru') <= 300);
+  check('AC-F2 clamp nilai di luar rentang',
+      AppMotion.transitionMs('home') == 250);
+
+  // --------------------------------------------------------------------
+  section('20. GRAFIK — ChartRange');
+  // --------------------------------------------------------------------
+  final DateTime acuan = DateTime(2026, 7, 15);
+  // AC-G2 — rentang 7/30/90 hari.
+  final ChartRange r30 = ChartRange.forPeriod('30d', acuan: acuan);
+  check('AC-G2 30d: sampai == acuan', r30.sampai == acuan, '${r30.sampai}');
+  check('AC-G2 30d: dari == acuan-30',
+      r30.dari == DateTime(2026, 6, 15), '${r30.dari}');
+  check('AC-G2 7d: dari == acuan-7',
+      ChartRange.forPeriod('7d', acuan: acuan).dari == DateTime(2026, 7, 8));
+  check('AC-G2 90d: dari == acuan-90',
+      ChartRange.forPeriod('90d', acuan: acuan).dari == DateTime(2026, 4, 16));
+  check('AC-G2 periode tak dikenal -> 30 hari',
+      ChartRange.forPeriod('99d', acuan: acuan).dari == DateTime(2026, 6, 15));
+  check('AC-G2 periods == [7d,30d,90d]',
+      ChartRange.periods.join(',') == '7d,30d,90d');
+  // AC-G3 — label.
+  check('AC-G3 label(30d) == "30 Hari"', ChartRange.label('30d') == '30 Hari');
+  check('AC-G3 label(7d) == "7 Hari"', ChartRange.label('7d') == '7 Hari');
+  check('AC-G3 label tak dikenal -> "30 Hari"',
+      ChartRange.label('xyz') == '30 Hari');
+  // Pemetaan indeks titik.
+  check('ChartRange titik(0) == dari', r30.titik(0) == r30.dari);
+  check('ChartRange indeks(dari) == 0', r30.indeks(r30.dari) == 0);
+
+  // --------------------------------------------------------------------
+  section('21. GESTURE & PENCARIAN — SwipeAction / SearchHistory');
+  // --------------------------------------------------------------------
+  // AC-H2 — tabel aksi per role.
+  String kode(List<SwipeActionType> a) =>
+      a.map((SwipeActionType t) => t.name).join(',');
+  check('AC-H2 Supervisor/verifikasi -> [setujui,tolak]',
+      kode(SwipeAction.forRole('Supervisor', 'verifikasi')) == 'setujui,tolak',
+      kode(SwipeAction.forRole('Supervisor', 'verifikasi')));
+  check('AC-H2 Admin/data -> [hapus]',
+      kode(SwipeAction.forRole('Admin', 'data')) == 'hapus');
+  check('AC-H2 Teknisi -> kosong',
+      SwipeAction.forRole('Teknisi', 'verifikasi').isEmpty &&
+          SwipeAction.forRole('Teknisi', 'data').isEmpty);
+  check('AC-H2 Admin/user_management -> [hapus]',
+      kode(SwipeAction.forRole('Admin', 'user_management')) == 'hapus');
+  check('AC-H2 Supervisor/data -> kosong',
+      SwipeAction.forRole('Supervisor', 'data').isEmpty);
+  // AC-H3 — confirmRequired.
+  check('AC-H3 confirmRequired(hapus) true',
+      SwipeAction.confirmRequired(SwipeActionType.hapus));
+  check('AC-H3 confirmRequired(setujui) false',
+      !SwipeAction.confirmRequired(SwipeActionType.setujui));
+  check('AC-H3 confirmRequired(tolak) false',
+      !SwipeAction.confirmRequired(SwipeActionType.tolak));
+
+  // AC-H4 — dedupe ke depan.
+  final SearchHistory sh = SearchHistory();
+  sh.add('AC-001');
+  sh.add('GS-001');
+  sh.add('AC-001');
+  check('AC-H4 terbaru di depan', sh.items.first == 'AC-001', sh.items.join(','));
+  check('AC-H4 duplikat tidak digandakan',
+      sh.items.where((String e) => e == 'AC-001').length == 1,
+      sh.items.join(','));
+  check('AC-H4 kueri kosong diabaikan', () {
+    final SearchHistory s = SearchHistory();
+    s.add('   ');
+    return s.items.isEmpty;
+  }());
+  // AC-H5 — bounded 10.
+  final SearchHistory sh5 = SearchHistory();
+  for (int i = 0; i < 15; i++) {
+    sh5.add('q$i');
+  }
+  check('AC-H5 kapasitas 10 dihormati', sh5.items.length == 10, 'n=${sh5.items.length}');
+  check('AC-H5 yang terlama dibuang', !sh5.items.contains('q0') && sh5.items.first == 'q14',
+      sh5.items.join(','));
+  check('AC-H5 remove bekerja', () {
+    final SearchHistory s = SearchHistory();
+    s.add('a');
+    s.remove('a');
+    return s.items.isEmpty;
+  }());
+  check('AC-H5 serialize/deserialize round-trip',
+      SearchHistory.deserialize(sh5.serialize()).items.join(',') == sh5.items.join(','));
 
   // --------------------------------------------------------------------
   print('');

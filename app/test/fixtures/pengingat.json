@@ -1,0 +1,53 @@
+{
+  "code": 200,
+  "data": {
+    "ringkasan": {
+      "jatuh_tempo": 3,
+      "terlambat": 2,
+      "menunggu_verifikasi": 0
+    },
+    "daftar": [
+      {
+        "tipe": "terlambat",
+        "barcode_alat": "PL-002",
+        "nama_kategori": "Penangkal Petir",
+        "nama_lokasi": "Aula Besar",
+        "jatuh_tempo": "2026-07-10",
+        "terlambat_hari": 5
+      },
+      {
+        "tipe": "terlambat",
+        "barcode_alat": "AC-003",
+        "nama_kategori": "AC",
+        "nama_lokasi": "Ruang ME",
+        "jatuh_tempo": "2026-07-12",
+        "terlambat_hari": 3
+      },
+      {
+        "tipe": "jatuh_tempo",
+        "barcode_alat": "AC-001",
+        "nama_kategori": "AC",
+        "nama_lokasi": "Aula Besar",
+        "jatuh_tempo": "2026-07-20",
+        "terlambat_hari": 0
+      },
+      {
+        "tipe": "jatuh_tempo",
+        "barcode_alat": "HY-003",
+        "nama_kategori": "Hydrant",
+        "nama_lokasi": "Aula Besar",
+        "jatuh_tempo": "2026-07-22",
+        "terlambat_hari": 0
+      },
+      {
+        "tipe": "jatuh_tempo",
+        "barcode_alat": "GS-001",
+        "nama_kategori": "Genset",
+        "nama_lokasi": "Basement",
+        "jatuh_tempo": "2026-07-25",
+        "terlambat_hari": 0
+      }
+    ]
+  },
+  "message": "OK"
+}

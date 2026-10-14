@@ -44,6 +44,13 @@ dev_dependencies:
 #   gagal di CI dan tidak ada file .g.dart yang perlu di-generate.
 # - Hive (offline draft, P1/T12) belum dimasukkan agar P0 tidak menambah
 #   dependensi; tambahkan saat mengerjakan T12.
+# - Fitur Tahap 3 (docs/DESIGN-FEATURES-V3.md §6): antrean offline memakai
+#   shared_preferences (satu string JSON), TIDAK memakai hive.
+# - Paket berikut MENUNGGU persetujuan pengguna dan BELUM ditambahkan (T01
+#   hanya menyentuh komentar ini, tanpa paket baru):
+#       image_picker, path_provider, flutter_local_notifications, timezone,
+#       flutter_image_compress.
+#   Setiap fitur terkait dirancang jalur ganda (lihat §5.2).
 
 flutter:
   uses-material-design: true

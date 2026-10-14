@@ -1,0 +1,55 @@
+{
+  "code": 200,
+  "data": {
+    "id_maintenance": 28,
+    "waktu_maintenance": "2026-10-13T13:15:00.000000Z",
+    "barcode_alat": "AC-001",
+    "username": "12345",
+    "id_lokasi": 5,
+    "id_kategori": 1,
+    "catatan": "Uji idempotency otomatis",
+    "kondisi_keseluruhan": "baik",
+    "client_uuid": "e469c7a9-5ea6-4f49-a62f-c16ad6b08d1c",
+    "created_at": "2026-10-13T20:03:08.000000Z",
+    "updated_at": "2026-10-13T20:03:08.000000Z",
+    "nama_kategori": "AC",
+    "merk_alat": "Daikin 2PK",
+    "nama_users": "Admin Mei-V",
+    "nama_lokasi": "Aula Besar",
+    "lantai": 7,
+    "status_verifikasi": "menunggu",
+    "detail": [
+      {
+        "id": 177,
+        "id_maintenance": 28,
+        "id_spesifikasi": 1,
+        "status": "Baik",
+        "nama_spesifikasi": "Voltage R-S",
+        "satuan": "V"
+      },
+      {
+        "id": 178,
+        "id_maintenance": 28,
+        "id_spesifikasi": 2,
+        "status": "Baik",
+        "nama_spesifikasi": "Voltage S-T",
+        "satuan": "V"
+      }
+    ],
+    "foto": [
+      {
+        "id_foto": 9,
+        "url": "http://127.0.0.1:8123/storage/foto/ab12.jpg",
+        "mime": "image/jpeg",
+        "ukuran": 184320
+      },
+      {
+        "id_foto": 10,
+        "url": "http://127.0.0.1:8123/storage/foto/cd34.jpg",
+        "mime": "image/jpeg",
+        "ukuran": 209715
+      }
+    ]
+  },
+  "message": "OK"
+}
