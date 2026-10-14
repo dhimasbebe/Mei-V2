@@ -100,6 +100,15 @@ class Maintenance extends Model
         return $this->hasMany(DetailMaintenance::class, 'id_maintenance', 'id_maintenance');
     }
 
+    /**
+     * Foto lampiran (Fitur Tahap 3). Hanya di-eager-load pada `show()` agar
+     * daftar (index/pending) tetap ringan.
+     */
+    public function foto(): HasMany
+    {
+        return $this->hasMany(MaintenanceFoto::class, 'id_maintenance', 'id_maintenance');
+    }
+
     // ----------------------------------------------------------------------
     // Accessor (kolom turunan)
     //

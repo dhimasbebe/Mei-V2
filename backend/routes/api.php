@@ -4,9 +4,11 @@ use App\Http\Controllers\Api\AlatController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\FotoController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LokasiController;
 use App\Http\Controllers\Api\MaintenanceController;
+use App\Http\Controllers\Api\PengingatController;
 use App\Http\Controllers\Api\SpesifikasiController;
 use App\Http\Controllers\Api\TugasController;
 use App\Http\Controllers\Api\UserController;
@@ -49,6 +51,18 @@ Route::prefix('v1')->group(function () {
         // --- Maintenance (baca/tulis dasar) ---
         Route::get('/maintenance', [MaintenanceController::class, 'index']);
         Route::post('/maintenance', [MaintenanceController::class, 'store']);
+
+        // --- Foto lampiran (Fitur Tahap 3) ---
+        // Rute ber-prefix statis "foto" didaftarkan sebelum rute dinamis
+        // /maintenance/{id} agar tidak tertelan.
+        Route::delete('/maintenance/foto/{id_foto}', [FotoController::class, 'destroy'])
+            ->middleware('role:Supervisor,Admin');
+        Route::post('/maintenance/{id}/foto', [FotoController::class, 'store'])
+            ->middleware('role:Teknisi,Admin');
+        Route::get('/maintenance/{id}/foto', [FotoController::class, 'index']);
+
+        // --- Pengingat (semua peran) ---
+        Route::get('/pengingat', [PengingatController::class, 'index']);
 
         // --- Supervisor + Admin: rute STATIS maintenance lebih dulu ---
         Route::middleware('role:Supervisor,Admin')->group(function () {

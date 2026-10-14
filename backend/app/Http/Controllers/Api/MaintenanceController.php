@@ -122,11 +122,13 @@ class MaintenanceController extends Controller
 
     /**
      * GET /api/v1/maintenance/{id}
+     *
+     * Menyertakan array `foto` (fitur Tahap 3) — `[]` bila belum ada lampiran.
      */
     public function show(int $id): JsonResponse
     {
         return $this->ok(
-            Maintenance::with(self::WITH)->findOrFail($id)
+            Maintenance::with(self::WITH)->with('foto')->findOrFail($id)
         );
     }
 
@@ -138,6 +140,7 @@ class MaintenanceController extends Controller
     public function pending(Request $request): JsonResponse
     {
         $query = Maintenance::with(self::WITH)
+            ->withCount(['foto as jumlah_foto'])
             ->where('status_verifikasi', 'menunggu')
             ->orderByDesc('waktu_maintenance');
 

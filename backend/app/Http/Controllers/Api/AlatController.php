@@ -121,9 +121,13 @@ class AlatController extends Controller
             'id_lokasi' => 'nullable|integer|exists:lokasi,id_lokasi',
         ]);
 
+        // Nilai lama diambil SEBELUM update agar audit menyimpan diff
+        // `{field: {lama, baru}}` (Fitur Tahap 3, U2).
+        $sebelum = $alat->only(['merk_alat', 'id_kategori', 'id_lokasi']);
+
         $alat->update($validated);
 
-        AuditLogger::log('update', 'alat', $alat->barcode_alat, $validated);
+        AuditLogger::logUpdate('alat', $alat->barcode_alat, $sebelum, $validated);
 
         return $this->ok($alat->load(['kategori', 'lokasi', 'penanggungJawab']), 'Alat diperbarui.');
     }

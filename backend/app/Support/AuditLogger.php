@@ -44,4 +44,37 @@ class AuditLogger
             'created_at' => now(),
         ]);
     }
+
+    /**
+     * Tulis satu baris audit `update` dalam bentuk diff `{field: {lama, baru}}`.
+     *
+     * ADITIF (Fitur Tahap 3, keputusan U2): hanya field yang benar-benar
+     * berubah yang dicatat. Bentuk lama (`{field: nilai}`) tetap didukung
+     * `AuditDetail.format` di klien, jadi baris audit lama tidak rusak.
+     *
+     * @param  array  $lama  nilai SEBELUM perubahan (field => nilai)
+     * @param  array  $baru  nilai SESUDAH perubahan (field => nilai)
+     */
+    public static function logUpdate(
+        string $entitas,
+        string $entitasId,
+        array $lama,
+        array $baru,
+        ?string $actor = null,
+    ): void {
+        $detail = [];
+
+        foreach (array_unique(array_merge(array_keys($lama), array_keys($baru))) as $field) {
+            $sebelum = $lama[$field] ?? null;
+            $sesudah = $baru[$field] ?? null;
+
+            if ($sebelum === $sesudah) {
+                continue; // hanya catat yang berubah
+            }
+
+            $detail[$field] = ['lama' => $sebelum, 'baru' => $sesudah];
+        }
+
+        self::log('update', $entitas, $entitasId, $detail, $actor);
+    }
 }

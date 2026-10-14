@@ -13,7 +13,10 @@ use Illuminate\Http\Request;
 class AuditLogController extends Controller
 {
     /**
-     * GET /api/v1/audit-log?page=&per_page=&entitas=&actor=&aksi=
+     * GET /api/v1/audit-log?page=&per_page=&entitas=&actor=&aksi=&dari=&sampai=
+     *
+     * Filter `dari`/`sampai` (fitur Tahap 3) mempersempit berdasarkan tanggal
+     * `created_at`; ADITIF — perilaku filter lama tidak berubah.
      */
     public function index(Request $request): JsonResponse
     {
@@ -31,6 +34,14 @@ class AuditLogController extends Controller
 
         if ($request->filled('aksi')) {
             $query->where('aksi', $request->input('aksi'));
+        }
+
+        if ($request->filled('dari')) {
+            $query->whereDate('created_at', '>=', $request->input('dari'));
+        }
+
+        if ($request->filled('sampai')) {
+            $query->whereDate('created_at', '<=', $request->input('sampai'));
         }
 
         $perPage = max(1, min(100, (int) $request->input('per_page', 20)));
