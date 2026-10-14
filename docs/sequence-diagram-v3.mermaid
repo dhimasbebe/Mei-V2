@@ -111,3 +111,62 @@ sequenceDiagram
     P->>TP: set(code)
     TP->>SP: setString
     TP-->>M: rebuild (tema berubah)
+
+    Note over U,BE: Alur 5 — Patroli + duplikat + checklist cepat (WS I, J, K, v3.1)
+    participant PQ as PatrolQueue (pure)
+    participant PS as PatrolScreen
+    participant CQ as ChecklistQuickFill (pure)
+    participant DT as DraftTemplate (pure)
+    U->>PS: buka Mode Patroli (kamera aktif terus)
+    loop tiap barcode terdeteksi
+        PS->>PQ: add(barcode)
+        alt duplikat
+            PQ-->>PS: false (item tidak ditambah)
+        else baru
+            PQ-->>PS: true (overlay ringkas ~1,5 dtk)
+            PS->>API: GET /alat/{barcode} (validasi)
+            alt 404
+                PS->>PQ: tandaiBelumValidasi(barcode) (item tetap ada)
+            else 200
+                PS->>PQ: tandaiTervalidasi(barcode)
+            end
+        end
+    end
+    PQ->>SP: persist (meiv.patrol_queue.v1)
+    U->>PS: "Selesai (N alat)" -> "Kerjakan" per item
+    PS->>F: buka form maintenance alat tsb
+    U->>F: tekan "Semua Baik"
+    F->>CQ: markAllOk(items)
+    CQ-->>F: N item diisi (angka/teks & isian user tidak disentuh)
+    F-->>U: snackbar "N item ditandai Baik"
+    U->>F: KIRIM -> draftProvider (antrean A)
+
+    Note over U,BE: Alur 6 — Duplikat laporan (WS K)
+    U->>F: aksi "Duplikat" pada laporan milik sendiri
+    F->>DT: fromReport(report, buatUuid, waktuDuplikasi=now)
+    DT-->>F: DraftRecord baru (client_uuid BARU, fotoPaths kosong)
+    F->>DP: enqueue(draf) -> kirim bila online
+    DP->>API: POST /maintenance (client_uuid baru)
+    API->>BE: 
+    BE-->>DP: 201 (laporan baru, bukan replay)
+
+    Note over S,BE: Alur 7 — Bagikan tautan (WS O, halaman publik di luar envelope)
+    participant SH as ShareController
+    participant BR as Browser eksternal
+    S->>AS: tombol "Bagikan Tautan"
+    AS->>API: POST /maintenance/{id}/share
+    API->>BE: (role:Supervisor,Admin, token Str::random(40))
+    BE->>BE: AuditLogger: create/share_link
+    BE-->>AS: 201 {url, token}
+    AS-->>S: salin clipboard / share_plus
+    BR->>BE: GET /share/{token} (TANPA auth, rute web.php)
+    BE->>BE: cek revoked_at / expires_at
+    alt token valid
+        BE-->>BR: 200 HTML read-only (tanpa email/NIP)
+    else salah/kedaluwarsa/dicabut
+        BE-->>BR: 404 view 'share.invalid'
+    end
+    S->>AS: cabut tautan
+    AS->>API: DELETE /api/v1/share/{token}
+    API->>BE: 
+    BE-->>AS: 200; GET /share/{token} -> 404

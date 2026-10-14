@@ -182,3 +182,97 @@ classDiagram
     AuditRepository ..> AuditDetail : format tampilan
     AuditRepository ..> AuditAksi : label tampilan
     SearchHistory ..> SwipeAction : tidak terkait (lihat WS H)
+
+    %% ============================================================
+    %% Perluasan v3.1 — Workstream I, J, K, M, O, P
+    %% ============================================================
+
+    class PatrolStatus {
+        <<enumeration>>
+        tervalidasi
+        belumValidasi
+    }
+
+    class PatrolItem {
+        +String barcode
+        +DateTime ditambahkanPada
+        +PatrolStatus status
+        +copyWith(PatrolStatus) PatrolItem
+        +toJson() Map
+        +fromJson(Map)$ PatrolItem
+    }
+
+    class PatrolQueue {
+        +List~PatrolItem~ items
+        +int count
+        +int jumlahBelumValidasi
+        +add(String, DateTime?) bool
+        +remove(String)
+        +clear()
+        +tandaiBelumValidasi(String) bool
+        +tandaiTervalidasi(String) bool
+        +serialize() String
+        +deserialize(String?)$ PatrolQueue
+    }
+
+    class QuickFillItem {
+        +int idSpesifikasi
+        +String tipeInput
+        +List~String~ opsi
+        +String? nilai
+    }
+
+    class ChecklistQuickFill {
+        <<static>>
+        +Set~String~ opsiBaik
+        +String defaultNilai
+        +markAllOk(List~QuickFillItem~, String) int
+        +hitungTerisi(List~QuickFillItem~) int
+    }
+
+    class DraftTemplate {
+        <<static>>
+        +fromReport(Maintenance, Function, DateTime?) DraftRecord
+    }
+
+    class AlatImportError {
+        +int baris
+        +String pesan
+        +fromJson(Map)$ AlatImportError
+    }
+
+    class AlatImportResult {
+        +int total
+        +int jumlahValid
+        +List~AlatImportError~ error
+        +fromJson(Map)$ AlatImportResult
+        +toJson() Map
+    }
+
+    class ShareLink {
+        +int idShare
+        +int idMaintenance
+        +String token
+        +String url
+        +DateTime? expiresAt
+        +DateTime? revokedAt
+        +DateTime createdAt
+        +bool aktif
+        +fromJson(Map)$ ShareLink
+        +toJson() Map
+    }
+
+    class LocaleCodec {
+        <<static>>
+        +String defaultLocale
+        +fromString(String?) String
+        +toStorage(String) String
+        +isValid(String) bool
+    }
+
+    PatrolQueue "1" *-- "0..*" PatrolItem : berisi
+    PatrolItem --> PatrolStatus : status
+    PatrolQueue ..> DraftQueue : laporan patroli masuk antrean A
+    ChecklistQuickFill ..> QuickFillItem : mengisi/menghitung
+    DraftTemplate ..> DraftRecord : menghasilkan draf baru
+    AlatImportResult "1" o-- "0..*" AlatImportError : daftar error
