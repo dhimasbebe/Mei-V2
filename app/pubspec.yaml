@@ -33,6 +33,21 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # ---------------------------------------------------------------------
+  # Fitur Tahap 3 — DISETUJUI pengguna (docs/DESIGN-FEATURES-V3.md §6).
+  # PENTING: setelah mengubah berkas ini, jalankan `flutter pub get` di
+  # terminal Anda. Sandbox pengembangan tidak dapat menjalankannya.
+  #   image_picker             : [C] ambil kamera/galeri
+  #   path_provider            : [A,C] direktori dokumen app (foto offline tahan tutup)
+  #   flutter_image_compress   : [C] JPEG native (jalur utama kompresi)
+  #   flutter_local_notifications + timezone : [B] notifikasi OS (dipakai T05)
+  # ---------------------------------------------------------------------
+  image_picker: ^1.1.2
+  path_provider: ^2.1.4
+  flutter_image_compress: ^2.3.0
+  flutter_local_notifications: ^17.2.4
+  timezone: ^0.9.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

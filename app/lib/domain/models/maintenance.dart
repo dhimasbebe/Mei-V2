@@ -36,6 +36,48 @@ class DetailMaintenance {
       };
 }
 
+/// Satu foto lampiran laporan pemeliharaan.
+///
+/// Kontrak JSON (`GET /maintenance/{id}` → `foto[]`, `GET /maintenance/{id}/foto`):
+/// `{ "id_foto": 9, "url": ".../storage/foto/ab12.jpg", "mime": "image/jpeg",
+///    "ukuran": 184320 }` (Fitur Tahap 3, AC-C8).
+class FotoLampiran {
+  const FotoLampiran({
+    required this.idFoto,
+    required this.url,
+    this.mime,
+    this.ukuran,
+  });
+
+  final int idFoto;
+  final String url;
+  final String? mime;
+  final int? ukuran;
+
+  /// Ukuran berkas dalam KB (dibulatkan) untuk tampilan.
+  String get ukuranTampil {
+    final int? b = ukuran;
+    if (b == null) return '-';
+    if (b < 1024) return '$b B';
+    if (b < 1024 * 1024) return '${(b / 1024).toStringAsFixed(0)} KB';
+    return '${(b / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
+
+  factory FotoLampiran.fromJson(Map<String, dynamic> json) => FotoLampiran(
+        idFoto: int.tryParse('${json['id_foto'] ?? json['idFoto'] ?? 0}') ?? 0,
+        url: '${json['url'] ?? ''}',
+        mime: (json['mime'] ?? json['mime_type']) as String?,
+        ukuran: json['ukuran'] == null ? null : int.tryParse('${json['ukuran']}'),
+      );
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'id_foto': idFoto,
+        'url': url,
+        'mime': mime,
+        'ukuran': ukuran,
+      };
+}
+
 /// Satu sesi pemeliharaan (header + detail). Padanan `maintenance`
 /// digabung dengan `detail_maintenance`.
 class Maintenance {
@@ -49,6 +91,7 @@ class Maintenance {
     this.catatan,
     this.kondisiKeseluruhan,
     this.detail = const <DetailMaintenance>[],
+    this.foto = const <FotoLampiran>[],
     this.namaKategori,
     this.merkAlat,
     this.namaUsers,
@@ -71,6 +114,12 @@ class Maintenance {
   /// 'baik' | 'kurang_baik' | 'rusak' (kolom baru untuk KPI dashboard).
   final String? kondisiKeseluruhan;
   final List<DetailMaintenance> detail;
+
+  /// Foto lampiran (Fitur Tahap 3). Selalu array — `[]` bila tidak ada foto.
+  final List<FotoLampiran> foto;
+
+  /// Jumlah foto lampiran (untuk indikator di riwayat, AC-C14).
+  int get jumlahFoto => foto.length;
 
   // Kolom baca-saja hasil join (view_maintenance).
   final String? namaKategori;
@@ -117,6 +166,7 @@ class Maintenance {
   factory Maintenance.fromJson(Map<String, dynamic> json) {
     final Object? waktu = json['waktu_maintenance'] ?? json['waktuMaintenance'];
     final Object? detailRaw = json['detail'];
+    final Object? fotoRaw = json['foto'];
     return Maintenance(
       idMaintenance: int.tryParse('${json['id_maintenance'] ?? json['idMaintenance'] ?? 0}') ?? 0,
       waktuMaintenance: DateTime.tryParse('$waktu') ?? DateTime.now(),
@@ -132,6 +182,12 @@ class Maintenance {
               .map(DetailMaintenance.fromJson)
               .toList(growable: false)
           : const <DetailMaintenance>[],
+      foto: fotoRaw is List
+          ? fotoRaw
+              .whereType<Map<String, dynamic>>()
+              .map(FotoLampiran.fromJson)
+              .toList(growable: false)
+          : const <FotoLampiran>[],
       namaKategori: json['nama_kategori'] as String?,
       merkAlat: json['merk_alat'] as String?,
       namaUsers: json['nama_users'] as String?,
@@ -157,6 +213,7 @@ class Maintenance {
         'catatan': catatan,
         'kondisi_keseluruhan': kondisiKeseluruhan,
         'detail': detail.map((DetailMaintenance d) => d.toJson()).toList(),
+        'foto': foto.map((FotoLampiran f) => f.toJson()).toList(),
         'status_verifikasi': statusVerifikasi,
         'diverifikasi_oleh': diverifikasiOleh,
         'waktu_verifikasi': waktuVerifikasi?.toIso8601String(),

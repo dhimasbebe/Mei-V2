@@ -327,8 +327,24 @@ class DraftQueue {
     return true;
   }
 
-  /// Menghapus draf berstatus [DraftStatus.terkirim] yang lebih tua dari
-  /// [simpan] (retensi default 7 hari — §12 U3). Umur dihitung dari
+  /// Mengganti draf ber-`clientUuid` sama dengan [draft] di tempat (posisi
+  /// FIFO dipertahankan). Mengembalikan `false` bila draf tidak ditemukan.
+  bool replace(DraftRecord draft) {
+    final int i = _indexOf(draft.clientUuid);
+    if (i < 0) return false;
+    _items[i] = draft;
+    return true;
+  }
+
+  /// Menghapus draf ber-`clientUuid` [uuid]. `false` bila tidak ditemukan.
+  bool remove(String uuid) {
+    final int i = _indexOf(uuid);
+    if (i < 0) return false;
+    _items.removeAt(i);
+    return true;
+  }
+
+  /// Menghapus draf berstatus [DraftStatus.terkirim] yang lebih tua dari  /// [simpan] (retensi default 7 hari — §12 U3). Umur dihitung dari
   /// [DraftRecord.terkirimPada]; draf terkirim tanpa cap waktu dibiarkan.
   void purgeTerkirim({Duration simpan = const Duration(days: 7)}) {
     final DateTime batas = DateTime.now().subtract(simpan);

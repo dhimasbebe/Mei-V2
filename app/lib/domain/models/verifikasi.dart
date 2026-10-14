@@ -27,6 +27,7 @@ class VerifikasiItem {
     this.catatan,
     this.merkAlat,
     this.detail = const <DetailMaintenance>[],
+    this.jumlahFoto = 0,
   });
 
   final int idMaintenance;
@@ -46,6 +47,13 @@ class VerifikasiItem {
   final String? catatan;
   final String? merkAlat;
   final List<DetailMaintenance> detail;
+
+  /// Jumlah foto lampiran (`GET /maintenance/pending` → `jumlah_foto`,
+  /// Fitur Tahap 3). Dipakai menampilkan indikator pada kartu verifikasi.
+  final int jumlahFoto;
+
+  /// `true` bila laporan memiliki minimal satu foto.
+  bool get punyaFoto => jumlahFoto > 0;
 
   bool get menunggu => (statusVerifikasi ?? 'menunggu') == 'menunggu';
   bool get disetujui => statusVerifikasi == 'disetujui';
@@ -88,6 +96,8 @@ class VerifikasiItem {
               .map(DetailMaintenance.fromJson)
               .toList(growable: false)
           : const <DetailMaintenance>[],
+      jumlahFoto:
+          int.tryParse('${json['jumlah_foto'] ?? json['jumlahFoto'] ?? 0}') ?? 0,
     );
   }
 

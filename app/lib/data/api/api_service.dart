@@ -399,6 +399,44 @@ class ApiService {
     return Maintenance.fromJson(_unwrap(res));
   }
 
+  // --------------------------------------------------------------------------
+  // Foto lampiran (Fitur Tahap 3)
+  // --------------------------------------------------------------------------
+
+  /// `POST /maintenance/{id}/foto` (multipart field `foto`).
+  ///
+  /// Mengirim BYTES (bukan path) supaya jalur yang sama bekerja di mobile
+  /// maupun web. `namaFile` menentukan ekstensi yang divalidasi server
+  /// (`mimes:jpg,jpeg,png`).
+  Future<FotoLampiran> uploadFotoBytes(
+    int id, {
+    required List<int> bytes,
+    required String namaFile,
+  }) async {
+    final FormData form = FormData.fromMap(<String, dynamic>{
+      'foto': MultipartFile.fromBytes(bytes, filename: namaFile),
+    });
+    final Response<dynamic> res = await _dio.post(
+      '/maintenance/$id/foto',
+      data: form,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+    return FotoLampiran.fromJson(_unwrap(res));
+  }
+
+  /// `GET /maintenance/{id}/foto` — daftar foto lampiran.
+  Future<List<FotoLampiran>> getFotos(int id) async {
+    final Response<dynamic> res = await _dio.get('/maintenance/$id/foto');
+    return _unwrapList(res)
+        .map((dynamic e) => FotoLampiran.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// `DELETE /maintenance/foto/{id_foto}` (Supervisor/Admin).
+  Future<void> deleteFoto(int idFoto) async {
+    await _dio.delete('/maintenance/foto/$idFoto');
+  }
+
   /// `GET /maintenance/pending?page=&per_page=` (Supervisor/Admin).
   Future<PagedResult<VerifikasiItem>> getMaintenancePending({
     int page = 1,
