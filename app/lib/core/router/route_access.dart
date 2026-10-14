@@ -27,7 +27,8 @@ abstract class RouteAccess {
             _cocok(location, Routes.riwayat) ||
             _cocok(location, Routes.profile) ||
             _cocok(location, Routes.alatPrefix) ||
-            _cocok(location, Routes.sinkron);
+            _cocok(location, Routes.sinkron) ||
+            _cocok(location, Routes.auditLog);
 
       case 'teknisi':
       default:

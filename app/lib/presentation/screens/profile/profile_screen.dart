@@ -189,6 +189,13 @@ class ProfileScreen extends ConsumerWidget {
           warna: AppColors.primaryDark,
           onTap: () => context.go(Routes.dashboard),
         ),
+        // Tahap 3 WS D (AC-D10): menu riwayat audit untuk Supervisor.
+        _Pintasan(
+          icon: Icons.receipt_long_outlined,
+          label: 'Riwayat Audit',
+          warna: AppColors.statusWarning,
+          onTap: () => context.go(Routes.auditLog),
+        ),
       ];
     }
     return <Widget>[

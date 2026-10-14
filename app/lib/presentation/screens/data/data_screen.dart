@@ -66,6 +66,16 @@ class _DataScreenState extends ConsumerState<DataScreen> {
           keterangan: 'Daftar alat beserta barcode, kategori, dan lokasinya.',
           onTap: () => context.go(Routes.dataAlat),
         ),
+        const SizedBox(height: AppSpacing.md),
+        // Tahap 3 WS D (AC-D10): pintu masuk riwayat audit.
+        _Kartu(
+          icon: Icons.receipt_long_outlined,
+          warna: AppColors.statusWarning,
+          judul: 'Riwayat Audit',
+          keterangan:
+              'Semua perubahan sistem: siapa, kapan, dan apa yang berubah.',
+          onTap: () => context.go(Routes.auditLog),
+        ),
       ],
     );
   }

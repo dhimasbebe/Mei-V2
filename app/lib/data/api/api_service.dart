@@ -571,12 +571,17 @@ class ApiService {
   // Audit log (Admin)
   // --------------------------------------------------------------------------
 
-  /// `GET /audit-log?page=&entitas=&actor=` (Admin).
+  /// `GET /audit-log?page=&entitas=&actor=&dari=&sampai=` (Admin, Supervisor).
+  ///
+  /// [dari]/[sampai] berformat `yyyy-MM-dd` (lihat `AuditFilter.keQuery`).
   Future<PagedResult<AuditLogEntry>> getAuditLog({
     int page = 1,
     int perPage = 20,
     String? entitas,
     String? actor,
+    String? aksi,
+    String? dari,
+    String? sampai,
   }) async {
     final Response<dynamic> res = await _dio.get(
       '/audit-log',
@@ -585,6 +590,9 @@ class ApiService {
         'per_page': perPage,
         if (entitas != null && entitas.isNotEmpty) 'entitas': entitas,
         if (actor != null && actor.isNotEmpty) 'actor': actor,
+        if (aksi != null && aksi.isNotEmpty) 'aksi': aksi,
+        if (dari != null && dari.isNotEmpty) 'dari': dari,
+        if (sampai != null && sampai.isNotEmpty) 'sampai': sampai,
       },
     );
     return PagedResult<AuditLogEntry>.fromJson(_unwrap(res), AuditLogEntry.fromJson);

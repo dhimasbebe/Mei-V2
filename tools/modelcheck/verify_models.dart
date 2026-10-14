@@ -36,6 +36,7 @@ import '../../app/lib/domain/models/verifikasi.dart';
 // Modul logika murni fitur tahap 3 (TANPA package:flutter).
 import '../../app/lib/core/audit/audit_aksi.dart';
 import '../../app/lib/core/audit/audit_detail.dart';
+import '../../app/lib/core/audit/audit_filter.dart';
 import '../../app/lib/core/charts/chart_range.dart';
 import '../../app/lib/core/gesture/swipe_action.dart';
 import '../../app/lib/core/media/photo_policy.dart';
@@ -767,6 +768,33 @@ void main() {
   check('AC-D8 format detail audit fixture',
       AuditDetail.format(aFirst.detail).join('|') == 'merk_alat: Daikin 2PK',
       AuditDetail.format(aFirst.detail).join('|'));
+  // Filter tanggal (mendukung AC-D3 di lapisan UI).
+  final DateTime dDari = DateTime(2026, 7, 1, 15, 30); // jam diabaikan
+  final DateTime dSampai = DateTime(2026, 7, 31, 10);
+  check('audit filter: dari -> awal hari 00:00:00',
+      AuditFilter.normalisasiDari(dDari).toString() == '2026-07-01 00:00:00.000',
+      AuditFilter.normalisasiDari(dDari).toString());
+  check('audit filter: sampai -> akhir hari 23:59:59.999',
+      AuditFilter.normalisasiSampai(dSampai)!.hour == 23 &&
+          AuditFilter.normalisasiSampai(dSampai)!.minute == 59 &&
+          AuditFilter.normalisasiSampai(dSampai)!.millisecond == 999,
+      AuditFilter.normalisasiSampai(dSampai).toString());
+  check('audit filter: null tetap null',
+      AuditFilter.normalisasiDari(null) == null &&
+          AuditFilter.normalisasiSampai(null) == null);
+  check('audit filter: rentang valid (dari < sampai)',
+      AuditFilter.valid(AuditFilter.normalisasiDari(dDari),
+          AuditFilter.normalisasiSampai(dSampai)));
+  check('audit filter: satu sisi null -> valid',
+      AuditFilter.valid(null, dSampai) && AuditFilter.valid(dDari, null));
+  check('audit filter: dari setelah sampai -> invalid',
+      !AuditFilter.valid(DateTime(2026, 8, 1), DateTime(2026, 7, 1)));
+  check('audit filter: hari sama -> valid',
+      AuditFilter.valid(DateTime(2026, 7, 15), DateTime(2026, 7, 15)));
+  check('audit filter: keQuery yyyy-MM-dd',
+      AuditFilter.keQuery(dDari) == '2026-07-01' &&
+          AuditFilter.keQuery(dSampai) == '2026-07-31');
+  check('audit filter: keQuery(null) -> null', AuditFilter.keQuery(null) == null);
 
   // --------------------------------------------------------------------
   section('18. TEMA — PaletteSpec & ThemeModeCodec');

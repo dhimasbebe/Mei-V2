@@ -21,6 +21,9 @@ abstract class Routes {
   /// Antrean sinkronisasi offline (draf menunggu kirim — Tahap 3 §5.1).
   static const String sinkron = '/sinkron';
 
+  /// Riwayat audit log (Admin & Supervisor — Tahap 3 WS D).
+  static const String auditLog = '/audit-log';
+
   /// Supervisor & Admin.
   static const String verifikasi = '/verifikasi';
 

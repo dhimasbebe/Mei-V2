@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../presentation/screens/audit/audit_log_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_analytics_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_overview_screen.dart';
@@ -101,6 +102,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.verifikasi,
             builder: (BuildContext context, GoRouterState state) =>
                 const VerifikasiScreen(),
+          ),
+          GoRoute(
+            path: Routes.auditLog,
+            builder: (BuildContext context, GoRouterState state) =>
+                const AuditLogScreen(),
           ),
           GoRoute(
             path: Routes.data,
