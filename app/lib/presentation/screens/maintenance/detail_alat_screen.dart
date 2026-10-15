@@ -98,17 +98,17 @@ class _DetailBody extends ConsumerWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isOverdue ? Colors.red.shade50 : Colors.green.shade50,
+              color: isOverdue ? AppColors.overdueSoft : AppColors.tepatWaktuSoft,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isOverdue ? Colors.red.shade200 : Colors.green.shade200,
+                color: isOverdue ? AppColors.overdue : AppColors.tepatWaktu,
               ),
             ),
             child: Row(
               children: <Widget>[
                 Icon(
                   isOverdue ? Icons.warning_amber_rounded : Icons.check_circle_outline,
-                  color: isOverdue ? Colors.red.shade700 : Colors.green.shade700,
+                  color: isOverdue ? AppColors.overdue : AppColors.tepatWaktu,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -119,7 +119,7 @@ class _DetailBody extends ConsumerWidget {
                         isOverdue ? 'Maintenance Terlambat' : 'Maintenance Tepat Waktu',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isOverdue ? Colors.red.shade700 : Colors.green.shade700,
+                          color: isOverdue ? AppColors.overdue : AppColors.tepatWaktu,
                         ),
                       ),
                       if (sisa != null)
@@ -129,13 +129,13 @@ class _DetailBody extends ConsumerWidget {
                               : 'Sisa $sisa hari menuju jadwal',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isOverdue ? Colors.red.shade600 : Colors.green.shade600,
+                            color: isOverdue ? AppColors.overdue : AppColors.tepatWaktu,
                           ),
                         ),
                       if (alat.terakhirMaintenance != null)
                         Text(
                           'Terakhir: ${_fmt(alat.terakhirMaintenance!)}',
-                          style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                          style: TextStyle(fontSize: 11, color: context.pal.textSecondary),
                         ),
                     ],
                   ),
@@ -287,9 +287,9 @@ class _InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: context.pal.surfaceAlt,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.pal.borderSubtle),
       ),
       child: Row(
         children: <Widget>[
@@ -299,7 +299,7 @@ class _InfoCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                Text(label, style: TextStyle(fontSize: 11, color: context.pal.textSecondary)),
                 const SizedBox(height: 2),
                 Text(
                   value,

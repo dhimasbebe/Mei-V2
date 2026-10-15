@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../domain/models/user.dart';
 import '../../providers/auth_provider.dart';
@@ -44,7 +45,7 @@ class RoleShell extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.pal.background,
       appBar: AppBar(
         backgroundColor: AppColors.black,
         foregroundColor: AppColors.background,

@@ -265,7 +265,7 @@ class _Header extends StatelessWidget {
       height: 64,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: context.pal.surface,
         border: Border(bottom: BorderSide(color: context.pal.borderSubtle)),
       ),
       child: Row(

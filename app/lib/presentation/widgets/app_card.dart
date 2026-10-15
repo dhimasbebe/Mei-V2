@@ -4,7 +4,7 @@ import '../../core/theme/app_tokens.dart';
 
 /// W1 — Kartu permukaan standar Mei-V.
 ///
-/// Radius default 12 ([AppRadius.md]), garis [AppColors.divider], elevasi 0
+/// Radius default 12 ([AppRadius.md]), garis [AppPalette.divider], elevasi 0
 /// (datar) atau 1 (berbayang lembut). Bila [gradient] diisi, latar warna
 /// diabaikan. Bila [onTap] diisi, seluruh area kartu dapat ditekan dengan
 /// efek ripple.

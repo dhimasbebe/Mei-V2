@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_tokens.dart';
+import '../../core/theme/app_palette.dart';
 
 /// W6 — Chip peran berwarna (AC-43).
 ///
@@ -34,7 +35,7 @@ class RoleBadge extends StatelessWidget {
     }
   }
 
-  static Color _soft(String role) {
+  static Color _soft(String role, AppPalette pal) {
     switch (role.trim().toLowerCase()) {
       case 'admin':
         return AppColors.roleAdminSoft;
@@ -43,7 +44,7 @@ class RoleBadge extends StatelessWidget {
       case 'teknisi':
         return AppColors.roleTeknisiSoft;
       default:
-        return AppColors.surfaceMuted;
+        return pal.surfaceMuted;
     }
   }
 
@@ -69,7 +70,7 @@ class RoleBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color solid = _solid(role);
-    final Color soft = _soft(role);
+    final Color soft = _soft(role, context.pal);
     final double h = size ?? 26;
     final double fontSize = h * 0.46;
     final double iconSize = h * 0.62;

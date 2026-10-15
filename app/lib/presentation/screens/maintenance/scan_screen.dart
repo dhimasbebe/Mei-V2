@@ -481,7 +481,7 @@ class _KartuPetunjuk extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          Icon(Icons.lightbulb_outline, color: Colors.amber, size: 20),
+          Icon(Icons.lightbulb_outline, color: AppColors.statusWarning, size: 20),
           const SizedBox(width: AppSpacing.md),
           const Expanded(
             child: Text(
