@@ -13,6 +13,7 @@ import '../../widgets/filter_chip_bar.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Dashboard Analytics — analisis tren pemeliharaan dengan filter periode.
 class DashboardAnalyticsScreen extends ConsumerStatefulWidget {
@@ -63,10 +64,10 @@ class _DashboardAnalyticsScreenState
             children: <Widget>[
               Text(
                 'Tren $_hari hari',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: context.pal.textPrimary,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -189,7 +190,7 @@ class _GrafikBatang extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (double v) =>
-              const FlLine(color: AppColors.borderSubtle, strokeWidth: 1),
+              FlLine(color: context.pal.borderSubtle, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           leftTitles: const AxisTitles(
@@ -208,9 +209,9 @@ class _GrafikBatang extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     l.length > 5 ? l.substring(5) : l,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 9,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                   ),
                 );
@@ -233,7 +234,7 @@ class _GrafikBatang extends StatelessWidget {
             ) {
               return BarTooltipItem(
                 '${data[group.x].label}\n${rod.toY.toInt()} pemeliharaan',
-                const TextStyle(
+                TextStyle(
                   color: Colors.white,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,

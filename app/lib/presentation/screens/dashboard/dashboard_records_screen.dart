@@ -14,6 +14,7 @@ import '../../widgets/filter_chip_bar.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Dashboard Records — tabel lengkap riwayat pemeliharaan.
 ///
@@ -68,7 +69,7 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
         AppTextField(
           controller: _cari,
           hint: 'Cari kode alat...',
-          prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+          prefixIcon: Icon(Icons.search, color: AppColors.primary),
           onSubmitted: (_) => _muat(),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -126,29 +127,29 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
               Expanded(
                 child: Text(
                   'Total ${result.total} catatan',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: context.pal.textSecondary,
                   ),
                 ),
               ),
               IconButton(
                 tooltip: 'Sebelumnya',
-                icon: const Icon(Icons.chevron_left),
+                icon: Icon(Icons.chevron_left),
                 onPressed: result.currentPage > 1
                     ? () => _muat(page: result.currentPage - 1)
                     : null,
               ),
               Text(
                 '${result.currentPage} / ${result.lastPage}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               IconButton(
                 tooltip: 'Berikutnya',
-                icon: const Icon(Icons.chevron_right),
+                icon: Icon(Icons.chevron_right),
                 onPressed: result.currentPage < result.lastPage
                     ? () => _muat(page: result.currentPage + 1)
                     : null,
@@ -166,7 +167,7 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
                       AppColors.primary.withValues(alpha: 0.08),
                     ),
                     border: TableBorder.all(
-                      color: AppColors.borderSubtle,
+                      color: context.pal.borderSubtle,
                       borderRadius: BorderRadius.circular(AppRadius.xs),
                     ),
                     columns: const <DataColumn>[
@@ -219,7 +220,7 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
           'Kurang Baik',
         ),
       'rusak' => (AppColors.kondisiRusak, AppColors.kondisiRusakSoft, 'Rusak'),
-      _ => (AppColors.statusUnknown, AppColors.surfaceMuted, '-'),
+      _ => (AppColors.statusUnknown, context.pal.surfaceMuted, '-'),
     };
 
     return StatusBadge(label: label, color: warna, softColor: soft, dense: true);

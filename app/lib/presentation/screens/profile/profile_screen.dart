@@ -14,6 +14,7 @@ import '../../widgets/app_card.dart';
 import '../../widgets/press_button.dart';
 import '../../widgets/role_badge.dart';
 import '../../widgets/section_header.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Layar Profil — isi menu menyesuaikan role.
 ///
@@ -40,7 +41,7 @@ class ProfileScreen extends ConsumerWidget {
             backgroundColor: AppColors.primarySoft,
             child: Text(
               user.inisial,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
@@ -53,10 +54,10 @@ class ProfileScreen extends ConsumerWidget {
           child: Text(
             user.namaUsers,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.pal.textPrimary,
             ),
           ),
         ),
@@ -107,7 +108,7 @@ class ProfileScreen extends ConsumerWidget {
         AppCard(
           child: Column(
             children: <Widget>[
-              const Row(
+              Row(
                 children: <Widget>[
                   Icon(Icons.apps, color: AppColors.primary),
                   SizedBox(width: AppSpacing.md),
@@ -121,13 +122,13 @@ class ProfileScreen extends ConsumerWidget {
                     'v2.0.0',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
-              const Divider(height: 1),
+              Divider(height: 1),
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: <Widget>[
@@ -137,12 +138,12 @@ class ProfileScreen extends ConsumerWidget {
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Telkom Property Surabaya Utara',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.pal.textSecondary,
                       ),
                     ),
                   ),
@@ -156,7 +157,7 @@ class ProfileScreen extends ConsumerWidget {
         PressButton(
           label: 'KELUAR',
           variant: AppButtonVariant.outline,
-          icon: const Icon(Icons.logout, size: AppSizes.iconSm),
+          icon: Icon(Icons.logout, size: AppSizes.iconSm),
           onPressed: () => _konfirmasiKeluar(context, ref),
         ),
         const SizedBox(height: AppSpacing.xxl),
@@ -230,16 +231,16 @@ class ProfileScreen extends ConsumerWidget {
     final bool? ya = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
-        title: const Text('Keluar dari Mei-V?'),
-        content: const Text('Anda perlu masuk kembali untuk memakai aplikasi.'),
+        title: Text('Keluar dari Mei-V?'),
+        content: Text('Anda perlu masuk kembali untuk memakai aplikasi.'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('BATAL'),
+            child: Text('BATAL'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('KELUAR'),
+            child: Text('KELUAR'),
           ),
         ],
       ),
@@ -284,16 +285,16 @@ class _Pintasan extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.pal.textPrimary,
                 ),
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
-              color: AppColors.textSecondary,
+              color: context.pal.textSecondary,
               size: AppSizes.iconMd,
             ),
           ],
@@ -333,18 +334,18 @@ class _InfoTile extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: context.pal.textPrimary,
                     ),
                   ),
                 ],
@@ -375,7 +376,7 @@ class _PemilihTema extends ConsumerWidget {
             onTap: () =>
                 ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
           ),
-          const Divider(height: 1),
+          Divider(height: 1),
           _BarisTema(
             ikon: Icons.dark_mode_outlined,
             label: 'Gelap',
@@ -383,7 +384,7 @@ class _PemilihTema extends ConsumerWidget {
             onTap: () =>
                 ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
           ),
-          const Divider(height: 1),
+          Divider(height: 1),
           _BarisTema(
             ikon: Icons.settings_suggest_outlined,
             label: 'Sistem',
@@ -424,7 +425,7 @@ class _BarisTema extends StatelessWidget {
             Icon(
               ikon,
               size: 20,
-              color: terpilih ? AppColors.primary : AppColors.textSecondary,
+              color: terpilih ? AppColors.primary : context.pal.textSecondary,
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -435,12 +436,12 @@ class _BarisTema extends StatelessWidget {
                   fontWeight: terpilih ? FontWeight.w700 : FontWeight.w400,
                   color: terpilih
                       ? AppColors.primary
-                      : AppColors.textPrimary,
+                      : context.pal.textPrimary,
                 ),
               ),
             ),
             if (terpilih)
-              const Icon(Icons.check_circle, size: 18, color: AppColors.primary),
+              Icon(Icons.check_circle, size: 18, color: AppColors.primary),
           ],
         ),
       ),

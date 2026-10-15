@@ -18,6 +18,7 @@ import '../../widgets/app_button.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/foto_picker_field.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Form pemeliharaan dinamis berdasarkan spesifikasi kategori.
 /// Teknisi mengisi checklist item per item, lalu kirim ke server.
@@ -157,7 +158,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       useRedAppBar: true,
       title: 'Form Maintenance',
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: Icon(Icons.arrow_back),
         onPressed: () => Navigator.of(context).maybePop(),
       ),
       body: spesifikasiAsync.when(
@@ -184,14 +185,14 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
             kondisiTerpilih: _kondisiKeseluruhan != null,
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Checklist Pemeriksaan',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           ...list.map((Spesifikasi s) => _buildInput(s)),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Kondisi Keseluruhan',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
@@ -241,20 +242,20 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('$label$satuanText', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            Text('$label$satuanText', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.borderSubtle),
+                border: Border.all(color: context.pal.borderSubtle),
                 borderRadius: BorderRadius.circular(12),
-                color: AppColors.surfaceAlt,
+                color: context.pal.surfaceAlt,
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   isExpanded: true,
                   value: _selectValues[s.idSpesifikasi],
-                  hint: const Text('Pilih'),
+                  hint: Text('Pilih'),
                   items: s.opsi
                       .map((String o) => DropdownMenuItem<String>(value: o, child: Text(o)))
                       .toList(),
@@ -434,7 +435,7 @@ class _ProgresChecklist extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: lengkap ? AppColors.kondisiBaik : AppColors.textPrimary,
+                    color: lengkap ? AppColors.kondisiBaik : context.pal.textPrimary,
                   ),
                 ),
               ),
@@ -459,7 +460,7 @@ class _ProgresChecklist extends StatelessWidget {
                 return LinearProgressIndicator(
                   value: v,
                   minHeight: 6,
-                  backgroundColor: AppColors.surface,
+                  backgroundColor: context.pal.surface,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     lengkap ? AppColors.kondisiBaik : AppColors.primary,
                   ),
@@ -489,23 +490,23 @@ class _HeaderInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _row('Barcode', formState.barcodeAlat),
+          _row(context, 'Barcode', formState.barcodeAlat),
           const SizedBox(height: 4),
-          _row('Waktu', _fmt(formState.waktuMaintenance)),
+          _row(context, 'Waktu', _fmt(formState.waktuMaintenance)),
         ],
       ),
     );
   }
 
-  Widget _row(String label, String value) {
+  Widget _row(BuildContext context, String label, String value) {
     return Row(
       children: <Widget>[
         SizedBox(
           width: 70,
-          child: Text(label, style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          child: Text(label, style: TextStyle(fontSize: 12, color: context.pal.textSecondary)),
         ),
         Expanded(
-          child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+          child: Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
         ),
       ],
     );
@@ -541,10 +542,10 @@ class _KondisiSelector extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: selected ? (item['color'] as Color).withValues(alpha: 0.1) : AppColors.surfaceAlt,
+                  color: selected ? (item['color'] as Color).withValues(alpha: 0.1) : context.pal.surfaceAlt,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: selected ? item['color'] as Color : AppColors.borderSubtle,
+                    color: selected ? item['color'] as Color : context.pal.borderSubtle,
                     width: selected ? 2 : 1,
                   ),
                 ),
@@ -553,7 +554,7 @@ class _KondisiSelector extends StatelessWidget {
                     Icon(
                       Icons.circle,
                       size: 14,
-                      color: selected ? item['color'] as Color : AppColors.divider,
+                      color: selected ? item['color'] as Color : context.pal.divider,
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -561,7 +562,7 @@ class _KondisiSelector extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                        color: selected ? item['color'] as Color : AppColors.textSecondary,
+                        color: selected ? item['color'] as Color : context.pal.textSecondary,
                       ),
                     ),
                   ],

@@ -17,6 +17,7 @@ import '../../widgets/stat_tile.dart';
 import '../../widgets/status_badge.dart';
 import '../../widgets/sync_banner.dart';
 import 'home_header.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Beranda Teknisi — "Tugas Hari Ini".
 ///
@@ -179,7 +180,7 @@ class _TugasCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: overdue ? AppColors.overdueSoft : AppColors.surfaceMuted,
+              color: overdue ? AppColors.overdueSoft : context.pal.surfaceMuted,
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             alignment: Alignment.center,
@@ -187,7 +188,7 @@ class _TugasCard extends StatelessWidget {
                 ? Image.asset(ikon, width: 30, height: 30, fit: BoxFit.contain)
                 : Icon(
                     Icons.build_outlined,
-                    color: overdue ? AppColors.overdue : AppColors.textSecondary,
+                    color: overdue ? AppColors.overdue : context.pal.textSecondary,
                   ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -197,10 +198,10 @@ class _TugasCard extends StatelessWidget {
               children: <Widget>[
                 Text(
                   tugas.barcodeAlat,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.pal.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -208,18 +209,18 @@ class _TugasCard extends StatelessWidget {
                   tugas.merkAlat,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: context.pal.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Row(
                   children: <Widget>[
-                    const Icon(
+                    Icon(
                       Icons.location_on_outlined,
                       size: 14,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
@@ -227,9 +228,9 @@ class _TugasCard extends StatelessWidget {
                         tugas.detailLokasi,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: AppColors.textSecondary,
+                          color: context.pal.textSecondary,
                         ),
                       ),
                     ),
@@ -262,9 +263,9 @@ class _TugasCard extends StatelessWidget {
               const SizedBox(height: AppSpacing.xs),
               Text(
                 tugas.teksKeterlambatan,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textSecondary,
+                  color: context.pal.textSecondary,
                 ),
               ),
             ],

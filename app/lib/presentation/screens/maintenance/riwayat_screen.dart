@@ -15,6 +15,7 @@ import '../../widgets/filter_chip_bar.dart';
 import '../../widgets/foto_gallery.dart' show FotoCountBadge;
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Layar Riwayat Maintenance.
 ///
@@ -71,7 +72,7 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
               AppTextField(
                 controller: _cari,
                 hint: 'Cari kode alat...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                prefixIcon: Icon(Icons.search, color: AppColors.primary),
                 onSubmitted: (_) => _muat(),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -141,7 +142,7 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
                 child: TextButton(
                   onPressed: () =>
                       ref.read(maintenanceListProvider.notifier).nextPage(),
-                  child: const Text('Muat lebih banyak'),
+                  child: Text('Muat lebih banyak'),
                 ),
               ),
             );
@@ -194,10 +195,10 @@ class _KartuRiwayat extends StatelessWidget {
               Expanded(
                 child: Text(
                   m.waktuTampil,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.pal.textPrimary,
                   ),
                 ),
               ),
@@ -215,33 +216,33 @@ class _KartuRiwayat extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             '${m.barcodeAlat} • ${m.namaKategori ?? '-'}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.pal.textPrimary,
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Row(
             children: <Widget>[
-              const Icon(
+              Icon(
                 Icons.person_outline,
                 size: 14,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 m.namaTeknisi,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textSecondary,
+                  color: context.pal.textSecondary,
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
-              const Icon(
+              Icon(
                 Icons.location_on_outlined,
                 size: 14,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
               ),
               const SizedBox(width: AppSpacing.xs),
               Expanded(
@@ -249,9 +250,9 @@ class _KartuRiwayat extends StatelessWidget {
                   m.namaLokasi ?? '-',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: context.pal.textSecondary,
                   ),
                 ),
               ),
@@ -263,10 +264,10 @@ class _KartuRiwayat extends StatelessWidget {
               m.detailRingkas,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 height: 1.5,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
               ),
             ),
           ],
@@ -301,24 +302,24 @@ class _KartuRiwayat extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.surfaceMuted,
+                color: context.pal.surfaceMuted,
                 borderRadius: BorderRadius.circular(AppRadius.xs),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Icon(
+                  Icon(
                     Icons.notes,
                     size: 16,
-                    color: AppColors.textSecondary,
+                    color: context.pal.textSecondary,
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
                       m.catatan!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textPrimary,
+                        color: context.pal.textPrimary,
                       ),
                     ),
                   ),

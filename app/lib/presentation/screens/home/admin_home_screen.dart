@@ -17,6 +17,7 @@ import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
 import '../../widgets/status_badge.dart';
 import 'home_header.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Beranda Admin — "Pusat Kendali".
 ///
@@ -210,19 +211,19 @@ class _AksiCepat extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.pal.textPrimary,
             ),
           ),
           Text(
             keterangan,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
-              color: AppColors.textSecondary,
+              color: context.pal.textSecondary,
             ),
           ),
         ],
@@ -253,7 +254,7 @@ class _PapanOverdue extends ConsumerWidget {
       ),
       data: (List<OverdueItem> list) {
         if (list.isEmpty) {
-          return const AppCard(
+          return AppCard(
             child: Row(
               children: <Widget>[
                 Icon(Icons.thumb_up_alt_outlined, color: AppColors.tepatWaktu),
@@ -261,7 +262,7 @@ class _PapanOverdue extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     'Tidak ada alat yang melewati siklus pemeliharaan.',
-                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 13, color: context.pal.textSecondary),
                   ),
                 ),
               ],
@@ -276,7 +277,7 @@ class _PapanOverdue extends ConsumerWidget {
                       onTap: () => context.goAlat(o.barcodeAlat),
                       child: Row(
                         children: <Widget>[
-                          const Icon(Icons.schedule, color: AppColors.overdue),
+                          Icon(Icons.schedule, color: AppColors.overdue),
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
@@ -284,7 +285,7 @@ class _PapanOverdue extends ConsumerWidget {
                               children: <Widget>[
                                 Text(
                                   o.barcodeAlat,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -293,9 +294,9 @@ class _PapanOverdue extends ConsumerWidget {
                                   '${o.merkAlat} • ${o.namaLokasi}',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.textSecondary,
+                                    color: context.pal.textSecondary,
                                   ),
                                 ),
                               ],

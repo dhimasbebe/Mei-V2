@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/role_nav_provider.dart';
 import '../widgets/responsive.dart';
 import '../widgets/role_badge.dart';
+import '../../core/theme/app_palette.dart';
 
 /// Tata letak dashboard web (lebar >= 768): sidebar navigasi + header + konten.
 ///
@@ -36,7 +37,7 @@ class WebShellLayout extends ConsumerWidget {
     final double sidebarWidth = expanded ? 248 : 84;
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceAlt,
+      backgroundColor: context.pal.surfaceAlt,
       body: Row(
         children: <Widget>[
           _Sidebar(
@@ -94,7 +95,7 @@ class _Sidebar extends StatelessWidget {
       duration: AppDurations.normal,
       curve: AppCurves.standard,
       width: width,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.black,
         boxShadow: AppShadows.card,
       ),
@@ -135,7 +136,7 @@ class _Sidebar extends StatelessWidget {
                 },
               ),
             ),
-            const Divider(color: Color(0xFF2B2B2B), height: 1),
+            Divider(color: Color(0xFF2B2B2B), height: 1),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
@@ -145,7 +146,7 @@ class _Sidebar extends StatelessWidget {
                     backgroundColor: AppColors.primary,
                     child: Text(
                       user?.inisial ?? '?',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.background,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
@@ -162,7 +163,7 @@ class _Sidebar extends StatelessWidget {
                             user?.namaUsers ?? '-',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.background,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -170,7 +171,7 @@ class _Sidebar extends StatelessWidget {
                           ),
                           Text(
                             user?.roleUsers ?? '-',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Color(0xFF9E9E9E),
                               fontSize: 11,
                             ),
@@ -181,7 +182,7 @@ class _Sidebar extends StatelessWidget {
                     IconButton(
                       tooltip: 'Keluar',
                       onPressed: onLogout,
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.logout,
                         color: Color(0xFFBDBDBD),
                         size: AppSizes.iconSm,
@@ -213,7 +214,7 @@ class _SidebarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color warna = aktif ? AppColors.background : const Color(0xFFBDBDBD);
+    final Color warna = aktif ? AppColors.background : Color(0xFFBDBDBD);
 
     return Material(
       color: aktif ? AppColors.primary : Colors.transparent,
@@ -263,18 +264,18 @@ class _Header extends StatelessWidget {
     return Container(
       height: 64,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.background,
-        border: Border(bottom: BorderSide(color: AppColors.borderSubtle)),
+        border: Border(bottom: BorderSide(color: context.pal.borderSubtle)),
       ),
       child: Row(
         children: <Widget>[
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.pal.textPrimary,
             ),
           ),
           const Spacer(),
@@ -283,9 +284,9 @@ class _Header extends StatelessWidget {
             const SizedBox(width: AppSpacing.md),
             Text(
               user!.namaUsers,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),

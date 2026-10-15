@@ -18,6 +18,7 @@ import '../../widgets/app_text_field.dart';
 import '../../widgets/scan/scan_control_bar.dart';
 import '../../widgets/scan/scan_overlay.dart';
 import '../../widgets/scan/scan_state_view.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Fase layar Scan. Setiap fase pasti punya teks penjelasan + tombol aksi.
 enum ScanFase {
@@ -212,14 +213,14 @@ class _ScanScreenState extends ConsumerState<ScanScreen>
     final String? hasil = await showDialog<String>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
-        title: const Text('Input Manual'),
+        title: Text('Input Manual'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Text(
               'Ketik kode alat bila barcode sulit terbaca.',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 13, color: context.pal.textSecondary),
             ),
             const SizedBox(height: AppSpacing.md),
             AppTextField(
@@ -234,11 +235,11 @@ class _ScanScreenState extends ConsumerState<ScanScreen>
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('BATAL'),
+            child: Text('BATAL'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(ctrl.text.trim()),
-            child: const Text('CARI'),
+            child: Text('CARI'),
           ),
         ],
       ),
@@ -334,7 +335,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen>
 
         if (_fase == ScanFase.izinDitolak)
           ColoredBox(
-            color: AppColors.surfaceAlt,
+            color: context.pal.surfaceAlt,
             child: ScanStateView(
               icon: Icons.no_photography_outlined,
               title: 'Izin kamera diperlukan',
@@ -364,7 +365,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen>
 
         if (_fase == ScanFase.kameraTidakAda || _fase == ScanFase.kameraGagal)
           ColoredBox(
-            color: AppColors.surfaceAlt,
+            color: context.pal.surfaceAlt,
             child: ScanStateView(
               icon: _fase == ScanFase.kameraTidakAda
                   ? Icons.videocam_off_outlined
@@ -403,7 +404,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen>
 
         if (_fase == ScanFase.tidakTerdaftar)
           ColoredBox(
-            color: AppColors.surfaceAlt,
+            color: context.pal.surfaceAlt,
             child: ScanStateView(
               icon: Icons.search_off,
               title: 'Barcode tidak terdaftar',
@@ -428,7 +429,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen>
 
         if (_fase == ScanFase.offline)
           ColoredBox(
-            color: AppColors.surfaceAlt,
+            color: context.pal.surfaceAlt,
             child: ScanStateView(
               icon: Icons.wifi_off_outlined,
               title: 'Tidak ada koneksi',
@@ -480,7 +481,7 @@ class _KartuPetunjuk extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          const Icon(Icons.lightbulb_outline, color: Colors.amber, size: 20),
+          Icon(Icons.lightbulb_outline, color: Colors.amber, size: 20),
           const SizedBox(width: AppSpacing.md),
           const Expanded(
             child: Text(
@@ -490,7 +491,7 @@ class _KartuPetunjuk extends StatelessWidget {
           ),
           TextButton(
             onPressed: onManual,
-            child: const Text(
+            child: Text(
               'Manual',
               style: TextStyle(color: Colors.white, fontSize: 12),
             ),

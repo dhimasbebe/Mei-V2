@@ -15,6 +15,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Manajemen Alat (Admin) — daftar alat beserta barcode, kategori, dan lokasi.
 class AlatManagementScreen extends ConsumerStatefulWidget {
@@ -62,7 +63,7 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
               AppTextField(
                 controller: _cari,
                 hint: 'Cari barcode atau merk...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                prefixIcon: Icon(Icons.search, color: AppColors.primary),
                 onSubmitted: (String v) =>
                     ref.read(masterAlatProvider.notifier).load(query: v),
               ),
@@ -71,8 +72,8 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () => _form(),
-                  icon: const Icon(Icons.add, size: AppSizes.iconSm),
-                  label: const Text('TAMBAH ALAT'),
+                  icon: Icon(Icons.add, size: AppSizes.iconSm),
+                  label: Text('TAMBAH ALAT'),
                 ),
               ),
             ],
@@ -134,7 +135,7 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                   if (ikon != null)
                     Image.asset(ikon, width: 34, height: 34, fit: BoxFit.contain)
                   else
-                    const Icon(Icons.build_outlined, color: AppColors.primary),
+                    Icon(Icons.build_outlined, color: AppColors.primary),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
@@ -144,7 +145,7 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                           a.barcodeAlat,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                           ),
@@ -154,9 +155,9 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                           '${a.merkAlat} • ${a.namaKategori ?? '-'}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.textSecondary,
+                            color: context.pal.textSecondary,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
@@ -172,16 +173,16 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                   ),
                   IconButton(
                     tooltip: 'Ubah',
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.edit_outlined,
                       size: AppSizes.iconSm,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                     onPressed: () => _form(alat: a),
                   ),
                   IconButton(
                     tooltip: 'Hapus',
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete_outline,
                       size: AppSizes.iconSm,
                       color: AppColors.statusDanger,
@@ -237,7 +238,7 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                     const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<int>(
                       initialValue: idKategori,
-                      decoration: const InputDecoration(labelText: 'Kategori'),
+                      decoration: InputDecoration(labelText: 'Kategori'),
                       items: kategori
                           .map(
                             (Kategori k) => DropdownMenuItem<int>(
@@ -252,7 +253,7 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                     const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<int?>(
                       initialValue: idLokasi,
-                      decoration: const InputDecoration(labelText: 'Lokasi'),
+                      decoration: InputDecoration(labelText: 'Lokasi'),
                       items: <DropdownMenuItem<int?>>[
                         const DropdownMenuItem<int?>(
                           value: null,
@@ -273,11 +274,11 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(false),
-                  child: const Text('BATAL'),
+                  child: Text('BATAL'),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(true),
-                  child: const Text('SIMPAN'),
+                  child: Text('SIMPAN'),
                 ),
               ],
             ),
@@ -317,18 +318,18 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
     final bool ya = await showDialog<bool>(
           context: context,
           builder: (BuildContext ctx) => AlertDialog(
-            title: const Text('Hapus alat?'),
+            title: Text('Hapus alat?'),
             content: Text(
               'Alat ${a.barcodeAlat} (${a.merkAlat}) akan dihapus permanen.',
             ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(false),
-                child: const Text('BATAL'),
+                child: Text('BATAL'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(true),
-                child: const Text('HAPUS'),
+                child: Text('HAPUS'),
               ),
             ],
           ),

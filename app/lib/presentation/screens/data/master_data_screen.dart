@@ -14,6 +14,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Master Data (Admin) — kategori, lokasi, dan checklist spesifikasi.
 ///
@@ -53,7 +54,7 @@ class _MasterDataScreenState extends ConsumerState<MasterDataScreen>
         TabBar(
           controller: _tab,
           labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.textSecondary,
+          unselectedLabelColor: context.pal.textSecondary,
           indicatorColor: AppColors.primary,
           tabs: const <Widget>[
             Tab(text: 'Kategori'),
@@ -325,7 +326,7 @@ class _TabSpesifikasiState extends ConsumerState<_TabSpesifikasi> {
           ),
           child: DropdownButtonFormField<int>(
             initialValue: terpilih,
-            decoration: const InputDecoration(labelText: 'Kategori'),
+            decoration: InputDecoration(labelText: 'Kategori'),
             items: kategori.items
                 .map(
                   (Kategori k) => DropdownMenuItem<int>(
@@ -386,7 +387,7 @@ class _TabSpesifikasiState extends ConsumerState<_TabSpesifikasi> {
         const SizedBox(height: AppSpacing.md),
         DropdownButtonFormField<String>(
           initialValue: tipe,
-          decoration: const InputDecoration(labelText: 'Tipe input'),
+          decoration: InputDecoration(labelText: 'Tipe input'),
           items: const <DropdownMenuItem<String>>[
             DropdownMenuItem<String>(value: 'text', child: Text('Teks')),
             DropdownMenuItem<String>(value: 'number', child: Text('Angka')),
@@ -490,7 +491,7 @@ class _KerangkaTab extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: onTambah,
-              icon: const Icon(Icons.add, size: AppSizes.iconSm),
+              icon: Icon(Icons.add, size: AppSizes.iconSm),
               label: Text(labelTambah),
             ),
           ),
@@ -585,7 +586,7 @@ class _BarisData extends StatelessWidget {
                     judul,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
@@ -595,9 +596,9 @@ class _BarisData extends StatelessWidget {
                     keterangan,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                   ),
                 ],
@@ -614,16 +615,16 @@ class _BarisData extends StatelessWidget {
             ],
             IconButton(
               tooltip: 'Ubah',
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit_outlined,
                 size: AppSizes.iconSm,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
               ),
               onPressed: onEdit,
             ),
             IconButton(
               tooltip: 'Hapus',
-              icon: const Icon(
+              icon: Icon(
                 Icons.delete_outline,
                 size: AppSizes.iconSm,
                 color: AppColors.statusDanger,
@@ -653,11 +654,11 @@ Future<bool> _dialogForm(
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(false),
-          child: const Text('BATAL'),
+          child: Text('BATAL'),
         ),
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(true),
-          child: const Text('SIMPAN'),
+          child: Text('SIMPAN'),
         ),
       ],
     ),
@@ -679,11 +680,11 @@ Future<bool> _konfirmasiHapus(
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(false),
-          child: const Text('BATAL'),
+          child: Text('BATAL'),
         ),
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(true),
-          child: const Text('HAPUS'),
+          child: Text('HAPUS'),
         ),
       ],
     ),

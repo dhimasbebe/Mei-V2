@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../providers/draft_provider.dart';
 import '../../widgets/empty_state.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Layar antrean sinkronisasi offline (Tahap 3 — WS A, §7.1).
 ///
@@ -37,18 +38,18 @@ class _SyncQueueScreenState extends ConsumerState<SyncQueueScreen> {
         backgroundColor: AppColors.background,
         surfaceTintColor: AppColors.background,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Antrean Sinkron',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: context.pal.textPrimary,
           ),
         ),
         actions: <Widget>[
           IconButton(
             tooltip: 'Kirim sekarang',
-            icon: const Icon(Icons.sync, color: AppColors.primary),
+            icon: Icon(Icons.sync, color: AppColors.primary),
             onPressed: state.sedangSinkron
                 ? null
                 : () =>
@@ -59,7 +60,7 @@ class _SyncQueueScreenState extends ConsumerState<SyncQueueScreen> {
       body: Column(
         children: <Widget>[
           _Ringkasan(state: state),
-          const Divider(height: 1, color: AppColors.borderSubtle),
+          Divider(height: 1, color: context.pal.borderSubtle),
           Expanded(
             child: items.isEmpty
                 ? const EmptyState(
@@ -106,7 +107,7 @@ class _Ringkasan extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
-      color: AppColors.surfaceMuted,
+      color: context.pal.surfaceMuted,
       child: Row(
         children: <Widget>[
           Icon(
@@ -128,20 +129,20 @@ class _Ringkasan extends StatelessWidget {
           const SizedBox(width: AppSpacing.lg),
           Text(
             'Menunggu: ${state.jumlahMenunggu}',
-            style: const TextStyle(
-                fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(
+                fontSize: 12, color: context.pal.textSecondary),
           ),
           const SizedBox(width: AppSpacing.md),
           Text(
             'Terkirim: ${state.jumlahTerkirim}',
-            style: const TextStyle(
-                fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(
+                fontSize: 12, color: context.pal.textSecondary),
           ),
           if (state.jumlahDitolak > 0) ...<Widget>[
             const SizedBox(width: AppSpacing.md),
             Text(
               'Ditolak: ${state.jumlahDitolak}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 color: AppColors.statusDanger,
@@ -150,7 +151,7 @@ class _Ringkasan extends StatelessWidget {
           ],
           if (state.perluLoginUlang) ...<Widget>[
             const SizedBox(width: AppSpacing.md),
-            const Icon(Icons.lock_outline,
+            Icon(Icons.lock_outline,
                 size: 14, color: AppColors.statusDanger),
             const SizedBox(width: 4),
             const Expanded(
@@ -239,9 +240,9 @@ class _KartuDraf extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.pal.surface,
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: context.pal.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,10 +252,10 @@ class _KartuDraf extends StatelessWidget {
               Expanded(
                 child: Text(
                   '${draf.barcodeAlat} • ${_fmt.format(draf.waktuMaintenance)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.pal.textPrimary,
                   ),
                 ),
               ),
@@ -285,16 +286,16 @@ class _KartuDraf extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           Text(
             'Percobaan: ${draf.attempt} • Foto: ${draf.fotoPaths.length}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
-              color: AppColors.textSecondary,
+              color: context.pal.textSecondary,
             ),
           ),
           if (draf.pesanError != null && draf.pesanError!.isNotEmpty) ...<Widget>[
             const SizedBox(height: AppSpacing.sm),
             Text(
               draf.pesanError!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 color: AppColors.statusDanger,
               ),
@@ -305,9 +306,9 @@ class _KartuDraf extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Text(
               'Coba lagi otomatis ${_fmt.format(draf.nextAttemptAt!)}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
               ),
             ),
           ],
@@ -319,7 +320,7 @@ class _KartuDraf extends StatelessWidget {
               children: <Widget>[
                 TextButton(
                   onPressed: onHapus,
-                  child: const Text(
+                  child: Text(
                     'Hapus',
                     style: TextStyle(color: AppColors.statusDanger),
                   ),
@@ -331,7 +332,7 @@ class _KartuDraf extends StatelessWidget {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: onCobaLagi,
-                  child: const Text('Coba lagi'),
+                  child: Text('Coba lagi'),
                 ),
               ],
             ),

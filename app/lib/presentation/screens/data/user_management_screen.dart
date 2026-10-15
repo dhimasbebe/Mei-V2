@@ -14,6 +14,7 @@ import '../../widgets/filter_chip_bar.dart';
 import '../../widgets/press_button.dart';
 import '../../widgets/role_badge.dart';
 import '../../widgets/skeleton.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Manajemen User (Admin) — daftar akun, pencarian, filter role, CRUD.
 class UserManagementScreen extends ConsumerStatefulWidget {
@@ -51,7 +52,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
               AppTextField(
                 controller: _cari,
                 hint: 'Cari nama atau NIP...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                prefixIcon: Icon(Icons.search, color: AppColors.primary),
                 onSubmitted: (String v) =>
                     ref.read(userListProvider.notifier).search(v),
               ),
@@ -72,7 +73,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
               const SizedBox(height: AppSpacing.sm),
               PressButton(
                 label: 'TAMBAH USER',
-                icon: const Icon(Icons.person_add_alt, size: AppSizes.iconSm),
+                icon: Icon(Icons.person_add_alt, size: AppSizes.iconSm),
                 onPressed: () => _form(),
               ),
             ],
@@ -120,7 +121,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                 const SizedBox(height: AppSpacing.md),
                 DropdownButtonFormField<String>(
                   initialValue: role,
-                  decoration: const InputDecoration(labelText: 'Role'),
+                  decoration: InputDecoration(labelText: 'Role'),
                   items: const <DropdownMenuItem<String>>[
                     DropdownMenuItem<String>(value: 'Admin', child: Text('Admin')),
                     DropdownMenuItem<String>(
@@ -142,7 +143,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     pesanError!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: AppColors.statusDanger,
                     ),
@@ -154,7 +155,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('BATAL'),
+              child: Text('BATAL'),
             ),
             TextButton(
               onPressed: () {
@@ -170,7 +171,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                 }
                 Navigator.of(ctx).pop(true);
               },
-              child: const Text('SIMPAN'),
+              child: Text('SIMPAN'),
             ),
           ],
         ),
@@ -213,7 +214,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     final bool? ya = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
-        title: const Text('Hapus user?'),
+        title: Text('Hapus user?'),
         content: Text(
           'Akun ${user.namaUsers} (${user.username}) akan dihapus permanen. '
           'Tindakan ini tidak dapat dibatalkan.',
@@ -221,11 +222,11 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('BATAL'),
+            child: Text('BATAL'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('HAPUS'),
+            child: Text('HAPUS'),
           ),
         ],
       ),
@@ -304,7 +305,7 @@ class _Isi extends ConsumerWidget {
                     backgroundColor: AppColors.primarySoft,
                     child: Text(
                       u.inisial,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
                       ),
@@ -319,7 +320,7 @@ class _Isi extends ConsumerWidget {
                           u.namaUsers,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                           ),
@@ -329,9 +330,9 @@ class _Isi extends ConsumerWidget {
                           '${u.username}${u.emailUsers == null ? '' : ' • ${u.emailUsers}'}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.textSecondary,
+                            color: context.pal.textSecondary,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
@@ -341,16 +342,16 @@ class _Isi extends ConsumerWidget {
                   ),
                   IconButton(
                     tooltip: 'Ubah',
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.edit_outlined,
                       size: AppSizes.iconSm,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                     onPressed: () => onEdit(u),
                   ),
                   IconButton(
                     tooltip: 'Hapus',
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete_outline,
                       size: AppSizes.iconSm,
                       color: AppColors.statusDanger,

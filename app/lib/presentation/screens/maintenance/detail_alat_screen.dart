@@ -10,6 +10,7 @@ import '../../../providers/alat_provider.dart';
 import '../../../providers/maintenance_provider.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Layar Detail Alat setelah scan / pencarian.
 /// Menampilkan: Kode Alat, Merk Alat, Detail Lokasi, status overdue.
@@ -26,7 +27,7 @@ class DetailAlatScreen extends ConsumerWidget {
       useRedAppBar: true,
       title: 'Detail Alat',
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: Icon(Icons.arrow_back),
         onPressed: () => context.goHome(),
       ),
       body: alatAsync.when(
@@ -36,7 +37,7 @@ class DetailAlatScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Icon(Icons.error_outline, color: AppColors.primary, size: 48),
+              Icon(Icons.error_outline, color: AppColors.primary, size: 48),
               const SizedBox(height: 12),
               Text('Barcode tidak ditemukan.\n$e', textAlign: TextAlign.center),
               const SizedBox(height: 16),
@@ -145,7 +146,7 @@ class _DetailBody extends ConsumerWidget {
           const SizedBox(height: 24),
           AppButton(
             label: 'ISI FORM MAINTENANCE',
-            icon: const Icon(Icons.edit_document, size: 18, color: Colors.white),
+            icon: Icon(Icons.edit_document, size: 18, color: Colors.white),
             onPressed: () {
               ref.read(maintenanceFormProvider.notifier).init(
                     barcodeAlat: alat.barcodeAlat,
@@ -202,7 +203,7 @@ class _HeroAlat extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.sm),
             child: ikon != null
                 ? Image.asset(ikon, fit: BoxFit.contain)
-                : const Icon(
+                : Icon(
                     Icons.build_outlined,
                     color: AppColors.primary,
                     size: AppSizes.iconLg,
@@ -217,7 +218,7 @@ class _HeroAlat extends StatelessWidget {
                   alat.barcodeAlat,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.background,
@@ -256,7 +257,7 @@ class _HeroAlat extends StatelessWidget {
                       const SizedBox(width: AppSpacing.xs),
                       Text(
                         overdue ? 'Perlu pemeliharaan' : 'Dalam siklus',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: AppColors.background,
@@ -302,7 +303,7 @@ class _InfoCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 ),
               ],
             ),

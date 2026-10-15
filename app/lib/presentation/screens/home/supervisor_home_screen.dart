@@ -17,6 +17,7 @@ import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
 import '../../widgets/status_badge.dart';
 import 'home_header.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Beranda Supervisor — "Pengawasan Eksekusi".
 ///
@@ -173,7 +174,7 @@ class _AntreanVerifikasi extends ConsumerWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Icon(
+                      Icon(
                         Icons.pending_actions,
                         color: AppColors.verifikasiMenunggu,
                       ),
@@ -184,10 +185,10 @@ class _AntreanVerifikasi extends ConsumerWidget {
                           children: <Widget>[
                             Text(
                               v.barcodeAlat,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: context.pal.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -195,17 +196,17 @@ class _AntreanVerifikasi extends ConsumerWidget {
                               '${v.teknisi} • ${v.detailLokasi}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.textSecondary,
+                                color: context.pal.textSecondary,
                               ),
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
                               _waktu(v.waktuMaintenance),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11,
-                                color: AppColors.textSecondary,
+                                color: context.pal.textSecondary,
                               ),
                             ),
                           ],
@@ -267,7 +268,7 @@ class _PapanOverdue extends ConsumerWidget {
                       onTap: () => context.goAlat(o.barcodeAlat),
                       child: Row(
                         children: <Widget>[
-                          const Icon(Icons.schedule, color: AppColors.overdue),
+                          Icon(Icons.schedule, color: AppColors.overdue),
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
@@ -275,7 +276,7 @@ class _PapanOverdue extends ConsumerWidget {
                               children: <Widget>[
                                 Text(
                                   o.barcodeAlat,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -284,9 +285,9 @@ class _PapanOverdue extends ConsumerWidget {
                                   '${o.merkAlat} • ${o.namaLokasi}',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.textSecondary,
+                                    color: context.pal.textSecondary,
                                   ),
                                 ),
                               ],

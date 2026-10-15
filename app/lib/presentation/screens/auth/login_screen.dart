@@ -9,6 +9,7 @@ import '../../widgets/app_scaffold.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/press_button.dart';
 import '../../widgets/role_badge.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Layar login Mei-V2 (PRD §6).
 ///
@@ -117,13 +118,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    const Text(
+                    Text(
                       AppStrings.tagline,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
+                        color: context.pal.textSecondary,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xxl),
@@ -134,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       keyboardType: TextInputType.number,
                       enabled: enabled,
                       onChanged: _onInputChanged,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.person_outline,
                         color: AppColors.primary,
                       ),
@@ -152,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       obscure: _obscure,
                       enabled: enabled,
                       onChanged: _onInputChanged,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.lock_outline,
                         color: AppColors.primary,
                       ),
@@ -167,7 +168,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           _obscure
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: AppColors.textSecondary,
+                          color: context.pal.textSecondary,
                         ),
                       ),
                       validator: (String? v) => (v == null || v.length < 4)
@@ -181,35 +182,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       isExpanded: true,
                       decoration: InputDecoration(
                         labelText: 'Role',
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.badge_outlined,
                           color: AppColors.primary,
                         ),
                         filled: true,
-                        fillColor: AppColors.surfaceMuted,
+                        fillColor: context.pal.surfaceMuted,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          borderSide: const BorderSide(
-                            color: AppColors.divider,
+                          borderSide: BorderSide(
+                            color: context.pal.divider,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          borderSide: const BorderSide(
-                            color: AppColors.divider,
+                          borderSide: BorderSide(
+                            color: context.pal.divider,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                             color: AppColors.primary,
                             width: 1.5,
                           ),
                         ),
                       ),
-                      hint: const Text(
+                      hint: Text(
                         AppStrings.hintPilihRole,
-                        style: TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: context.pal.textSecondary),
                       ),
                       items: <DropdownMenuItem<String>>[
                         for (final String r in AppStrings.roles)
@@ -246,7 +247,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     const SizedBox(height: AppSpacing.xxl),
                     // Footer ko-branding (AC-02): pemisah, logo Telkom
                     // Property 32px, nama instansi, versi aplikasi.
-                    const Divider(color: AppColors.divider, height: 1),
+                    Divider(color: context.pal.divider, height: 1),
                     const SizedBox(height: AppSpacing.lg),
                     Center(
                       child: Image.asset(
@@ -256,22 +257,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    const Text(
+                    Text(
                       AppStrings.telkomPropertySurabayaUtara,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
+                        color: context.pal.textSecondary,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xxs),
-                    const Text(
+                    Text(
                       AppStrings.appVersion,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textSecondary,
+                        color: context.pal.textSecondary,
                       ),
                     ),
                   ],
@@ -305,7 +306,7 @@ class _ErrorBanner extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Icon(
+          Icon(
             Icons.error_outline,
             color: AppColors.statusDanger,
             size: AppSizes.iconSm,
@@ -314,7 +315,7 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.statusDanger,
                 fontSize: 13,
               ),

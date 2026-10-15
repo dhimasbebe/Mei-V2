@@ -16,6 +16,7 @@ import '../../widgets/responsive.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Dashboard Overview — ringkasan KPI, tren, distribusi, dan alat terlambat.
 ///
@@ -95,17 +96,17 @@ class DashboardOverviewScreen extends ConsumerWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Expanded(child: _panelDistribusi(distribusi, ref)),
+                Expanded(child: _panelDistribusi(context, distribusi, ref)),
                 const SizedBox(width: AppSpacing.lg),
-                Expanded(child: _panelOverdue(overdue, ref)),
+                Expanded(child: _panelOverdue(context, overdue, ref)),
               ],
             )
           else
             Column(
               children: <Widget>[
-                _panelDistribusi(distribusi, ref),
+                _panelDistribusi(context, distribusi, ref),
                 const SizedBox(height: AppSpacing.lg),
-                _panelOverdue(overdue, ref),
+                _panelOverdue(context, overdue, ref),
               ],
             ),
           const SizedBox(height: AppSpacing.xl),
@@ -123,6 +124,7 @@ class DashboardOverviewScreen extends ConsumerWidget {
   }
 
   Widget _panelDistribusi(
+    BuildContext context,
     AsyncValue<List<DistributionItem>> data,
     WidgetRef ref,
   ) {
@@ -155,6 +157,7 @@ class DashboardOverviewScreen extends ConsumerWidget {
   }
 
   Widget _panelOverdue(
+    BuildContext context,
     AsyncValue<List<OverdueItem>> data,
     WidgetRef ref,
   ) {
@@ -181,20 +184,20 @@ class DashboardOverviewScreen extends ConsumerWidget {
                 return ListView.separated(
                   itemCount: list.length,
                   separatorBuilder: (_, __) =>
-                      const Divider(height: 1, color: AppColors.borderSubtle),
+                      Divider(height: 1, color: context.pal.borderSubtle),
                   itemBuilder: (BuildContext context, int i) {
                     final OverdueItem o = list[i];
                     return ListTile(
                       dense: true,
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.schedule,
                         color: AppColors.overdue,
                         size: AppSizes.iconMd,
                       ),
                       title: Text(
                         o.barcodeAlat,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                         ),
@@ -203,7 +206,7 @@ class DashboardOverviewScreen extends ConsumerWidget {
                         '${o.merkAlat} • ${o.namaLokasi}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 11),
+                        style: TextStyle(fontSize: 11),
                       ),
                       trailing: StatusBadge(
                         label: '${o.terlambatHari} hari',
@@ -335,7 +338,7 @@ class _GrafikTren extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (double v) =>
-              const FlLine(color: AppColors.borderSubtle, strokeWidth: 1),
+              FlLine(color: context.pal.borderSubtle, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           leftTitles: const AxisTitles(
@@ -354,9 +357,9 @@ class _GrafikTren extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     l.length > 5 ? l.substring(5) : l,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10,
-                      color: AppColors.textSecondary,
+                      color: context.pal.textSecondary,
                     ),
                   ),
                 );
@@ -431,7 +434,7 @@ class _GrafikDistribusi extends StatelessWidget {
                   value: e.value.jumlah.toDouble(),
                   title: pct < 6 ? '' : '${pct.toStringAsFixed(0)}%',
                   radius: 52,
-                  titleStyle: const TextStyle(
+                  titleStyle: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -464,12 +467,12 @@ class _GrafikDistribusi extends StatelessWidget {
                       data[i].label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 11),
+                      style: TextStyle(fontSize: 11),
                     ),
                   ),
                   Text(
                     '${data[i].jumlah}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),

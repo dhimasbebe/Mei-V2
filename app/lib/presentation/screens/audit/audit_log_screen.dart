@@ -15,6 +15,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Layar Riwayat Audit Log (Tahap 3 — WS D, `docs/DESIGN-FEATURES-V3.md` §7).
 ///
@@ -43,7 +44,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
       useRedAppBar: true,
       title: 'Riwayat Audit',
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: Icon(Icons.arrow_back),
         onPressed: () => Navigator.of(context).maybePop(),
       ),
       body: Column(
@@ -62,7 +63,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                   );
             },
           ),
-          const Divider(height: 1, color: AppColors.borderSubtle),
+          Divider(height: 1, color: context.pal.borderSubtle),
           Expanded(
             child: async.when(
               data: (PagedResult<AuditLogEntry> hasil) => _daftar(hasil),
@@ -116,7 +117,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                 child: TextButton(
                   onPressed: () =>
                       ref.read(auditLogProvider.notifier).nextPage(),
-                  child: const Text('Muat lebih banyak'),
+                  child: Text('Muat lebih banyak'),
                 ),
               ),
             );
@@ -190,15 +191,15 @@ class _BarisFilter extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textPrimary,
-                backgroundColor: AppColors.surfaceMuted,
+                foregroundColor: context.pal.textPrimary,
+                backgroundColor: context.pal.surfaceMuted,
                 minimumSize: const Size.fromHeight(40),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 side: BorderSide.none,
               ),
-              icon: const Icon(Icons.date_range,
+              icon: Icon(Icons.date_range,
                   size: 16, color: AppColors.primary),
               label: Text(teksDari, overflow: TextOverflow.ellipsis),
               onPressed: () => _pilih(context, true),
@@ -208,15 +209,15 @@ class _BarisFilter extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textPrimary,
-                backgroundColor: AppColors.surfaceMuted,
+                foregroundColor: context.pal.textPrimary,
+                backgroundColor: context.pal.surfaceMuted,
                 minimumSize: const Size.fromHeight(40),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 side: BorderSide.none,
               ),
-              icon: const Icon(Icons.date_range,
+              icon: Icon(Icons.date_range,
                   size: 16, color: AppColors.primary),
               label: Text(teksSampai, overflow: TextOverflow.ellipsis),
               onPressed: () => _pilih(context, false),
@@ -226,8 +227,8 @@ class _BarisFilter extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             IconButton(
               tooltip: 'Hapus filter',
-              icon: const Icon(Icons.filter_alt_off_outlined,
-                  size: 20, color: AppColors.textSecondary),
+              icon: Icon(Icons.filter_alt_off_outlined,
+                  size: 20, color: context.pal.textSecondary),
               onPressed: () => onPilih(null, null),
             ),
           ],
@@ -242,7 +243,7 @@ class _KartuAudit extends StatelessWidget {
 
   final AuditLogEntry entry;
 
-  (Color, Color, IconData) get _stail {
+  (Color, Color, IconData) _stail(AppPalette pal) {
     switch (entry.aksi.toLowerCase()) {
       case 'create':
         return (
@@ -270,8 +271,8 @@ class _KartuAudit extends StatelessWidget {
         );
       default:
         return (
-          AppColors.textSecondary,
-          AppColors.surfaceMuted,
+          pal.textSecondary,
+          pal.surfaceMuted,
           Icons.info_outline,
         );
     }
@@ -284,14 +285,14 @@ class _KartuAudit extends StatelessWidget {
       builder: (BuildContext ctx) => AlertDialog(
         title: Text(
           'Perubahan #${entry.idAudit}',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.pal.textPrimary,
           ),
         ),
         content: baris.isEmpty
-            ? const Text('Tidak ada detail perubahan.')
+            ? Text('Tidak ada detail perubahan.')
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,10 +301,10 @@ class _KartuAudit extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 2),
                     child: Text(
                       baris[i],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         height: 1.4,
-                        color: AppColors.textPrimary,
+                        color: context.pal.textPrimary,
                       ),
                     ),
                   );
@@ -312,7 +313,7 @@ class _KartuAudit extends StatelessWidget {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('TUTUP'),
+            child: Text('TUTUP'),
           ),
         ],
       ),
@@ -321,7 +322,7 @@ class _KartuAudit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (Color warna, Color soft, IconData ikon) = _stail;
+    final (Color warna, Color soft, IconData ikon) = _stail(context.pal);
     final List<String> perubahan = AuditDetail.format(entry.detail);
 
     return AppCard(
@@ -341,9 +342,9 @@ class _KartuAudit extends StatelessWidget {
               ),
               Text(
                 entry.waktuTampil,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textSecondary,
+                  color: context.pal.textSecondary,
                 ),
               ),
             ],
@@ -351,27 +352,27 @@ class _KartuAudit extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             '${entry.entitas} • ${entry.entitasId}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.pal.textPrimary,
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Row(
             children: <Widget>[
-              const Icon(
+              Icon(
                 Icons.person_outline,
                 size: 14,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
               ),
               const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: Text(
                   entry.actorUsername,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: context.pal.textSecondary,
                   ),
                 ),
               ),
@@ -385,8 +386,8 @@ class _KartuAudit extends StatelessWidget {
                 minimumSize: const Size(0, 32),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              icon: const Icon(Icons.visibility_outlined, size: 15),
-              label: const Text('Lihat perubahan'),
+              icon: Icon(Icons.visibility_outlined, size: 15),
+              label: Text('Lihat perubahan'),
               onPressed: () => _bukaDetail(context),
             ),
           ],

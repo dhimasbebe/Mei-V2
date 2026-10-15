@@ -19,6 +19,7 @@ import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
 import '../../widgets/status_badge.dart';
 import '../../widgets/swipe_action_wrapper.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Layar Verifikasi (Supervisor & Admin).
 ///
@@ -199,18 +200,18 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                   children: <Widget>[
                     Text(
                       v.barcodeAlat,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.pal.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '${v.merkAlat ?? '-'} • ${v.namaKategori ?? '-'}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.pal.textSecondary,
                       ),
                     ),
                   ],
@@ -242,7 +243,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                 child: Row(
                   children: <Widget>[
-                    const Icon(
+                    Icon(
                       Icons.checklist_rtl,
                       size: 16,
                       color: AppColors.primary,
@@ -250,7 +251,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       _terbuka ? 'Sembunyikan checklist' : 'Lihat checklist',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
@@ -275,15 +276,15 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                 margin: const EdgeInsets.only(top: AppSpacing.sm),
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceMuted,
+                  color: context.pal.surfaceMuted,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
                   v.detailRingkas,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     height: 1.5,
-                    color: AppColors.textPrimary,
+                    color: context.pal.textPrimary,
                   ),
                 ),
               ),
@@ -301,7 +302,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                 child: Row(
                   children: <Widget>[
-                    const Icon(
+                    Icon(
                       Icons.photo_library_outlined,
                       size: 16,
                       color: AppColors.primary,
@@ -311,7 +312,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                       _fotoTerbuka
                           ? 'Sembunyikan foto'
                           : 'Lihat foto (${v.jumlahFoto})',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
@@ -335,7 +336,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                 width: double.infinity,
                 margin: const EdgeInsets.only(top: AppSpacing.sm),
                 child: _fotoGagal && _foto.isEmpty
-                    ? const Text(
+                    ? Text(
                         'Gagal memuat foto.',
                         style: TextStyle(
                           fontSize: 11,
@@ -366,16 +367,16 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: sibuk ? null : () => _tolak(v),
-                  icon: const Icon(Icons.close, size: AppSizes.iconSm),
-                  label: const Text('TOLAK'),
+                  icon: Icon(Icons.close, size: AppSizes.iconSm),
+                  label: Text('TOLAK'),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: sibuk ? null : () => _setujui(v),
-                  icon: const Icon(Icons.check, size: AppSizes.iconSm),
-                  label: const Text('SETUJUI'),
+                  icon: Icon(Icons.check, size: AppSizes.iconSm),
+                  label: Text('SETUJUI'),
                 ),
               ),
             ],
@@ -445,9 +446,9 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
             children: <Widget>[
               Text(
                 keterangan,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.textSecondary,
+                  color: context.pal.textSecondary,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -461,7 +462,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   pesanError!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: AppColors.statusDanger,
                   ),
@@ -472,7 +473,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('BATAL'),
+              child: Text('BATAL'),
             ),
             TextButton(
               onPressed: () {
@@ -517,14 +518,14 @@ class _Baris extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.xs),
       child: Row(
         children: <Widget>[
-          Icon(icon, size: 15, color: AppColors.textSecondary),
+          Icon(icon, size: 15, color: context.pal.textSecondary),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               teks,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppColors.textSecondary,
+                color: context.pal.textSecondary,
               ),
             ),
           ),

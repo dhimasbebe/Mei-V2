@@ -8,6 +8,7 @@ import '../../../core/theme/app_tokens.dart';
 import '../../../providers/master_data_provider.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/section_header.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Pusat Data (Admin) — pintu masuk ke manajemen user, master data, dan alat.
 class DataScreen extends ConsumerStatefulWidget {
@@ -120,27 +121,27 @@ class _Kartu extends StatelessWidget {
               children: <Widget>[
                 Text(
                   judul,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.pal.textPrimary,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   keterangan,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     height: 1.5,
-                    color: AppColors.textSecondary,
+                    color: context.pal.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(
+          Icon(
             Icons.chevron_right,
-            color: AppColors.textSecondary,
+            color: context.pal.textSecondary,
             size: AppSizes.iconMd,
           ),
         ],
