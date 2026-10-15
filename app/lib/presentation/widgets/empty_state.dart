@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 import 'press_button.dart';
 
@@ -28,6 +28,7 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -38,16 +39,16 @@ class EmptyState extends StatelessWidget {
                 Icon(
                   icon ?? Icons.inbox_outlined,
                   size: AppSizes.iconXl,
-                  color: AppColors.textSecondary,
+                  color: pal.textSecondary,
                 ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: pal.textPrimary,
               ),
             ),
             if (message != null) ...<Widget>[
@@ -55,9 +56,9 @@ class EmptyState extends StatelessWidget {
               Text(
                 message!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: pal.textSecondary,
                 ),
               ),
             ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 
 /// W1 — Kartu permukaan standar Mei-V.
@@ -37,12 +37,13 @@ class AppCard extends StatelessWidget {
       child: child,
     );
 
+    final AppPalette pal = context.pal;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: gradient == null ? AppColors.surface : null,
+        color: gradient == null ? pal.surface : null,
         gradient: gradient,
         borderRadius: br,
-        border: Border.all(color: borderColor ?? AppColors.divider),
+        border: Border.all(color: borderColor ?? pal.divider),
         boxShadow: elevation > 0 ? AppShadows.card : null,
       ),
       child: onTap == null

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 import 'press_button.dart';
 
@@ -22,6 +23,7 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(compact ? AppSpacing.lg : AppSpacing.xl),
@@ -39,7 +41,7 @@ class ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: compact ? 13.0 : 14.0,
-                color: AppColors.textSecondary,
+                color: pal.textSecondary,
               ),
             ),
             if (onRetry != null) ...<Widget>[

@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/media/photo_store.dart';
 import '../core/offline/draft_queue.dart';
+import '../core/offline/draft_status.dart';
 import '../core/offline/retry_policy.dart';
 import '../data/api/api_exception.dart';
 import '../data/repositories/foto_repository.dart';

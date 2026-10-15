@@ -189,6 +189,8 @@ class _KartuDraf extends StatelessWidget {
   final VoidCallback? onCobaLagi;
   final VoidCallback? onHapus;
 
+  static final DateFormat _fmt = DateFormat('dd MMM yyyy, HH:mm');
+
   (Color, Color, IconData, String) get _statusTampil {
     switch (draf.status) {
       case DraftStatus.terkirim:

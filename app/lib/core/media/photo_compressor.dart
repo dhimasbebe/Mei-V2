@@ -73,8 +73,8 @@ class PhotoCompressor {
   /// Jalur utama: JPEG native. `null` bila paket gagal/tidak mendukung.
   Future<List<int>?> _cobaNative(List<int> input) async {
     try {
-      final List<int>? hasil = await FlutterImageCompress.compressList(
-        input,
+      final List<int>? hasil = await FlutterImageCompress.compressWithList(
+        input is Uint8List ? input : Uint8List.fromList(input),
         quality: kualitasJpeg,
         format: CompressFormat.jpeg,
         minWidth: PhotoPolicy.maxSisiPx,

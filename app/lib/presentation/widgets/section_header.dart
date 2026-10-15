@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 
 /// W3 — Judul seksi dengan aksi opsional di kanan ("Lihat semua",
@@ -22,6 +23,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
@@ -38,10 +40,10 @@ class SectionHeader extends StatelessWidget {
               children: <Widget>[
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: pal.textPrimary,
                   ),
                 ),
                 if (subtitle != null)
@@ -49,9 +51,9 @@ class SectionHeader extends StatelessWidget {
                     padding: const EdgeInsets.only(top: AppSpacing.xxs),
                     child: Text(
                       subtitle!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: pal.textSecondary,
                       ),
                     ),
                   ),

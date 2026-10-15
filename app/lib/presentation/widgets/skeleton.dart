@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 import 'app_card.dart';
 
@@ -46,6 +46,7 @@ class _SkeletonBoxState extends State<SkeletonBox>
       animation: _controller,
       builder: (BuildContext context, Widget? _) {
         final double t = _controller.value;
+        final AppPalette pal = context.pal;
         return Container(
           width: widget.width,
           height: widget.height,
@@ -54,10 +55,10 @@ class _SkeletonBoxState extends State<SkeletonBox>
             gradient: LinearGradient(
               begin: Alignment(-1.0 - 2.0 * t, 0),
               end: Alignment(1.0 - 2.0 * t, 0),
-              colors: const <Color>[
-                AppColors.borderSubtle,
-                AppColors.surfaceAlt,
-                AppColors.borderSubtle,
+              colors: <Color>[
+                pal.borderSubtle,
+                pal.surfaceAlt,
+                pal.borderSubtle,
               ],
               stops: const <double>[0.35, 0.5, 0.65],
             ),

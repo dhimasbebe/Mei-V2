@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 import 'app_card.dart';
 import 'skeleton.dart';
@@ -30,6 +31,7 @@ class StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     final Color accent = color ?? AppColors.primary;
 
     return AppCard(
@@ -71,10 +73,10 @@ class StatTile extends StatelessWidget {
               value,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: pal.textPrimary,
               ),
             ),
           const SizedBox(height: AppSpacing.xxs),
@@ -82,9 +84,9 @@ class StatTile extends StatelessWidget {
             label,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: pal.textSecondary,
             ),
           ),
         ],
