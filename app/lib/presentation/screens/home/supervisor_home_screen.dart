@@ -9,6 +9,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import '../../../providers/verifikasi_provider.dart';
 import '../../shell/role_shell.dart';
+import '../../widgets/long_press_menu.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
@@ -266,6 +267,11 @@ class _PapanOverdue extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: AppCard(
                       onTap: () => context.goAlat(o.barcodeAlat),
+                      onLongPress: () => tampilkanMenuKonteksAlat(
+                        context,
+                        barcode: o.barcodeAlat,
+                        onDetail: () => context.goAlat(o.barcodeAlat),
+                      ),
                       child: Row(
                         children: <Widget>[
                           Icon(Icons.schedule, color: AppColors.overdue),

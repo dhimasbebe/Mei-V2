@@ -8,6 +8,7 @@ import '../../../domain/models/tugas.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/tugas_provider.dart';
 import '../../shell/role_shell.dart';
+import '../../widgets/long_press_menu.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
@@ -173,6 +174,11 @@ class _TugasCard extends StatelessWidget {
 
     return AppCard(
       onTap: () => context.goAlat(tugas.barcodeAlat),
+      onLongPress: () => tampilkanMenuKonteksAlat(
+        context,
+        barcode: tugas.barcodeAlat,
+        onDetail: () => context.goAlat(tugas.barcodeAlat),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

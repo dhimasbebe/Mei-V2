@@ -13,6 +13,7 @@ class AppCard extends StatelessWidget {
     super.key,
     required this.child,
     this.onTap,
+    this.onLongPress,
     this.padding,
     this.elevation = 0,
     this.borderColor,
@@ -22,6 +23,9 @@ class AppCard extends StatelessWidget {
 
   final Widget child;
   final VoidCallback? onTap;
+
+  /// Ditekan lama (menu konteks, AC-H9).
+  final VoidCallback? onLongPress;
   final EdgeInsetsGeometry? padding;
   final double elevation;
   final Color? borderColor;
@@ -46,13 +50,14 @@ class AppCard extends StatelessWidget {
         border: Border.all(color: borderColor ?? pal.divider),
         boxShadow: elevation > 0 ? AppShadows.card : null,
       ),
-      child: onTap == null
+      child: (onTap == null && onLongPress == null)
           ? content
           : Material(
               color: Colors.transparent,
               borderRadius: br,
               child: InkWell(
                 onTap: onTap,
+                onLongPress: onLongPress,
                 borderRadius: br,
                 child: content,
               ),

@@ -7,6 +7,8 @@ import '../../../domain/models/kategori.dart';
 import '../../../domain/models/lokasi.dart';
 import '../../../domain/models/spesifikasi.dart';
 import '../../../providers/master_data_provider.dart';
+import '../../widgets/swipe_action_wrapper.dart';
+import '../../../core/gesture/swipe_action.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../widgets/app_text_field.dart';
@@ -566,7 +568,14 @@ class _BarisData extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: AppCard(
+      child: SwipeActionWrapper(
+              layar: 'master_data',
+              onAksi: (SwipeActionType aksi) {
+                if (aksi == SwipeActionType.hapus) {
+                  onDelete();
+                }
+              },
+              child: AppCard(
         child: Row(
           children: <Widget>[
             if (ikonAsset != null)
@@ -634,6 +643,7 @@ class _BarisData extends StatelessWidget {
           ],
         ),
       ),
+            ),
     );
   }
 }

@@ -5,6 +5,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/user.dart';
 import '../../../providers/user_provider.dart';
+import '../../widgets/swipe_action_wrapper.dart';
+import '../../../core/gesture/swipe_action.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../widgets/app_text_field.dart';
@@ -297,7 +299,14 @@ class _Isi extends ConsumerWidget {
           final User u = users[i];
           return Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: AppCard(
+            child: SwipeActionWrapper(
+              layar: 'user_management',
+              onAksi: (SwipeActionType aksi) {
+                if (aksi == SwipeActionType.hapus) {
+                  onDelete(u);
+                }
+              },
+              child: AppCard(
               child: Row(
                 children: <Widget>[
                   CircleAvatar(
@@ -360,6 +369,7 @@ class _Isi extends ConsumerWidget {
                   ),
                 ],
               ),
+            ),
             ),
           );
         },

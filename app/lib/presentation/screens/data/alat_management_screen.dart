@@ -8,6 +8,8 @@ import '../../../domain/models/alat.dart';
 import '../../../domain/models/kategori.dart';
 import '../../../domain/models/lokasi.dart';
 import '../../../providers/master_data_provider.dart';
+import '../../widgets/swipe_action_wrapper.dart';
+import '../../../core/gesture/swipe_action.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_snackbar.dart';
 import '../../widgets/app_text_field.dart';
@@ -129,7 +131,14 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
           final String? ikon = AppStrings.kategoriIcon[a.namaKategori];
           return Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: AppCard(
+            child: SwipeActionWrapper(
+              layar: 'alat_management',
+              onAksi: (SwipeActionType aksi) {
+                if (aksi == SwipeActionType.hapus) {
+                  _hapus(a);
+                }
+              },
+              child: AppCard(
               child: Row(
                 children: <Widget>[
                   if (ikon != null)
@@ -191,6 +200,7 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
                   ),
                 ],
               ),
+            ),
             ),
           );
         },
