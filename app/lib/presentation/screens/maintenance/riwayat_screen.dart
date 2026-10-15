@@ -9,6 +9,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../providers/maintenance_provider.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/search_history_field.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/filter_chip_bar.dart';
@@ -69,10 +70,10 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
           ),
           child: Column(
             children: <Widget>[
-              AppTextField(
+              SearchHistoryField(
                 controller: _cari,
                 hint: 'Cari kode alat...',
-                prefixIcon: Icon(Icons.search, color: AppColors.primary),
+                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                 onSubmitted: (_) => _muat(),
               ),
               const SizedBox(height: AppSpacing.md),
