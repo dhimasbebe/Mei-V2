@@ -9,7 +9,9 @@ use App\Http\Controllers\Api\FotoController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LokasiController;
 use App\Http\Controllers\Api\MaintenanceController;
+use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\Api\PengingatController;
+use App\Http\Controllers\Api\QrLabelController;
 use App\Http\Controllers\Api\ShareController;
 use App\Http\Controllers\Api\SpesifikasiController;
 use App\Http\Controllers\Api\TugasController;
@@ -76,6 +78,14 @@ Route::prefix('v1')->group(function () {
             // --- Share link laporan (WS O, Fitur Tahap 3) ---
             Route::post('/maintenance/{id}/share', [ShareController::class, 'store']);
             Route::delete('/share/{token}', [ShareController::class, 'destroy']);
+
+            // --- Ekspor PDF laporan (WS L, Fitur Tahap 3) ---
+            // Respons biner application/pdf di luar envelope (pola ekspor CSV).
+            Route::get('/maintenance/{id}/pdf', [PdfController::class, 'show']);
+            Route::get('/dashboard/export/pdf', [PdfController::class, 'periode']);
+
+            // --- Label QR massal (WS N, Fitur Tahap 3) ---
+            Route::post('/dashboard/export/qr-labels', [QrLabelController::class, 'store']);
 
             Route::post('/alat/{barcode}/assign', [AlatController::class, 'assign']);
 
