@@ -53,6 +53,22 @@ class NotifSchedule {
   /// Total menit sejak tengah malam (untuk perbandingan/pengurutan).
   int get totalMenit => hour * 60 + minute;
 
+  /// ID notifikasi OS untuk pengingat harian (satu kanal, satu ID).
+  static const int notifId = 1001;
+
+  /// Waktu kemunculan berikutnya setelah [now] untuk jam [hour]:[minute].
+  ///
+  /// Bila jam hari ini belum lewat → hari ini; bila sudah/tepat → besok.
+  /// Dipakai lapisan OS (`local_notifier_io.dart`) untuk menghitung
+  /// `TZDateTime` pertama sebelum penjadwalan harian berulang (AC-B5).
+  DateTime nextOccurrence(DateTime now) {
+    final DateTime hariIni =
+        DateTime(now.year, now.month, now.day, hour, minute);
+    if (hariIni.isAfter(now)) return hariIni;
+    // Zona Asia/Jakarta tidak memakai DST → penambahan 1 hari aman.
+    return hariIni.add(const Duration(days: 1));
+  }
+
   /// Label tampilan, mis. `"07:00 (Asia/Jakarta)"`.
   String get label {
     String p(int v) => v.toString().padLeft(2, '0');

@@ -5,6 +5,7 @@ import '../../domain/models/dashboard.dart';
 import '../../domain/models/kategori.dart';
 import '../../domain/models/lokasi.dart';
 import '../../domain/models/maintenance.dart';
+import '../../domain/models/pengingat.dart';
 import '../../domain/models/spesifikasi.dart';
 import '../../domain/models/tugas.dart';
 import '../../domain/models/user.dart';
@@ -596,6 +597,18 @@ class ApiService {
       },
     );
     return PagedResult<AuditLogEntry>.fromJson(_unwrap(res), AuditLogEntry.fromJson);
+  }
+
+  // --------------------------------------------------------------------------
+  // Pengingat (Tahap 3 — WS B)
+  // --------------------------------------------------------------------------
+
+  /// `GET /pengingat` — ringkasan + daftar pengingat milik pengguna
+  /// (Teknisi: jatuh tempo/terlambat miliknya; Supervisor/Admin:
+  /// `menunggu_verifikasi`). Tahap 3 WS B, AC-B1/AC-B2.
+  Future<PengingatPayload> getPengingat() async {
+    final Response<dynamic> res = await _dio.get('/pengingat');
+    return PengingatPayload.fromJson(_unwrap(res));
   }
 
   // --------------------------------------------------------------------------

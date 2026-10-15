@@ -1196,6 +1196,69 @@ void main() {
   }
   check('AC-K1 buatUuid kosong -> ArgumentError', ditolak);
 
+  // ====================================================================
+  // 27. WS B — jadwal pengingat: kemunculan berikutnya & ID notifikasi
+  //     (Tahap 3 T05; logika murni baru, ditambahkan di AKHIR berkas)
+  // ====================================================================
+
+  // AC-B5 — ID notifikasi OS tetap & kemunculan pertama tepat waktu.
+  check('AC-B5 notifId stabil (1001)', NotifSchedule.notifId == 1001,
+      '${NotifSchedule.notifId}');
+
+  final NotifSchedule pagi = NotifSchedule.dailyAt(hour: 7, minute: 0);
+
+  // Sebelum jam pengingat -> hari yang sama.
+  final DateTime sebelum = DateTime(2026, 3, 10, 6, 30);
+  final DateTime n1 = pagi.nextOccurrence(sebelum);
+  check(
+      'AC-B5 sebelum 07:00 -> hari yang sama 07:00',
+      n1 == DateTime(2026, 3, 10, 7, 0),
+      '$n1');
+
+  // Setelah jam pengingat -> besok.
+  final DateTime sesudah = DateTime(2026, 3, 10, 9, 15);
+  final DateTime n2 = pagi.nextOccurrence(sesudah);
+  check(
+      'AC-B5 sesudah 07:00 -> besok 07:00',
+      n2 == DateTime(2026, 3, 11, 7, 0),
+      '$n2');
+
+  // Tepat pada jam pengingat -> besok (tidak terjadwal ulang di detik sama).
+  final DateTime tepat = DateTime(2026, 3, 10, 7, 0);
+  final DateTime n3 = pagi.nextOccurrence(tepat);
+  check(
+      'AC-B5 tepat 07:00 -> besok 07:00',
+      n3 == DateTime(2026, 3, 11, 7, 0),
+      '$n3');
+
+  // Jam/menit hasil selalu sama dengan jadwal.
+  final NotifSchedule sore = NotifSchedule.dailyAt(hour: 16, minute: 45);
+  final DateTime n4 = sore.nextOccurrence(DateTime(2026, 3, 10, 16, 44));
+  check(
+      'AC-B5 jam & menit hasil == jadwal',
+      n4.hour == 16 && n4.minute == 45,
+      '${n4.hour}:${n4.minute}');
+
+  // Nilai di luar rentang di-clamp (bukan exception).
+  final NotifSchedule clamp = NotifSchedule.dailyAt(hour: 25, minute: 99);
+  check('AC-B5 hour 25 -> 23', clamp.hour == 23, '${clamp.hour}');
+  check('AC-B5 minute 99 -> 59', clamp.minute == 59, '${clamp.minute}');
+
+  // fromJson tahan nilai rusak (string/tak ada) -> default.
+  final NotifSchedule rusak = NotifSchedule.fromJson(<String, dynamic>{
+    'hour': 'bukan-angka',
+  });
+  check(
+      'AC-B5 fromJson rusak -> default 07:00',
+      rusak.hour == NotifSchedule.defaultHour &&
+          rusak.minute == NotifSchedule.defaultMinute &&
+          rusak.timezone == NotifSchedule.zona,
+      '${rusak.hour}:${rusak.minute}');
+
+  // totalMenit konsisten dengan jam/menit (dipakai persistensi preferensi).
+  check('AC-B5 totalMenit konsisten', sore.totalMenit == 16 * 60 + 45,
+      '${sore.totalMenit}');
+
   // --------------------------------------------------------------------
   print('');
   print('=' * 74);

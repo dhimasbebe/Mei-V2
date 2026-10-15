@@ -199,7 +199,7 @@ class _Sidebar extends StatelessWidget {
   }
 }
 
-class _SidebarItem extends StatelessWidget {
+class _SidebarItem extends ConsumerWidget {
   const _SidebarItem({
     required this.destination,
     required this.aktif,
@@ -213,8 +213,9 @@ class _SidebarItem extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Color warna = aktif ? AppColors.background : Color(0xFFBDBDBD);
+    final int jumlah = jumlahBadge(ref, destination.badge);
 
     return Material(
       color: aktif ? AppColors.primary : Colors.transparent,
@@ -229,7 +230,20 @@ class _SidebarItem extends StatelessWidget {
             mainAxisAlignment:
                 expanded ? MainAxisAlignment.start : MainAxisAlignment.center,
             children: <Widget>[
-              Icon(aktif ? destination.activeIcon : destination.icon, color: warna),
+              jumlah > 0
+                  ? Badge(
+                      label: Text(jumlah > 99 ? '99+' : '$jumlah'),
+                      backgroundColor: AppColors.background,
+                      textColor: AppColors.primary,
+                      child: Icon(
+                        aktif ? destination.activeIcon : destination.icon,
+                        color: warna,
+                      ),
+                    )
+                  : Icon(
+                      aktif ? destination.activeIcon : destination.icon,
+                      color: warna,
+                    ),
               if (expanded) ...<Widget>[
                 const SizedBox(width: AppSpacing.md),
                 Flexible(

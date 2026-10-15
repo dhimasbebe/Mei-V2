@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/user.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/notif_provider.dart';
 import '../../../providers/theme_provider.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
@@ -101,6 +102,17 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         const _PemilihTema(),
+
+        const SizedBox(height: AppSpacing.xl),
+        // Tahap 3 WS B (AC-B9): sakelar pengingat harian. Bila izin notifikasi
+        // OS ditolak, pengingat tetap tampil sebagai lencana/banner in-app.
+        const SectionHeader(
+          title: 'Pengingat',
+          subtitle: 'Notifikasi harian alat jatuh tempo',
+          icon: Icons.notifications_active_outlined,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const _PemilihPengingat(),
 
         const SizedBox(height: AppSpacing.xl),
         const SectionHeader(title: 'Tentang', icon: Icons.info_outline),
@@ -444,6 +456,94 @@ class _BarisTema extends StatelessWidget {
               Icon(Icons.check_circle, size: 18, color: AppColors.primary),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Sakelar "Pengingat harian" + pemilih jam (Tahap 3 WS B, AC-B9).
+///
+/// Preferensi disimpan di perangkat (`notifPrefsProvider`). Bila platform
+/// tidak punya notifikasi OS atau izin ditolak, keterangan ditampilkan dan
+/// pengingat in-app tetap aktif — tidak ada crash (AC-B7).
+class _PemilihPengingat extends ConsumerWidget {
+  const _PemilihPengingat();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final NotifPrefsState prefs = ref.watch(notifPrefsProvider);
+    final NotifPrefsNotifier notifier = ref.read(notifPrefsProvider.notifier);
+    final AppPalette pal = context.pal;
+
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            value: prefs.aktif,
+            onChanged: (bool v) => notifier.setAktif(v),
+            secondary: Icon(
+              Icons.alarm,
+              color: prefs.aktif ? AppColors.primary : pal.textSecondary,
+            ),
+            title: Text(
+              'Pengingat harian',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: pal.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              prefs.jadwal.label,
+              style: TextStyle(fontSize: 12, color: pal.textSecondary),
+            ),
+          ),
+          if (prefs.aktif)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () async {
+                  final TimeOfDay? pilih = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay(
+                      hour: prefs.jadwal.hour,
+                      minute: prefs.jadwal.minute,
+                    ),
+                  );
+                  if (pilih == null) return;
+                  await notifier.setJam(
+                    hour: pilih.hour,
+                    minute: pilih.minute,
+                  );
+                },
+                icon: Icon(Icons.schedule, size: AppSizes.iconSm),
+                label: const Text('Ubah jam pengingat'),
+              ),
+            ),
+          if (prefs.pesan != null)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xs),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Icon(
+                    Icons.info_outline,
+                    size: AppSizes.iconSm,
+                    color: AppColors.statusWarning,
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      prefs.pesan!,
+                      style: TextStyle(fontSize: 11, color: pal.textSecondary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

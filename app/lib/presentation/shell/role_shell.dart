@@ -9,6 +9,7 @@ import '../../core/theme/app_tokens.dart';
 import '../../domain/models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/role_nav_provider.dart';
+import '../../providers/notif_provider.dart';
 import '../../providers/verifikasi_provider.dart';
 import '../widgets/responsive.dart';
 import '../widgets/role_badge.dart';
@@ -105,10 +106,7 @@ class RoleShell extends ConsumerWidget {
   Widget _beriBadge(WidgetRef ref, RoleNavDestination d, Widget icon) {
     if (d.badge == RoleNavBadge.none) return icon;
 
-    final int jumlah = switch (d.badge) {
-      RoleNavBadge.menungguVerifikasi => ref.watch(pendingVerifikasiCountProvider),
-      RoleNavBadge.none => 0,
-    };
+    final int jumlah = jumlahBadge(ref, d.badge);
     if (jumlah <= 0) return icon;
 
     return Badge(

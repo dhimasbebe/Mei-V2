@@ -10,6 +10,7 @@ import '../../../providers/tugas_provider.dart';
 import '../../shell/role_shell.dart';
 import '../../widgets/long_press_menu.dart';
 import '../../widgets/app_card.dart';
+import '../../widgets/notif_banner.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/section_header.dart';
@@ -63,6 +64,9 @@ class _TeknisiHomeScreenState extends ConsumerState<TeknisiHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                NotifBanner(
+                  onTap: () => context.goTugas(),
+                ),
                 Row(
                   children: <Widget>[
                     Expanded(

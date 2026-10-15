@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/router/routes.dart';
 import 'auth_provider.dart';
+import 'notif_provider.dart';
+import 'verifikasi_provider.dart';
 
 /// Satu tujuan navigasi pada shell role.
 @immutable
@@ -29,6 +31,9 @@ enum RoleNavBadge {
 
   /// Jumlah maintenance yang menunggu verifikasi (Supervisor / Admin).
   menungguVerifikasi,
+
+  /// Alat jatuh tempo/terlambat + draf offline (Teknisi) — WS B AC-B7.
+  pengingatAlat,
 }
 
 /// Definisi tab per role.
@@ -45,6 +50,7 @@ abstract class RoleNav {
       icon: Icons.assignment_outlined,
       activeIcon: Icons.assignment,
       path: Routes.tugas,
+      badge: RoleNavBadge.pengingatAlat,
     ),
     RoleNavDestination(
       label: 'Scan',
@@ -172,3 +178,14 @@ final roleNavProvider = Provider<List<RoleNavDestination>>((ref) {
   final String? role = ref.watch(authProvider).user?.roleUsers;
   return RoleNav.forRole(role);
 });
+
+/// Jumlah badge untuk [badge] pada tab/sidebar (dipakai shell mobile & web).
+///
+/// Satu tempat agar lencana mobile ([RoleShell]) dan sidebar web
+/// ([WebShellLayout]) selalu konsisten (AC-B7).
+int jumlahBadge(WidgetRef ref, RoleNavBadge badge) => switch (badge) {
+      RoleNavBadge.menungguVerifikasi =>
+        ref.watch(pendingVerifikasiCountProvider),
+      RoleNavBadge.pengingatAlat => ref.watch(badgeTugasTeknisiProvider),
+      RoleNavBadge.none => 0,
+    };
