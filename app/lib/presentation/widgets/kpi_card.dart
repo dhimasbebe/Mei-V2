@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
+import 'animated_number.dart';
 import 'app_card.dart';
 import 'skeleton.dart';
 
@@ -36,31 +37,16 @@ class KpiCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppPalette pal = context.pal;
     final Color accent = color ?? AppColors.primary;
-    final double? target = double.tryParse(value.replaceAll(',', '.'));
 
-    Widget valueWidget;
-    if (loading) {
-      valueWidget = const SkeletonBox(width: 88, height: 28);
-    } else if (animate && target != null) {
-      valueWidget = TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0, end: target),
-        duration: AppDurations.slow,
-        curve: AppCurves.standard,
-        builder: (BuildContext context, double v, Widget? _) {
-          final String shown = target == target.roundToDouble()
-              ? v.round().toString()
-              : v.toStringAsFixed(1);
-          return Text(shown, style: _gayaNilai(pal));
-        },
-      );
-    } else {
-      valueWidget = Text(
-        value,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: _gayaNilai(pal),
-      );
-    }
+    // AC-F6: angka naik dari 0 (400 ms) saat kartu pertama tampil; animasi
+    // dilewati otomatis bila pengguna mematikan animasi (reduce-motion).
+    final Widget valueWidget = loading
+        ? const SkeletonBox(width: 88, height: 28)
+        : AnimatedNumber(
+            value: value,
+            style: _gayaNilai(pal),
+            duration: animate ? AppDurations.slow : Duration.zero,
+          );
 
     return AppCard(
       onTap: onTap,

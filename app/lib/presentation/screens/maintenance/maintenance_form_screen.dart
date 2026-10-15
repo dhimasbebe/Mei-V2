@@ -17,6 +17,7 @@ import '../../../providers/maintenance_provider.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/success_check.dart';
 import '../../widgets/foto_picker_field.dart';
 import '../../../core/theme/app_palette.dart';
 
@@ -335,6 +336,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       _drafTersimpan = false;
 
       if (mounted) {
+        // AC-F4: animasi centang (CustomPainter, tanpa paket tambahan)
+        // tampil sebelum snackbar; dilewati bila pengguna mematikan animasi.
+        await tampilkanAnimasiSukses(context, judul: 'Laporan terkirim');
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Maintenance berhasil dikirim!'), backgroundColor: AppColors.statusOk),
         );

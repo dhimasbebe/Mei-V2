@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
+import 'animated_number.dart';
 import 'app_card.dart';
 import 'skeleton.dart';
 
@@ -69,10 +70,9 @@ class StatTile extends StatelessWidget {
           if (loading)
             const SkeletonBox(width: 64, height: 24)
           else
-            Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            // AC-F6: angka beranimasi naik dari 0 saat kartu pertama tampil.
+            AnimatedNumber(
+              value: value,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,

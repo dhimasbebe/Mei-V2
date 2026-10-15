@@ -193,21 +193,26 @@ class _HeroAlat extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(AppRadius.md),
+          // AC-F3: Hero memakai tag unik per barcode sehingga ikon alat
+          // "terbang" dari kartu daftar ke header detail.
+          Hero(
+            tag: 'alat-${alat.barcodeAlat}',
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: ikon != null
+                  ? Image.asset(ikon, fit: BoxFit.contain)
+                  : Icon(
+                      Icons.build_outlined,
+                      color: AppColors.primary,
+                      size: AppSizes.iconLg,
+                    ),
             ),
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            child: ikon != null
-                ? Image.asset(ikon, fit: BoxFit.contain)
-                : Icon(
-                    Icons.build_outlined,
-                    color: AppColors.primary,
-                    size: AppSizes.iconLg,
-                  ),
           ),
           const SizedBox(width: AppSpacing.lg),
           Expanded(

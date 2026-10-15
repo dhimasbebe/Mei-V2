@@ -141,10 +141,17 @@ class _AlatManagementScreenState extends ConsumerState<AlatManagementScreen> {
               child: AppCard(
               child: Row(
                 children: <Widget>[
-                  if (ikon != null)
-                    Image.asset(ikon, width: 34, height: 34, fit: BoxFit.contain)
-                  else
-                    Icon(Icons.build_outlined, color: AppColors.primary),
+                  Hero(
+                    tag: 'alat-${a.barcodeAlat}',
+                    child: ikon != null
+                        ? Image.asset(
+                            ikon,
+                            width: 34,
+                            height: 34,
+                            fit: BoxFit.contain,
+                          )
+                        : Icon(Icons.build_outlined, color: AppColors.primary),
+                  ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(

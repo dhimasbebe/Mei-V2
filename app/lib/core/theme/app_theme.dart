@@ -5,6 +5,7 @@ import 'app_colors.dart';
 import 'app_palette.dart';
 import 'app_palette_spec.dart';
 import 'app_tokens.dart';
+import '../motion/app_page_transitions.dart';
 
 /// Tema Mei-V — mengikuti tampilan aplikasi lama:
 ///  • tombol aksi = pil penuh (radius 50dp) warna brand #CB2400
@@ -326,11 +327,17 @@ class AppTheme {
         textStyle: const TextStyle(color: AppColors.background, fontSize: 12),
       ),
 
-      // Transisi geser konsisten (I1: 250 ms) pada Android & iOS.
+      // Transisi halaman kustom, konsisten di Android/iOS/web (Tahap 3 WS F,
+      // AC-F7): durasi efektif 200–300 ms dari AppMotion, hormati
+      // reduce-motion (MediaQuery.disableAnimations).
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: <TargetPlatform, PageTransitionsBuilder>{
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.android: MeiVPageTransitionsBuilder(),
+          TargetPlatform.iOS: MeiVPageTransitionsBuilder(),
+          TargetPlatform.macOS: MeiVPageTransitionsBuilder(),
+          TargetPlatform.windows: MeiVPageTransitionsBuilder(),
+          TargetPlatform.linux: MeiVPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: MeiVPageTransitionsBuilder(),
         },
       ),
 
