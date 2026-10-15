@@ -1,0 +1,12 @@
+{
+  "code": 201,
+  "message": "Tautan bagikan dibuat.",
+  "data": {
+    "id_share": 7,
+    "id_maintenance": 88,
+    "token": "Xk9pQ2vR7wZtN4jLmB6cDy8fGhS0aE3uIoP5rTqW",
+    "url": "https://meiv.example.com/share/Xk9pQ2vR7wZtN4jLmB6cDy8fGhS0aE3uIoP5rTqW",
+    "expires_at": "2026-08-15 23:59:59",
+    "created_at": "2026-07-15 09:30:00"
+  }
+}

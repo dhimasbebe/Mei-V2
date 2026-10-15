@@ -1,0 +1,22 @@
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "total": 5,
+    "jumlah_valid": 2,
+    "error": [
+      {
+        "baris": 3,
+        "pesan": "Barcode 'AC-001' sudah terdaftar di database"
+      },
+      {
+        "baris": 4,
+        "pesan": "Barcode 'IMP-BARU' duplikat di dalam berkas (baris 3)"
+      },
+      {
+        "baris": 6,
+        "pesan": "Kolom wajib kosong: merk_alat"
+      }
+    ]
+  }
+}

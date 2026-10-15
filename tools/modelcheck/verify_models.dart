@@ -49,6 +49,10 @@ import '../../app/lib/core/search/search_history.dart';
 import '../../app/lib/core/theme/app_palette_spec.dart';
 import '../../app/lib/core/theme/theme_mode_codec.dart';
 
+// Model domain fitur tahap 3 (WS M + O, T06).
+import '../../app/lib/domain/models/alat_import.dart';
+import '../../app/lib/domain/models/share_link.dart';
+
 /// Folder fixture, relatif terhadap root paket ini.
 const String _fixtureDir = '../../app/test/fixtures';
 
@@ -936,6 +940,87 @@ void main() {
   }());
   check('AC-H5 serialize/deserialize round-trip',
       SearchHistory.deserialize(sh5.serialize()).items.join(',') == sh5.items.join(','));
+
+  // --------------------------------------------------------------------
+  section('22. IMPOR CSV — AlatImportResult (WS M, T06)');
+  // --------------------------------------------------------------------
+  // AC-M6 — AlatImportResult.fromJson memetakan fixture hasil preview.
+  final AlatImportResult impor =
+      AlatImportResult.fromJson(fx('alat_import_preview.json')['data'] as Map<String, dynamic>);
+  check('AC-M6 total == 5', impor.total == 5, '${impor.total}');
+  check('AC-M6 jumlahValid == 2', impor.jumlahValid == 2, '${impor.jumlahValid}');
+  check('AC-M6 jumlahGagal == 3', impor.jumlahGagal == 3, '${impor.jumlahGagal}');
+  check('AC-M6 error 3 baris', impor.error.length == 3, 'n=${impor.error.length}');
+  final AlatImportError eFirst = impor.error.first;
+  check('AC-M6 error[0].baris == 3', eFirst.baris == 3, '${eFirst.baris}');
+  check('AC-M6 error[0].pesan duplikat DB',
+      eFirst.pesan.contains("AC-001") && eFirst.pesan.contains('terdaftar'), eFirst.pesan);
+  check('AC-M6 error[1] duplikat dalam berkas',
+      impor.error[1].pesan.contains('duplikat di dalam berkas'), impor.error[1].pesan);
+  check('AC-M6 error[2] kolom kosong',
+      impor.error[2].pesan.contains('Kolom wajib kosong'), impor.error[2].pesan);
+  check('AC-M6 semuaValid false pada fixture bercampur', !impor.semuaValid);
+  check('AC-M6 labelTombolImpor "Impor 2 baris valid"',
+      impor.labelTombolImpor == 'Impor 2 baris valid', impor.labelTombolImpor);
+  // Round-trip toJson/fromJson + hasil bersih.
+  final AlatImportResult bersih = const AlatImportResult(total: 4, jumlahValid: 4);
+  check('AC-M6 hasil bersih: semuaValid true', bersih.semuaValid);
+  check('AC-M6 hasil bersih: error kosong', bersih.error.isEmpty);
+  check('AC-M6 0 baris valid terdeteksi',
+      const AlatImportResult(total: 0, jumlahValid: 0).tidakAdaBarisValid);
+  final AlatImportResult rt = AlatImportResult.fromJson(impor.toJson());
+  check('AC-M6 round-trip toJson/fromJson',
+      rt.total == impor.total && rt.jumlahValid == impor.jumlahValid &&
+          rt.error.length == impor.error.length &&
+          rt.error.first.baris == eFirst.baris && rt.error.first.pesan == eFirst.pesan);
+
+  // --------------------------------------------------------------------
+  section('23. SHARE LINK — ShareLink (WS O, T06)');
+  // --------------------------------------------------------------------
+  // AC-O6 — ShareLink.fromJson memetakan fixture buat-tautan.
+  final ShareLink sl =
+      ShareLink.fromJson(fx('share_link.json')['data'] as Map<String, dynamic>);
+  check('AC-O6 idShare == 7', sl.idShare == 7, '${sl.idShare}');
+  check('AC-O6 idMaintenance == 88', sl.idMaintenance == 88, '${sl.idMaintenance}');
+  check('AC-O6 token >= 32 karakter', sl.token.length >= 32, 'len=${sl.token.length}');
+  check('AC-O6 url mengandung token', sl.url.endsWith('/share/${sl.token}'), sl.url);
+  check('AC-O6 expiresAt ter-parse', sl.expiresAt != null, '${sl.expiresAt}');
+  check('AC-O6 revokedAt null (baru dibuat)', sl.revokedAt == null);
+  check('AC-O6 aktif (belum cabut/kedaluwarsa)', sl.aktif);
+  check('AC-O6 dicabut false', !sl.dicabut);
+  // Tautan dicabut -> aktif false.
+  final ShareLink dicabut = ShareLink(
+    idShare: sl.idShare,
+    idMaintenance: sl.idMaintenance,
+    token: sl.token,
+    url: sl.url,
+    expiresAt: sl.expiresAt,
+    revokedAt: DateTime.now(),
+    createdAt: sl.createdAt,
+  );
+  check('AC-O6 revokedAt != null -> dicabut', dicabut.dicabut);
+  check('AC-O6 revokedAt != null -> !aktif', !dicabut.aktif);
+  // Tautan kedaluwarsa -> aktif false, dicabut false.
+  final ShareLink kedaluwarsa = ShareLink(
+    idShare: sl.idShare,
+    idMaintenance: sl.idMaintenance,
+    token: sl.token,
+    url: sl.url,
+    expiresAt: DateTime.now().subtract(const Duration(minutes: 1)),
+    createdAt: sl.createdAt,
+  );
+  check('AC-O6 expiresAt lampau -> !aktif', !kedaluwarsa.aktif);
+  check('AC-O6 expiresAt lampau -> kedaluwarsa', kedaluwarsa.kedaluwarsa);
+  // expires_at null (tanpa kedaluwarsa) tetap aktif.
+  final ShareLink tanpaExpiry = ShareLink(
+    idShare: 1, idMaintenance: 1, token: sl.token, url: sl.url, createdAt: sl.createdAt,
+  );
+  check('AC-O6 expiresAt null tetap aktif', tanpaExpiry.aktif);
+  // Round-trip toJson/fromJson.
+  final ShareLink rtSl = ShareLink.fromJson(sl.toJson());
+  check('AC-O6 round-trip toJson/fromJson',
+      rtSl.idShare == sl.idShare && rtSl.token == sl.token && rtSl.url == sl.url &&
+          rtSl.expiresAt == sl.expiresAt && rtSl.createdAt == sl.createdAt);
 
   // --------------------------------------------------------------------
   print('');
