@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
+import 'app_palette.dart';
+import 'app_palette_spec.dart';
 import 'app_tokens.dart';
 
 /// Tema Mei-V — mengikuti tampilan aplikasi lama:
@@ -14,11 +16,18 @@ import 'app_tokens.dart';
 /// (bottom bar / rail / drawer), dialog, chip, progress, tooltip, dan transisi
 /// halaman. Semua nilai memakai token dari [AppColors]/[AppTokens] — tidak ada
 /// literal warna yang tersebar (AC-51, AC-53).
+///
+/// Tahap 3 (WS E): kedua tema memasang `AppPalette` sebagai ThemeExtension
+/// (permukaan/teks dari `PaletteSpec`); [dark] adalah varian gelap baru.
 class AppTheme {
   const AppTheme._();
 
   static const double pillRadius = 50;
 
+  /// Perubahan aditif bersama: extensions + darkTheme.
+  ///
+  /// Nilai permukaan/teks lama TIDAK berubah — [light] tetap 100% kompatibel
+  /// dengan tampilan sebelumnya.
   static ThemeData light() {
     final ColorScheme scheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,
@@ -27,24 +36,66 @@ class AppTheme {
       brightness: Brightness.light,
     );
 
+    return _dasar(
+      scheme: scheme,
+      palet: AppPalette.dari(PaletteTheme.light),
+      scaffold: AppColors.background,
+      appBarBackground: AppColors.black,
+      appBarForeground: AppColors.background,
+    );
+  }
+
+  /// Varian gelap (Tahap 3 — AC-E6). Brand tetap #CB2400; permukaan/teks dari
+  /// `PaletteSpec.dark`; top bar tetap hitam sehingga identitas visual bertahan.
+  static ThemeData dark() {
+    final AppPalette palet = AppPalette.dari(PaletteTheme.dark);
+    final ColorScheme scheme = ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      primary: AppColors.primary,
+      surface: palet.surface,
+      brightness: Brightness.dark,
+    );
+
+    return _dasar(
+      scheme: scheme,
+      palet: palet,
+      scaffold: palet.background,
+      appBarBackground: AppColors.black,
+      appBarForeground: AppColors.background,
+      gelap: true,
+    );
+  }
+
+  /// Kerangka tema bersama light/dark. Nilai permukaan/teks diambil dari
+  /// [palet] sehingga dark mode benar-benar berbeda; brand tidak berubah.
+  static ThemeData _dasar({
+    required ColorScheme scheme,
+    required AppPalette palet,
+    required Color scaffold,
+    required Color appBarBackground,
+    required Color appBarForeground,
+    bool gelap = false,
+  }) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: scaffold,
       splashFactory: InkRipple.splashFactory,
+      brightness: gelap ? Brightness.dark : Brightness.light,
+      extensions: <ThemeExtension<dynamic>>{palet},
 
       // Top bar hitam (logo Mei-V) — dipakai di Beranda & Profil.
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.black,
-        foregroundColor: AppColors.background,
+      appBarTheme: AppBarTheme(
+        backgroundColor: appBarBackground,
+        foregroundColor: appBarForeground,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          color: AppColors.background,
+          color: appBarForeground,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
-        iconTheme: IconThemeData(color: AppColors.background),
+        iconTheme: IconThemeData(color: appBarForeground),
       ),
 
       // App bar merah (halaman detail / form) — seperti "ALAT", "Panel Listrik".
@@ -89,7 +140,7 @@ class AppTheme {
       // Field input: rounded, terisi, label kecil di atas.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceMuted,
+        fillColor: palet.surfaceMuted,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: 14,
@@ -100,7 +151,7 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.sm),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderSide: BorderSide(color: palet.divider),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -110,22 +161,22 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: const BorderSide(color: AppColors.primary),
         ),
-        labelStyle: const TextStyle(color: AppColors.textSecondary),
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
+        labelStyle: TextStyle(color: palet.textSecondary),
+        hintStyle: TextStyle(color: palet.textSecondary),
       ),
 
-      // Kartu permukaan standar: putih, garis [divider], radius [AppRadius.md].
+      // Kartu permukaan standar: putih/gelap, garis [divider], radius [AppRadius.md].
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: palet.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          side: const BorderSide(color: AppColors.divider),
+          side: BorderSide(color: palet.divider),
         ),
       ),
 
-      dividerTheme: const DividerThemeData(
-        color: AppColors.divider,
+      dividerTheme: DividerThemeData(
+        color: palet.divider,
         thickness: 1,
         space: 1,
       ),
@@ -143,7 +194,7 @@ class AppTheme {
       // Bottom navigation (Material 3) — dipakai [RoleShell].
       navigationBarTheme: NavigationBarThemeData(
         height: AppSizes.bottomNavHeight,
-        backgroundColor: AppColors.surface,
+        backgroundColor: palet.surface,
         indicatorColor: AppColors.primarySoft,
         elevation: 0,
         labelTextStyle: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
@@ -151,52 +202,52 @@ class AppTheme {
           return TextStyle(
             fontSize: 12,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? AppColors.primary : AppColors.textSecondary,
+            color: selected ? AppColors.primary : palet.textSecondary,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
           final bool selected = states.contains(WidgetState.selected);
           return IconThemeData(
             size: AppSizes.iconMd,
-            color: selected ? AppColors.primary : AppColors.textSecondary,
+            color: selected ? AppColors.primary : palet.textSecondary,
           );
         }),
       ),
 
       // Bottom navigation (Material 2) — jaring pengaman bila shell memakai
       // BottomNavigationBar agar warna ikon/label tetap konsisten.
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: AppColors.surface,
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: palet.surface,
         selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textSecondary,
-        selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+        unselectedItemColor: palet.textSecondary,
+        selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
         unselectedLabelStyle:
-            TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        selectedIconTheme: IconThemeData(color: AppColors.primary),
-        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary),
+            const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        selectedIconTheme: const IconThemeData(color: AppColors.primary),
+        unselectedIconTheme: IconThemeData(color: palet.textSecondary),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
 
       // Sidebar web (rail) — item aktif latar primarySoft, teks primary.
-      navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: AppColors.surface,
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: palet.surface,
         indicatorColor: AppColors.primarySoft,
-        selectedIconTheme: IconThemeData(
+        selectedIconTheme: const IconThemeData(
           color: AppColors.primary,
           size: AppSizes.iconMd,
         ),
         unselectedIconTheme: IconThemeData(
-          color: AppColors.textSecondary,
+          color: palet.textSecondary,
           size: AppSizes.iconMd,
         ),
-        selectedLabelTextStyle: TextStyle(
+        selectedLabelTextStyle: const TextStyle(
           color: AppColors.primary,
           fontWeight: FontWeight.w700,
           fontSize: 12,
         ),
         unselectedLabelTextStyle: TextStyle(
-          color: AppColors.textSecondary,
+          color: palet.textSecondary,
           fontWeight: FontWeight.w500,
           fontSize: 12,
         ),
@@ -204,7 +255,7 @@ class AppTheme {
 
       // Sidebar web (drawer) untuk layar sempit.
       navigationDrawerTheme: NavigationDrawerThemeData(
-        backgroundColor: AppColors.surface,
+        backgroundColor: palet.surface,
         indicatorColor: AppColors.primarySoft,
         elevation: 0,
         labelTextStyle: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
@@ -212,48 +263,48 @@ class AppTheme {
           return TextStyle(
             fontSize: 14,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? AppColors.primary : AppColors.textPrimary,
+            color: selected ? AppColors.primary : palet.textPrimary,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
           final bool selected = states.contains(WidgetState.selected);
           return IconThemeData(
-            color: selected ? AppColors.primary : AppColors.textSecondary,
+            color: selected ? AppColors.primary : palet.textSecondary,
           );
         }),
       ),
 
       // Dialog konfirmasi (I9) — radius besar, judul titleMedium.
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.surface,
+        backgroundColor: palet.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
-        contentTextStyle: const TextStyle(
+        contentTextStyle: TextStyle(
           fontSize: 14,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
       ),
 
       // Chip filter/badge — latar abu, terpilih primarySoft + teks primary.
-      chipTheme: const ChipThemeData(
-        backgroundColor: AppColors.surfaceMuted,
+      chipTheme: ChipThemeData(
+        backgroundColor: palet.surfaceMuted,
         selectedColor: AppColors.primarySoft,
         secondarySelectedColor: AppColors.primarySoft,
         side: BorderSide.none,
-        shape: StadiumBorder(),
+        shape: const StadiumBorder(),
         showCheckmark: false,
         labelStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
-        secondaryLabelStyle: TextStyle(
+        secondaryLabelStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: AppColors.primary,
@@ -284,72 +335,72 @@ class AppTheme {
       ),
 
       // Skala tipografi lengkap (11 style).
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         displaySmall: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.w700,
           letterSpacing: 0,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         headlineSmall: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w700,
           letterSpacing: 0,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         titleLarge: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           letterSpacing: 0,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         titleMedium: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           letterSpacing: 0,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         titleSmall: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           letterSpacing: 0,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
           letterSpacing: 0,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         bodyMedium: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           letterSpacing: 0,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         bodySmall: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w400,
           letterSpacing: 0,
-          color: AppColors.textSecondary,
+          color: palet.textSecondary,
         ),
         labelLarge: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.4,
-          color: AppColors.textPrimary,
+          color: palet.textPrimary,
         ),
         labelMedium: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.6,
-          color: AppColors.textSecondary,
+          color: palet.textSecondary,
         ),
         labelSmall: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.8,
-          color: AppColors.textSecondary,
+          color: palet.textSecondary,
         ),
       ),
     );

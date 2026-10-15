@@ -246,9 +246,9 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: AppColors.borderSubtle),
                 borderRadius: BorderRadius.circular(12),
-                color: Colors.grey.shade50,
+                color: AppColors.surfaceAlt,
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
@@ -335,7 +335,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Maintenance berhasil dikirim!'), backgroundColor: Colors.green),
+          const SnackBar(content: Text('Maintenance berhasil dikirim!'), backgroundColor: AppColors.statusOk),
         );
         context.goHome();
       }
@@ -349,7 +349,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
           const SnackBar(
             content: Text('Gagal mengirim. Laporan disimpan di antrean offline '
                 'dan dikirim otomatis saat online.'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.statusWarning,
           ),
         );
         context.goHome();
@@ -459,7 +459,7 @@ class _ProgresChecklist extends StatelessWidget {
                 return LinearProgressIndicator(
                   value: v,
                   minHeight: 6,
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColors.surface,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     lengkap ? AppColors.kondisiBaik : AppColors.primary,
                   ),
@@ -502,7 +502,7 @@ class _HeaderInfo extends StatelessWidget {
       children: <Widget>[
         SizedBox(
           width: 70,
-          child: Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          child: Text(label, style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
         ),
         Expanded(
           child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
@@ -524,9 +524,9 @@ class _KondisiSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> items = <Map<String, dynamic>>[
-      <String, dynamic>{'label': 'Baik', 'value': 'baik', 'color': Colors.green},
-      <String, dynamic>{'label': 'Kurang Baik', 'value': 'kurang_baik', 'color': Colors.orange},
-      <String, dynamic>{'label': 'Rusak', 'value': 'rusak', 'color': Colors.red},
+      <String, dynamic>{'label': 'Baik', 'value': 'baik', 'color': AppColors.statusOk},
+      <String, dynamic>{'label': 'Kurang Baik', 'value': 'kurang_baik', 'color': AppColors.statusWarning},
+      <String, dynamic>{'label': 'Rusak', 'value': 'rusak', 'color': AppColors.statusDanger},
     ];
 
     return Row(
@@ -541,10 +541,10 @@ class _KondisiSelector extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: selected ? (item['color'] as Color).withValues(alpha: 0.1) : Colors.grey.shade50,
+                  color: selected ? (item['color'] as Color).withValues(alpha: 0.1) : AppColors.surfaceAlt,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: selected ? item['color'] as Color : Colors.grey.shade300,
+                    color: selected ? item['color'] as Color : AppColors.borderSubtle,
                     width: selected ? 2 : 1,
                   ),
                 ),
@@ -553,7 +553,7 @@ class _KondisiSelector extends StatelessWidget {
                     Icon(
                       Icons.circle,
                       size: 14,
-                      color: selected ? item['color'] as Color : Colors.grey.shade400,
+                      color: selected ? item['color'] as Color : AppColors.divider,
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -561,7 +561,7 @@ class _KondisiSelector extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                        color: selected ? item['color'] as Color : Colors.grey.shade700,
+                        color: selected ? item['color'] as Color : AppColors.textSecondary,
                       ),
                     ),
                   ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/gesture/swipe_action.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/maintenance.dart';
@@ -17,6 +18,7 @@ import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
 import '../../widgets/status_badge.dart';
+import '../../widgets/swipe_action_wrapper.dart';
 
 /// Layar Verifikasi (Supervisor & Admin).
 ///
@@ -175,7 +177,16 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
     final VerifikasiItem v = widget.item;
     final bool sibuk = ref.watch(verifikasiProvider).isSubmitting;
 
-    return AppCard(
+    // Geser kartu (AC-H6): kanan = Setujui, kiri = Tolak. Tabel aksi
+    // pure-Dart [SwipeAction.forRole] hanya memberi aksi untuk Supervisor;
+    // peran lain melihat kartu biasa.
+    return SwipeActionWrapper(
+      layar: 'verifikasi',
+      onAksi: (SwipeActionType aksi) {
+        if (aksi == SwipeActionType.setujui) _setujui(v);
+        if (aksi == SwipeActionType.tolak) _tolak(v);
+      },
+      child: AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -370,6 +381,7 @@ class _KartuVerifikasiState extends ConsumerState<_KartuVerifikasi> {
             ],
           ),
         ],
+      ),
       ),
     );
   }

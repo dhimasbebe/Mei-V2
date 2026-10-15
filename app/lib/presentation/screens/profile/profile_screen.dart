@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/user.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/theme_provider.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/press_button.dart';
@@ -88,6 +89,17 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         ..._pintasan(context, user),
+
+        const SizedBox(height: AppSpacing.xl),
+        // Tahap 3 WS E (AC-E7): sakelar tema Terang/Gelap/Sistem. Pilihan
+        // disimpan di shared_preferences dan bertahan setelah ditutup.
+        const SectionHeader(
+          title: 'Tampilan',
+          subtitle: 'Mode terang, gelap, atau ikut sistem',
+          icon: Icons.dark_mode_outlined,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const _PemilihTema(),
 
         const SizedBox(height: AppSpacing.xl),
         const SectionHeader(title: 'Tentang', icon: Icons.info_outline),
@@ -338,6 +350,97 @@ class _InfoTile extends StatelessWidget {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Baris pilihan tema (Terang / Gelap / Sistem) — AC-E7.
+class _PemilihTema extends ConsumerWidget {
+  const _PemilihTema();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ThemeMode mode = ref.watch(themeModeProvider);
+
+    return AppCard(
+      child: Column(
+        children: <Widget>[
+          _BarisTema(
+            ikon: Icons.light_mode_outlined,
+            label: 'Terang',
+            terpilih: mode == ThemeMode.light,
+            onTap: () =>
+                ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
+          ),
+          const Divider(height: 1),
+          _BarisTema(
+            ikon: Icons.dark_mode_outlined,
+            label: 'Gelap',
+            terpilih: mode == ThemeMode.dark,
+            onTap: () =>
+                ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
+          ),
+          const Divider(height: 1),
+          _BarisTema(
+            ikon: Icons.settings_suggest_outlined,
+            label: 'Sistem',
+            terpilih: mode == ThemeMode.system,
+            onTap: () =>
+                ref.read(themeModeProvider.notifier).setMode(ThemeMode.system),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BarisTema extends StatelessWidget {
+  const _BarisTema({
+    required this.ikon,
+    required this.label,
+    required this.terpilih,
+    required this.onTap,
+  });
+
+  final IconData ikon;
+  final String label;
+  final bool terpilih;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          children: <Widget>[
+            Icon(
+              ikon,
+              size: 20,
+              color: terpilih ? AppColors.primary : AppColors.textSecondary,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: terpilih ? FontWeight.w700 : FontWeight.w400,
+                  color: terpilih
+                      ? AppColors.primary
+                      : AppColors.textPrimary,
+                ),
+              ),
+            ),
+            if (terpilih)
+              const Icon(Icons.check_circle, size: 18, color: AppColors.primary),
           ],
         ),
       ),

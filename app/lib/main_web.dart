@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/draft_provider.dart';
+import 'providers/theme_provider.dart';
 
 /// Entry point dashboard web Mei-V.
 ///
@@ -28,6 +29,8 @@ class MeiVWebApp extends ConsumerWidget {
       title: 'Mei-V Dashboard',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: ref.watch(themeModeProvider),
       routerConfig: router,
     );
   }
