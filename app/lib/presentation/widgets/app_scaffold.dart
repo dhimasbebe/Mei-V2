@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 
 /// Scaffold konsisten: AppBar hitam (home) atau merah (detail), dengan logo putih.
@@ -33,7 +34,7 @@ class AppScaffold extends StatelessWidget {
     final Color appBarColor = useRedAppBar ? AppColors.primary : AppColors.black;
 
     return Scaffold(
-      backgroundColor: backgroundColor ?? AppColors.background,
+      backgroundColor: backgroundColor ?? context.pal.background,
       appBar: AppBar(
         backgroundColor: appBarColor,
         foregroundColor: AppColors.background,

@@ -8,6 +8,7 @@ import '../../../core/media/photo_compressor.dart';
 import '../../../core/media/photo_policy.dart';
 import '../../../core/media/photo_store.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_tokens.dart';
 
 /// Field pemilih foto lampiran (Tahap 3 — WS C, §7.1).
@@ -122,18 +123,19 @@ class _FotoPickerFieldState extends State<FotoPickerField> {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
           children: <Widget>[
-            const Expanded(
+            Expanded(
               child: Text(
                 'Foto Lampiran',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: pal.textPrimary,
                 ),
               ),
             ),
@@ -141,9 +143,9 @@ class _FotoPickerFieldState extends State<FotoPickerField> {
               '${widget.fotos.length}/${PhotoPolicy.maxFotos} • '
               '${(_totalBytes / (1024 * 1024)).toStringAsFixed(1)}/'
               '${PhotoPolicy.maxTotalBytes / (1024 * 1024)} MB',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
-                color: AppColors.textSecondary,
+                color: pal.textSecondary,
               ),
             ),
           ],
@@ -218,6 +220,7 @@ class _TombolAmbil extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     return InkWell(
       borderRadius: BorderRadius.circular(AppRadius.sm),
       onTap: sedangProses ? null : onTap,
@@ -225,9 +228,9 @@ class _TombolAmbil extends StatelessWidget {
         width: 88,
         height: 88,
         decoration: BoxDecoration(
-          color: AppColors.surfaceMuted,
+          color: pal.surfaceMuted,
           borderRadius: BorderRadius.circular(AppRadius.sm),
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: pal.borderSubtle),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -242,9 +245,9 @@ class _TombolAmbil extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
-                color: AppColors.textSecondary,
+                color: pal.textSecondary,
               ),
             ),
           ],
@@ -262,6 +265,7 @@ class _Thumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     return Stack(
       children: <Widget>[
         ClipRRect(
@@ -269,16 +273,16 @@ class _Thumbnail extends StatelessWidget {
           child: Container(
             width: 88,
             height: 88,
-            color: AppColors.surfaceMuted,
+            color: pal.surfaceMuted,
             child: FutureBuilder<List<int>?>(
               future: PhotoStore.baca(foto.kunci),
               builder: (BuildContext context, AsyncSnapshot<List<int>?> snap) {
                 final List<int>? bytes = snap.data;
                 if (!snap.hasData || bytes == null || bytes.isEmpty) {
-                  return const Icon(
+                  return Icon(
                     Icons.image_outlined,
                     size: 24,
-                    color: AppColors.textSecondary,
+                    color: pal.textSecondary,
                   );
                 }
                 return Image.memory(

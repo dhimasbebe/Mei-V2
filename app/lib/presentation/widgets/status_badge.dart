@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 
 /// W7 — Badge status (overdue/tepat waktu AC-29, kondisi, verifikasi).
@@ -24,7 +24,7 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color solid = color ?? AppColors.textSecondary;
+    final Color solid = color ?? context.pal.textSecondary;
     final Color bg = softColor ?? solid.withValues(alpha: 0.12);
     final double h = dense ? 20.0 : 26.0;
     final double fontSize = dense ? 11.0 : 12.0;

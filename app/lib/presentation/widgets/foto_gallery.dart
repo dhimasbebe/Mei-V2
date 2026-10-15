@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../domain/models/maintenance.dart';
 import '../../../core/media/photo_store.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_tokens.dart';
 
 /// Galeri thumbnail foto lampiran laporan (Tahap 3 — WS C, §7.1).
@@ -22,6 +23,7 @@ class FotoGallery extends StatelessWidget {
     if (foto.isEmpty) return const SizedBox.shrink();
 
     final double sisi = dense ? 56 : 88;
+    final AppPalette pal = context.pal;
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
@@ -34,16 +36,15 @@ class FotoGallery extends StatelessWidget {
             child: Container(
               width: sisi,
               height: sisi,
-              color: AppColors.surfaceMuted,
+              color: pal.surfaceMuted,
               child: Image.network(
                 f.url,
                 fit: BoxFit.cover,
                 errorBuilder:
-                    (BuildContext c, Object e, StackTrace? st) =>
-                        const Icon(
+                    (BuildContext c, Object e, StackTrace? st) => Icon(
                   Icons.broken_image_outlined,
                   size: 20,
-                  color: AppColors.textSecondary,
+                  color: c.pal.textSecondary,
                 ),
               ),
             ),
@@ -103,20 +104,21 @@ class FotoCountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (jumlah <= 0) return const SizedBox.shrink();
+    final Color sekunder = context.pal.textSecondary;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        const Icon(
+        Icon(
           Icons.photo_outlined,
           size: 14,
-          color: AppColors.textSecondary,
+          color: sekunder,
         ),
         const SizedBox(width: 2),
         Text(
           '$jumlah',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
-            color: AppColors.textSecondary,
+            color: sekunder,
           ),
         ),
       ],

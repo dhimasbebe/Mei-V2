@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 import 'app_card.dart';
 import 'skeleton.dart';
@@ -33,6 +34,7 @@ class KpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
     final Color accent = color ?? AppColors.primary;
     final double? target = double.tryParse(value.replaceAll(',', '.'));
 
@@ -48,7 +50,7 @@ class KpiCard extends StatelessWidget {
           final String shown = target == target.roundToDouble()
               ? v.round().toString()
               : v.toStringAsFixed(1);
-          return Text(shown, style: _valueStyle);
+          return Text(shown, style: _gayaNilai(pal));
         },
       );
     } else {
@@ -56,7 +58,7 @@ class KpiCard extends StatelessWidget {
         value,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: _valueStyle,
+        style: _gayaNilai(pal),
       );
     }
 
@@ -107,9 +109,9 @@ class KpiCard extends StatelessWidget {
             label,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: context.pal.textSecondary,
             ),
           ),
         ],
@@ -117,9 +119,9 @@ class KpiCard extends StatelessWidget {
     );
   }
 
-  static const TextStyle _valueStyle = TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
-  );
+  TextStyle _gayaNilai(AppPalette pal) => TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.w700,
+        color: pal.textPrimary,
+      );
 }
