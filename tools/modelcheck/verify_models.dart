@@ -53,6 +53,11 @@ import '../../app/lib/core/theme/theme_mode_codec.dart';
 import '../../app/lib/domain/models/alat_import.dart';
 import '../../app/lib/domain/models/share_link.dart';
 
+// Modul pure fitur tahap 3 (WS I + J + K, T07).
+import '../../app/lib/core/patrol/patrol_queue.dart';
+import '../../app/lib/core/maintenance/checklist_quick_fill.dart';
+import '../../app/lib/core/maintenance/draft_template.dart';
+
 /// Folder fixture, relatif terhadap root paket ini.
 const String _fixtureDir = '../../app/test/fixtures';
 
@@ -1021,6 +1026,175 @@ void main() {
   check('AC-O6 round-trip toJson/fromJson',
       rtSl.idShare == sl.idShare && rtSl.token == sl.token && rtSl.url == sl.url &&
           rtSl.expiresAt == sl.expiresAt && rtSl.createdAt == sl.createdAt);
+
+  // --------------------------------------------------------------------
+  section('24. PATROLI — PatrolQueue (WS I, T07)');
+  // --------------------------------------------------------------------
+  // AC-I1 — tambah + dedupe.
+  final PatrolQueue patrol = PatrolQueue();
+  check('AC-I1 antrean awal kosong', patrol.count == 0 && patrol.kosong);
+  check('AC-I1 add AC-001 -> true', patrol.add('AC-001'));
+  check('AC-I1 add AC-001 lagi -> false (duplikat)',
+      !patrol.add('AC-001'), 'count=${patrol.count}');
+  check('AC-I1 dedupe: count tetap 1', patrol.count == 1);
+  check('AC-I1 dedupe case-insensitive (ac-001)', !patrol.add('ac-001'));
+  check('AC-I1 barcode kosong ditolak', !patrol.add('   '));
+  // AC-I2 — FIFO + remove + clear tanpa mengubah urutan item lain.
+  patrol.add('GS-001');
+  patrol.add('AC-003');
+  check('AC-I2 urutan FIFO',
+      patrol.items.map((PatrolItem i) => i.barcode).join(',') == 'AC-001,GS-001,AC-003',
+      patrol.items.map((PatrolItem i) => i.barcode).join(','));
+  patrol.remove('GS-001');
+  check('AC-I2 remove mempertahankan urutan item lain',
+      patrol.items.map((PatrolItem i) => i.barcode).join(',') == 'AC-001,AC-003',
+      patrol.items.map((PatrolItem i) => i.barcode).join(','));
+  check('AC-I2 count setelah remove == 2', patrol.count == 2);
+  // AC-I3 — serialize/deserialize round-trip.
+  final String rawPatrol = patrol.serialize();
+  final PatrolQueue patrolRt = PatrolQueue.deserialize(rawPatrol);
+  check('AC-I3 round-trip count', patrolRt.count == patrol.count, '${patrolRt.count}');
+  check('AC-I3 round-trip barcode identik',
+      patrolRt.items.map((PatrolItem i) => i.barcode).join(',') ==
+          patrol.items.map((PatrolItem i) => i.barcode).join(','));
+  check('AC-I3 round-trip waktu identik',
+      patrolRt.items.first.ditambahkanPada == patrol.items.first.ditambahkanPada);
+  check('AC-I3 round-trip status identik',
+      patrolRt.items.first.status == patrol.items.first.status);
+  check('AC-I3 deserialize(null) -> antrean kosong', PatrolQueue.deserialize(null).count == 0);
+  check('AC-I3 deserialize sampah -> antrean kosong',
+      PatrolQueue.deserialize('{bukan json').count == 0);
+  // AC-I4 — status validasi; 404 menandai belumValidasi TANPA menghapus item.
+  check('AC-I4 status awal belumValidasi',
+      patrol.items.first.status == PatrolStatus.belumValidasi);
+  check('AC-I4 jumlahBelumValidasi == 2', patrol.jumlahBelumValidasi == 2);
+  check('AC-I4 tandaiTervalidasi -> true', patrol.tandaiTervalidasi('AC-001'));
+  check('AC-I4 status jadi tervalidasi',
+      patrol.items.first.status == PatrolStatus.tervalidasi);
+  check('AC-I4 jumlahBelumValidasi == 1 setelah validasi', patrol.jumlahBelumValidasi == 1);
+  check('AC-I4 tandaiBelumValidasi -> true (item TIDAK dihapus)',
+      patrol.tandaiBelumValidasi('AC-001') && patrol.count == 2);
+  check('AC-I4 status kembali belumValidasi',
+      patrol.items.first.status == PatrolStatus.belumValidasi);
+  check('AC-I4 tandai barcode tak ada -> false', !patrol.tandaiTervalidasi('XX-999'));
+  // add dengan waktu eksplisit + clear.
+  final DateTime waktuPatrol = DateTime(2026, 7, 15, 9, 30);
+  final PatrolQueue patrol2 = PatrolQueue()..add('PL-001', pada: waktuPatrol);
+  check('AC-I1 add(pada:) memakai waktu yang diberikan',
+      patrol2.items.first.ditambahkanPada == waktuPatrol);
+  patrol2.clear();
+  check('AC-I2 clear mengosongkan antrean', patrol2.count == 0);
+  check('AC-I1 kunci penyimpanan', PatrolQueue.storageKey == 'meiv.patrol_queue.v1');
+
+  // --------------------------------------------------------------------
+  section('25. CHECKLIST CEPAT — ChecklistQuickFill (WS J, T07)');
+  // --------------------------------------------------------------------
+  final List<QuickFillItem> itemsJ = <QuickFillItem>[
+    const QuickFillItem(idSpesifikasi: 1, tipeInput: 'select', opsi: <String>['Baik', 'Rusak']),
+    const QuickFillItem(idSpesifikasi: 2, tipeInput: 'select', opsi: <String>['OK', 'Tidak OK']),
+    const QuickFillItem(idSpesifikasi: 3, tipeInput: 'select', opsi: <String>['Baik', 'Rusak'], nilai: 'Rusak'),
+    const QuickFillItem(idSpesifikasi: 4, tipeInput: 'select', opsi: <String>['Ya', 'Tidak']),
+    const QuickFillItem(idSpesifikasi: 5, tipeInput: 'number'),
+    const QuickFillItem(idSpesifikasi: 6, tipeInput: 'text', nilai: ''),
+  ];
+  final List<QuickFillItem> hasilJ = ChecklistQuickFill.isiSemua(itemsJ);
+  // AC-J1 — hanya item pilihan beropsi Baik/OK, tidak menimpa isian ada.
+  check('AC-J1 item select beropsi Baik diisi "Baik"', hasilJ[0].nilai == 'Baik', '${hasilJ[0].nilai}');
+  check('AC-J1 item select beropsi OK diisi "OK"', hasilJ[1].nilai == 'OK', '${hasilJ[1].nilai}');
+  check('AC-J1 isian pengguna TIDAK ditimpa', hasilJ[2].nilai == 'Rusak', '${hasilJ[2].nilai}');
+  check('AC-J1 select tanpa opsi Baik/OK TIDAK disentuh', hasilJ[3].nilai == null, '${hasilJ[3].nilai}');
+  // AC-J2 — item angka/teks tetap kosong.
+  check('AC-J2 item number tetap kosong', hasilJ[4].nilai == null);
+  check('AC-J2 item text tetap kosong', (hasilJ[5].nilai ?? '').isEmpty);
+  check('AC-J1 jumlah diisi (markAllOk) == 2', ChecklistQuickFill.markAllOk(itemsJ) == 2,
+      '${ChecklistQuickFill.markAllOk(itemsJ)}');
+  // Fungsi murni: daftar masukan TIDAK berubah.
+  check('AC-J1 isiSemua tidak memutasi input', itemsJ[0].nilai == null && itemsJ[1].nilai == null);
+  check('AC-J1 markAllOk tidak memutasi input', itemsJ[0].nilai == null);
+  // AC-J3 — progres hanya item benar-benar terisi, tidak pernah > total.
+  check('AC-J3 hitungTerisi setelah aksi == 3',
+      ChecklistQuickFill.hitungTerisi(hasilJ) == 3, '${ChecklistQuickFill.hitungTerisi(hasilJ)}');
+  check('AC-J3 hitungTerisi <= items.length',
+      ChecklistQuickFill.hitungTerisi(hasilJ) <= hasilJ.length);
+  check('AC-J3 hitungTerisi daftar kosong == 0', ChecklistQuickFill.hitungTerisi(const <QuickFillItem>[]) == 0);
+  check('AC-J3 markAllOk idempoten (aksi kedua == 0)',
+      ChecklistQuickFill.markAllOk(hasilJ) == 0, '${ChecklistQuickFill.markAllOk(hasilJ)}');
+  check('AC-J1 defaultNilai default == "Baik"', ChecklistQuickFill.defaultNilai == 'Baik');
+  // defaultNilai kustom dihormati bila opsinya tersedia.
+  final List<QuickFillItem> hasilJ2 = ChecklistQuickFill.isiSemua(
+    <QuickFillItem>[
+      const QuickFillItem(idSpesifikasi: 9, tipeInput: 'select', opsi: <String>['Normal', 'Abnormal']),
+    ],
+    defaultNilai: 'Normal',
+  );
+  check('AC-J1 defaultNilai kustom dipakai bila cocok', hasilJ2.first.nilai == 'Normal', '${hasilJ2.first.nilai}');
+
+  // --------------------------------------------------------------------
+  section('26. DUPLIKAT LAPORAN — DraftTemplate (WS K, T07)');
+  // --------------------------------------------------------------------
+  final DateTime waktuAsal = DateTime(2026, 7, 1, 8, 0);
+  final Maintenance laporanAsal = Maintenance(
+    idMaintenance: 88,
+    waktuMaintenance: waktuAsal,
+    barcodeAlat: 'AC-001',
+    username: '67890',
+    idLokasi: 3,
+    idKategori: 7,
+    catatan: 'Kondisi normal, filter bersih.',
+    kondisiKeseluruhan: 'baik',
+    detail: const <DetailMaintenance>[
+      DetailMaintenance(idSpesifikasi: 11, status: '380'),
+      DetailMaintenance(idSpesifikasi: 12, status: 'Baik'),
+    ],
+    foto: const <FotoLampiran>[
+      FotoLampiran(idFoto: 1, url: 'https://x/storage/foto/a.jpg'),
+    ],
+  );
+  final DateTime waktuDup = DateTime(2026, 7, 15, 10, 0);
+  final DraftRecord drafK = DraftTemplate.fromReport(
+    laporanAsal,
+    buatUuid: () => 'uuid-baru-1234',
+    waktuDuplikasi: waktuDup,
+  );
+  // AC-K1 — client_uuid BARU + tanpa field foto.
+  check('AC-K1 clientUuid dari generator ter-inject',
+      drafK.clientUuid == 'uuid-baru-1234', drafK.clientUuid);
+  check('AC-K1 clientUuid tidak kosong', drafK.clientUuid.isNotEmpty);
+  check('AC-K1 fotoPaths selalu kosong (foto tidak disalin)', drafK.fotoPaths.isEmpty);
+  check('AC-K1 laporan asal memang punya foto (bukti tidak disalin)',
+      laporanAsal.foto.isNotEmpty);
+  // AC-K2 — waktu = waktu duplikasi, bukan waktu asal.
+  check('AC-K2 waktuMaintenance == waktuDuplikasi', drafK.waktuMaintenance == waktuDup);
+  check('AC-K2 waktuMaintenance != waktu laporan asal', drafK.waktuMaintenance != waktuAsal);
+  // AC-K3 — salinan utuh.
+  check('AC-K3 barcode tersalin', drafK.barcodeAlat == 'AC-001');
+  check('AC-K3 idKategori tersalin', drafK.idKategori == 7);
+  check('AC-K3 idLokasi tersalin', drafK.idLokasi == 3);
+  check('AC-K3 kondisi tersalin', drafK.kondisiKeseluruhan == 'baik');
+  check('AC-K3 catatan tersalin', drafK.catatan == 'Kondisi normal, filter bersih.');
+  check('AC-K3 checklist tersalin utuh (id -> status)',
+      drafK.checklist.length == 2 && drafK.checklist[11] == '380' && drafK.checklist[12] == 'Baik',
+      drafK.checklist.toString());
+  check('AC-K3 status draf bawaan menungguSinkron',
+      drafK.status == DraftStatus.menungguSinkron, '${drafK.status}');
+  // Tanpa waktuDuplikasi -> waktu sekarang (bukan waktu asal).
+  final DraftRecord drafNow = DraftTemplate.fromReport(
+    laporanAsal,
+    buatUuid: () => 'uuid-baru-5678',
+  );
+  check('AC-K2 tanpa waktuDuplikasi memakai waktu sekarang',
+      drafNow.waktuMaintenance != waktuAsal &&
+          drafNow.waktuMaintenance.difference(DateTime.now()).inSeconds.abs() < 5);
+  check('AC-K1 dua pemanggilan dengan generator berbeda -> uuid berbeda',
+      drafNow.clientUuid != drafK.clientUuid);
+  // Generator kosong ditolak tegas (bukan diam-diam lolos).
+  bool ditolak = false;
+  try {
+    DraftTemplate.fromReport(laporanAsal, buatUuid: () => '  ');
+  } on ArgumentError {
+    ditolak = true;
+  }
+  check('AC-K1 buatUuid kosong -> ArgumentError', ditolak);
 
   // --------------------------------------------------------------------
   print('');
