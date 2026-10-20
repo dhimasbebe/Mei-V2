@@ -8,10 +8,12 @@ import '../../../domain/models/maintenance.dart';
 import '../../../providers/maintenance_provider.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/ekspor_aksi.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/filter_chip_bar.dart';
 import '../../widgets/section_header.dart';
+import '../../widgets/share_link_button.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
 import '../../../core/theme/app_palette.dart';
@@ -53,6 +55,44 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
         );
   }
 
+  /// Ekspor periode (WS L, T09): pilih rentang lalu unduh PDF atau CSV.
+  ///
+  /// Rentang awal 30 hari terakhir dipilih karena itu rentang yang paling
+  /// sering dipakai untuk laporan bulanan, dan masih jauh di bawah batas
+  /// server 90 hari (AC-L3).
+  Future<void> _eksporPeriode({required bool csv}) async {
+    final DateTime sekarang = DateTime.now();
+    final DateTimeRange? rentang = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: sekarang,
+      initialDateRange: DateTimeRange(
+        start: sekarang.subtract(const Duration(days: 29)),
+        end: sekarang,
+      ),
+      helpText: csv ? 'Pilih periode ekspor CSV' : 'Pilih periode ekspor PDF',
+      saveText: 'UNDUH',
+    );
+
+    if (rentang == null || !mounted) return;
+
+    if (csv) {
+      await EksporAksi.csvPeriode(
+        context,
+        ref,
+        dari: rentang.start,
+        sampai: rentang.end,
+      );
+    } else {
+      await EksporAksi.pdfPeriode(
+        context,
+        ref,
+        dari: rentang.start,
+        sampai: rentang.end,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final AsyncValue<PagedResult<Maintenance>> async =
@@ -83,6 +123,41 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
           },
         ),
         const SizedBox(height: AppSpacing.lg),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                'Ekspor periode',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: context.pal.textSecondary,
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Unduh PDF periode',
+              visualDensity: VisualDensity.compact,
+              onPressed: () => _eksporPeriode(csv: false),
+              icon: Icon(
+                Icons.picture_as_pdf_outlined,
+                size: AppSizes.iconSm,
+                color: AppColors.primary,
+              ),
+            ),
+            IconButton(
+              tooltip: 'Unduh CSV periode',
+              visualDensity: VisualDensity.compact,
+              onPressed: () => _eksporPeriode(csv: true),
+              icon: Icon(
+                Icons.table_view_outlined,
+                size: AppSizes.iconSm,
+                color: context.pal.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
         Expanded(
           child: async.when(
             data: (PagedResult<Maintenance> result) => _tabel(result),
@@ -179,6 +254,7 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
                       DataColumn(label: Text('Lokasi')),
                       DataColumn(label: Text('Kondisi')),
                       DataColumn(label: Text('Status')),
+                      DataColumn(label: Text('Aksi')),
                     ],
                     rows: result.data.map((Maintenance m) {
                       final (Color warna, String label) = _statusVerifikasi(m);
@@ -196,6 +272,33 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
                               label: label,
                               color: warna,
                               dense: true,
+                            ),
+                          ),
+                          // WS L + O: unduh PDF laporan & kelola tautan bagikan.
+                          // Keduanya endpoint Supervisor/Admin, sama seperti
+                          // layar ini, jadi tidak perlu gerbang role tambahan.
+                          DataCell(
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                  tooltip: 'Unduh PDF laporan',
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () => EksporAksi.pdfLaporan(
+                                    context,
+                                    ref,
+                                    id: m.idMaintenance,
+                                  ),
+                                  icon: Icon(
+                                    Icons.picture_as_pdf_outlined,
+                                    size: AppSizes.iconSm,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                TombolBagikanLaporan(
+                                  idMaintenance: m.idMaintenance,
+                                ),
+                              ],
                             ),
                           ),
                         ],
