@@ -29,10 +29,12 @@ class _SyncQueueScreenState extends ConsumerState<SyncQueueScreen> {
     final List<DraftRecord> items = state.antrean.items;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.pal.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
-        surfaceTintColor: AppColors.background,
+        backgroundColor: context.pal.background,
+        // Tint permukaan bawaan M3 akan menimpa warna di atas pada mode
+        // gelap; matikan eksplisit agar header tetap menyatu dengan halaman.
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: Text(
           'Antrean Sinkron',

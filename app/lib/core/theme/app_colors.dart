@@ -37,6 +37,25 @@ class AppColors {
   /// Latar abu-abu untuk field input gelap pada aplikasi lama.
   static const Color fieldDark = Color(0xFF2B2B2B);
 
+  // ---------------------------------------------------------------------
+  // Warna CHROME SIDEBAR web/desktop.
+  //
+  // Panel sidebar sengaja SELALU hitam (`black`) di kedua tema — ia chrome
+  // tetap, bukan permukaan yang mengikuti `AppPalette`. Karena itu teks dan
+  // ikonnya memakai abu-abu netral tetap; memakai `context.pal.textSecondary`
+  // justru akan merusak kontras di mode terang (#6B6B6B di atas hitam).
+  // Nilai dipromosikan dari literal agar AC-E9 tetap bersih.
+  // ---------------------------------------------------------------------
+
+  /// Garis pemisah di dalam sidebar hitam.
+  static const Color sidebarDivider = Color(0xFF2B2B2B);
+
+  /// Teks sekunder (mis. nama peran) di sidebar hitam.
+  static const Color sidebarTextSecondary = Color(0xFF9E9E9E);
+
+  /// Ikon non-aktif di sidebar hitam.
+  static const Color sidebarIconInactive = Color(0xFFBDBDBD);
+
   /// Garis tabel — dari `table_header_cell_bg.xml` (stroke #AFAFAF).
   static const Color tableBorder = Color(0xFFAFAFAF);
 

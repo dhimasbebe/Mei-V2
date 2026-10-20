@@ -19,7 +19,7 @@ class ForbiddenScreen extends ConsumerWidget {
     final String role = ref.watch(authProvider).user?.roleUsers ?? '-';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.pal.background,
       appBar: AppBar(
         backgroundColor: AppColors.black,
         foregroundColor: AppColors.background,

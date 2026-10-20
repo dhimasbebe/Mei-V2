@@ -82,7 +82,7 @@ class RoleShell extends ConsumerWidget {
         selectedIndex: index,
         onDestinationSelected: (int i) => context.go(nav[i].path),
         height: AppSizes.bottomNavHeight,
-        backgroundColor: AppColors.background,
+        backgroundColor: context.pal.background,
         surfaceTintColor: Colors.transparent,
         indicatorColor: AppColors.primarySoft,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,

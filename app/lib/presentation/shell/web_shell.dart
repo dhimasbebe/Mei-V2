@@ -136,7 +136,7 @@ class _Sidebar extends StatelessWidget {
                 },
               ),
             ),
-            Divider(color: Color(0xFF2B2B2B), height: 1),
+            Divider(color: AppColors.sidebarDivider, height: 1),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
@@ -172,7 +172,7 @@ class _Sidebar extends StatelessWidget {
                           Text(
                             user?.roleUsers ?? '-',
                             style: TextStyle(
-                              color: Color(0xFF9E9E9E),
+                              color: AppColors.sidebarTextSecondary,
                               fontSize: 11,
                             ),
                           ),
@@ -184,7 +184,7 @@ class _Sidebar extends StatelessWidget {
                       onPressed: onLogout,
                       icon: Icon(
                         Icons.logout,
-                        color: Color(0xFFBDBDBD),
+                        color: AppColors.sidebarIconInactive,
                         size: AppSizes.iconSm,
                       ),
                     ),
@@ -214,7 +214,8 @@ class _SidebarItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Color warna = aktif ? AppColors.background : Color(0xFFBDBDBD);
+    final Color warna =
+        aktif ? AppColors.background : AppColors.sidebarIconInactive;
     final int jumlah = jumlahBadge(ref, destination.badge);
 
     return Material(
@@ -233,6 +234,8 @@ class _SidebarItem extends ConsumerWidget {
               jumlah > 0
                   ? Badge(
                       label: Text(jumlah > 99 ? '99+' : '$jumlah'),
+                      // Chip lencana berada di atas sidebar hitam, jadi
+                      // putih tetap benar di kedua tema.
                       backgroundColor: AppColors.background,
                       textColor: AppColors.primary,
                       child: Icon(
