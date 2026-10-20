@@ -38,7 +38,13 @@ class MaintenanceController extends Controller
             $query->where('id_kategori', $request->input('id_kategori'));
         }
 
-        if ($request->filled('username')) {
+        // Privasi: Teknisi dibatasi pada laporannya sendiri (dua lapis dengan
+        // penyaringan `username` di klien — AC-K5). Untuk peran ini parameter
+        // `username` dari klien DIABAIKAN, bukan digabung dengan syarat lain:        // memintanya sebagai teknisi lain tidak boleh menghasilkan apa pun,
+        // termasuk tidak boleh membocorkan keberadaan data lewat beda respons.
+        if ($this->hanyaLaporanSendiri($request)) {
+            $query->where('username', $request->user()->username);
+        } elseif ($request->filled('username')) {
             $query->where('username', $request->input('username'));
         }
 
@@ -124,12 +130,41 @@ class MaintenanceController extends Controller
      * GET /api/v1/maintenance/{id}
      *
      * Menyertakan array `foto` (fitur Tahap 3) — `[]` bila belum ada lampiran.
+     * Teknisi hanya boleh membuka laporannya sendiri (403 bila bukan).
      */
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
-        return $this->ok(
-            Maintenance::with(self::WITH)->with('foto')->findOrFail($id)
-        );
+        $maintenance = Maintenance::with(self::WITH)->with('foto')->findOrFail($id);
+
+        // Teknisi tidak boleh membaca laporan teknisi lain, termasuk lewat
+        // enumerasi id berurutan. Supervisor/Admin tetap boleh membuka semua.
+        if ($this->hanyaLaporanSendiri($request)
+            && $maintenance->username !== $request->user()->username) {
+            return response()->json([
+                'code' => 403,
+                'data' => null,
+                'message' => 'Laporan ini bukan milik Anda.',
+            ], 403);
+        }
+
+        return $this->ok($maintenance);
+    }
+
+    /**
+     * Apakah peminta dibatasi pada laporan miliknya sendiri?
+     *
+     * Sama seperti `FotoController::index`, peran Teknisi hanya boleh melihat
+     * laporannya sendiri; Supervisor dan Admin melihat semua.
+     */
+    private function hanyaLaporanSendiri(Request $request): bool
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return false;
+        }
+
+        return strcasecmp((string) $user->role_users, 'Teknisi') === 0;
     }
 
     /**
