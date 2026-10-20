@@ -8,7 +8,6 @@ import '../../../core/maintenance/checklist_quick_fill.dart';
 import '../../../core/offline/draft_queue.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../data/repositories/foto_repository.dart';
 import '../../../domain/models/maintenance.dart';
 import '../../../domain/models/spesifikasi.dart';
 import '../../../providers/alat_provider.dart';

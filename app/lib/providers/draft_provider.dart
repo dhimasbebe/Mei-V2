@@ -12,7 +12,6 @@ import '../core/offline/draft_status.dart';
 import '../core/offline/retry_policy.dart';
 import '../data/api/api_exception.dart';
 import '../data/repositories/foto_repository.dart';
-import '../data/repositories/maintenance_repository.dart';
 import '../domain/models/maintenance.dart';
 import 'auth_provider.dart';
 import 'maintenance_provider.dart';
@@ -220,9 +219,6 @@ class DraftNotifier extends StateNotifier<DraftState> {
   // Internal
   // ------------------------------------------------------------------
 
-  MaintenanceRepository get _maintenanceRepo =>
-      _ref.read(maintenanceRepositoryProvider);
-
   FotoRepository get _fotoRepo => _ref.read(fotoRepositoryProvider);
 
   /// Memetakan [DraftRecord] ke payload `POST /maintenance` — `client_uuid`
@@ -295,7 +291,10 @@ class DraftNotifier extends StateNotifier<DraftState> {
 
     // Jaringan / server: kembali `menungguSinkron`, jadwalkan backoff
     // eksponensial (AC-A10, AC-A11) lalu lanjutkan antrean berikutnya.
-    final int attempt = _cari(draf.clientUuid)?.attempt ?? draf.attempt;
+    //
+    // `attempt` sudah dinaikkan oleh `DraftQueue.markSending` sebelum unggah,
+    // jadi `attempt - 1` adalah indeks percobaan 0-based yang dipakai
+    // `RetryPolicy` (5s, 10s, 20s, 40s, lalu mentok 60s).
     _queue.onUploadFailed(
         draf.clientUuid, api?.message ?? 'Koneksi terputus.');
     final DraftRecord? terkini = _cari(draf.clientUuid);

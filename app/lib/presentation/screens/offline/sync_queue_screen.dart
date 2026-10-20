@@ -23,10 +23,6 @@ class SyncQueueScreen extends ConsumerStatefulWidget {
 }
 
 class _SyncQueueScreenState extends ConsumerState<SyncQueueScreen> {
-  // Tanpa locale eksplisit: `intl` hanya membawa data simbol `en_US`,
-  // locale lain melempar LocaleDataException bila tidak diinisialisasi.
-  static final DateFormat _fmt = DateFormat('dd MMM yyyy, HH:mm');
-
   @override
   Widget build(BuildContext context) {
     final DraftState state = ref.watch(draftQueueProvider);
@@ -190,6 +186,9 @@ class _KartuDraf extends StatelessWidget {
   final VoidCallback? onCobaLagi;
   final VoidCallback? onHapus;
 
+  // Tanpa locale eksplisit: `intl` hanya membawa data simbol `en_US`, sehingga
+  // memaksa locale lain di sini akan melempar LocaleDataException. Jangan set
+  // `Intl.defaultLocale` ke 'id' tanpa memuat datanya lebih dulu.
   static final DateFormat _fmt = DateFormat('dd MMM yyyy, HH:mm');
 
   (Color, Color, IconData, String) get _statusTampil {

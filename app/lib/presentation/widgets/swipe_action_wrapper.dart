@@ -42,14 +42,6 @@ class SwipeActionWrapper extends ConsumerWidget {
     final bool bolehTolak = aksi.contains(SwipeActionType.tolak);
     final bool bolehHapus = aksi.contains(SwipeActionType.hapus);
 
-    Future<void> jalankan(SwipeActionType a) async {
-      if (SwipeAction.confirmRequired(a)) {
-        final bool? ya = await _konfirmasi(context, a);
-        if (ya != true) return;
-      }
-      onAksi(a);
-    }
-
     return Dismissible(
       key: ValueKey<String>(
         'swipe-$layar-${identityHashCode(child)}',

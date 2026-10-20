@@ -29,7 +29,7 @@ import 'package:mei_v/core/files/file_delivery_web.dart' as delivery_web;
 import 'package:mei_v/core/media/photo_store_stub.dart' as photo_stub;
 import 'package:mei_v/core/media/photo_store_web.dart' as photo_web;
 
-Future<void> main() async {
+Future<int> main() async {
   final Uint8List dummy = Uint8List.fromList(<int>[0x25, 0x50, 0x44, 0x46]);
 
   // Variasi web — file_delivery.
@@ -56,6 +56,7 @@ Future<void> main() async {
   await photo_web.hapus('mem://probe');
   await photo_stub.hapus('probe');
 
-  // Dijadikan nilai balik agar tidak dianggap kode mati oleh kompilator.
-  print('$webDidukung $stubDidukung');
+  // Nilai dipakai sebagai kode keluar agar pemanggilan di atas tidak dibuang
+  // kompilator sebagai kode mati — sekaligus bukti stub melaporkan false.
+  return (webDidukung ? 1 : 0) + (stubDidukung ? 2 : 0);
 }
