@@ -38,8 +38,11 @@ import '../../app/lib/core/audit/audit_aksi.dart';
 import '../../app/lib/core/audit/audit_detail.dart';
 import '../../app/lib/core/audit/audit_filter.dart';
 import '../../app/lib/core/charts/chart_range.dart';
+import '../../app/lib/core/constants/app_strings.dart';
 import '../../app/lib/core/files/file_export_spec.dart';
 import '../../app/lib/core/gesture/swipe_action.dart';
+import '../../app/lib/core/locale/locale_codec.dart';
+import '../../app/lib/core/locale/teks.dart';
 import '../../app/lib/core/media/photo_policy.dart';
 import '../../app/lib/core/motion/app_motion.dart';
 import '../../app/lib/core/notif/notif_schedule.dart';
@@ -1370,6 +1373,157 @@ void main() {
   check('ukuranManusia MB',
       FileExportSpec.ukuranManusia((1.4 * 1024 * 1024).round()) == '1.4 MB',
       FileExportSpec.ukuranManusia((1.4 * 1024 * 1024).round()));
+
+  // ====================================================================
+  // 30. WS P — codec bahasa ID/EN & helper teks dwibahasa
+  //     (Tahap 3 T10; logika murni baru, ditambahkan di AKHIR berkas)
+  // ====================================================================
+
+  // AC-P2 — tanpa setelan apa pun aplikasi tampil berbahasa Indonesia.
+  check('AC-P2 bawaan adalah Indonesia', LocaleCodec.bawaan == AppLocale.id);
+  check('AC-P2 fromKode(null) == id', LocaleCodec.fromKode(null) == AppLocale.id);
+  check('AC-P2 fromKode("") == id', LocaleCodec.fromKode('') == AppLocale.id);
+  check('AC-P2 fromKode("   ") == id',
+      LocaleCodec.fromKode('   ') == AppLocale.id);
+  check('AC-P2 Indonesia lebih dulu di daftar',
+      LocaleCodec.didukung.first == AppLocale.id);
+  check('AC-P2 hanya dua bahasa didukung', LocaleCodec.didukung.length == 2);
+
+  // AC-P5 — `keKode` / `fromKode` round-trip stabil untuk setiap bahasa.
+  check('AC-P5 keKode(id) == "id"', LocaleCodec.keKode(AppLocale.id) == 'id');
+  check('AC-P5 keKode(en) == "en"', LocaleCodec.keKode(AppLocale.en) == 'en');
+  for (final AppLocale bahasa in LocaleCodec.didukung) {
+    final String kode = LocaleCodec.keKode(bahasa);
+    check('AC-P5 round-trip "$kode"',
+        LocaleCodec.fromKode(kode) == bahasa, kode);
+    check('AC-P5 round-trip " $kode " (spasi)',
+        LocaleCodec.fromKode(' $kode ') == bahasa);
+    check('AC-P5 didukungKode("$kode")', LocaleCodec.didukungKode(kode));
+  }
+
+  // Toleransi huruf besar/kecil dan spasi.
+  check('AC-P5 fromKode("EN ") == en',
+      LocaleCodec.fromKode('EN ') == AppLocale.en);
+  check('AC-P5 fromKode(" En") == en',
+      LocaleCodec.fromKode(' En') == AppLocale.en);
+  check('AC-P5 fromKode("ID") == id',
+      LocaleCodec.fromKode('ID') == AppLocale.id);
+  check('AC-P5 didukungKode("EN ")', LocaleCodec.didukungKode('EN '));
+
+  // Kode locale lengkap (BCP-47) dipetakan lewat subtag utamanya.
+  check('AC-P5 fromKode("en-US") == en',
+      LocaleCodec.fromKode('en-US') == AppLocale.en);
+  check('AC-P5 fromKode("id_ID") == id',
+      LocaleCodec.fromKode('id_ID') == AppLocale.id);
+  check('AC-P5 didukungKode("en-US")', LocaleCodec.didukungKode('en-US'));
+
+  // Nilai tak dikenal jatuh ke Indonesia dan tidak pernah melempar.
+  check('AC-P5 fromKode("fr") == id', LocaleCodec.fromKode('fr') == AppLocale.id);
+  check('AC-P5 fromKode("xx-YY") == id',
+      LocaleCodec.fromKode('xx-YY') == AppLocale.id);
+  check('AC-P2 fromKode("-") == id', LocaleCodec.fromKode('-') == AppLocale.id);
+  check('AC-P5 didukungKode("fr") == false', !LocaleCodec.didukungKode('fr'));
+  check('AC-P5 didukungKode(null) == false', !LocaleCodec.didukungKode(null));
+
+  bool kodeAman = true;
+  for (final String? masukan in <String?>[
+    null,
+    '',
+    ' ',
+    '-',
+    '??',
+    'en-US-x',
+    'zz',
+    'EN ',
+  ]) {
+    try {
+      LocaleCodec.fromKode(masukan);
+    } catch (_) {
+      kodeAman = false;
+    }
+  }
+  check('AC-P5 fromKode tidak pernah melempar', kodeAman);
+
+  // Siklus bahasa berikutnya — dengan dua bahasa, invers dirinya sendiri.
+  check('AC-P2 berikutnya(id) == en',
+      LocaleCodec.berikutnya(AppLocale.id) == AppLocale.en);
+  check('AC-P2 berikutnya(en) == id',
+      LocaleCodec.berikutnya(AppLocale.en) == AppLocale.id);
+  bool siklusBalik = true;
+  for (final AppLocale bahasa in LocaleCodec.didukung) {
+    if (LocaleCodec.berikutnya(LocaleCodec.berikutnya(bahasa)) != bahasa) {
+      siklusBalik = false;
+    }
+  }
+  check('AC-P2 berikutnya invers dirinya sendiri', siklusBalik);
+
+  // Nama bahasa: label singkat untuk pemilih, endonim untuk keterangan.
+  check('label(id) == Indonesia', LocaleCodec.label(AppLocale.id) == 'Indonesia');
+  check('label(en) == English', LocaleCodec.label(AppLocale.en) == 'English');
+  check('endonim id', LocaleCodec.labelSendiri(AppLocale.id) == 'Bahasa Indonesia',
+      LocaleCodec.labelSendiri(AppLocale.id));
+  check('endonim en', LocaleCodec.labelSendiri(AppLocale.en) == 'English');
+
+  // AC-P4 — kunci penyimpanan stabil; mengganti nama akan membuat preferensi
+  // pengguna yang sudah ada menjadi yatim (aplikasi kembali ke Indonesia).
+  check('AC-P4 kunci penyimpanan stabil',
+      LocaleCodec.storageKey == 'meiv.locale.v1', LocaleCodec.storageKey);
+
+  // AC-P2/AC-P3 — helper Teks memilih sisi yang benar.
+  const Teks teksId = Teks(AppLocale.id);
+  const Teks teksEn = Teks(AppLocale.en);
+  check('AC-P2 Teks(id) tidak inggris', !teksId.inggris);
+  check('AC-P3 Teks(en) inggris', teksEn.inggris);
+  check('AC-P2 Teks(id).pilih -> Indonesia', teksId.pilih('a', 'b') == 'a');
+  check('AC-P3 Teks(en).pilih -> Inggris', teksEn.pilih('a', 'b') == 'b');
+
+  // `jumlah` — Indonesia tanpa infleksi, Inggris berjamak otomatis.
+  check('jumlah id tetap "3 alat"', teksId.jumlah(3, 'alat', 'tool') == '3 alat',
+      teksId.jumlah(3, 'alat', 'tool'));
+  check('jumlah en tunggal "1 tool"',
+      teksEn.jumlah(1, 'alat', 'tool') == '1 tool', teksEn.jumlah(1, 'alat', 'tool'));
+  check('jumlah en jamak "3 tools"',
+      teksEn.jumlah(3, 'alat', 'tool') == '3 tools', teksEn.jumlah(3, 'alat', 'tool'));
+
+  // AC-P3 — penjaga regresi: string Login WAJIB berbeda antar bahasa, supaya
+  // layar tidak pernah tampil setengah terjemahan.
+  check('AC-P3 labelMasuk berbeda', teksId.labelMasuk != teksEn.labelMasuk,
+      '${teksId.labelMasuk} / ${teksEn.labelMasuk}');
+  check('AC-P3 hintNip berbeda', teksId.hintNip != teksEn.hintNip,
+      '${teksId.hintNip} / ${teksEn.hintNip}');
+  check('AC-P3 hintPilihRole berbeda',
+      teksId.hintPilihRole != teksEn.hintPilihRole,
+      '${teksId.hintPilihRole} / ${teksEn.hintPilihRole}');
+  check('AC-P3 msgNipKosong berbeda',
+      teksId.msgNipKosong != teksEn.msgNipKosong,
+      '${teksId.msgNipKosong} / ${teksEn.msgNipKosong}');
+  check('AC-P3 msgPasswordMinimal berbeda',
+      teksId.msgPasswordMinimal != teksEn.msgPasswordMinimal,
+      '${teksId.msgPasswordMinimal} / ${teksEn.msgPasswordMinimal}');
+  check('AC-P3 msgRoleWajib berbeda',
+      teksId.msgRoleWajib != teksEn.msgRoleWajib,
+      '${teksId.msgRoleWajib} / ${teksEn.msgRoleWajib}');
+  check('AC-P3 tooltip password berbeda',
+      teksId.tooltipLihatPassword != teksEn.tooltipLihatPassword,
+      '${teksId.tooltipLihatPassword} / ${teksEn.tooltipLihatPassword}');
+  check('AC-P3 labelBahasa berbeda', teksId.labelBahasa != teksEn.labelBahasa,
+      '${teksId.labelBahasa} / ${teksEn.labelBahasa}');
+
+  // Pesan galat lokal diterjemahkan; teks tak dikenal dibiarkan apa adanya
+  // (teks server = data, bukan string UI).
+  check('AC-P3 pesan galat role diterjemahkan',
+      teksEn.pesanGalat(AppStrings.msgRoleTidakCocok) !=
+          AppStrings.msgRoleTidakCocok);
+  check('pesan galat Indonesia tidak diubah',
+      teksId.pesanGalat(AppStrings.msgRoleTidakCocok) ==
+          AppStrings.msgRoleTidakCocok);
+  check('AC-P3 pesan galat berbingkai ApiException diterjemahkan',
+      teksEn.pesanGalat('ApiException(401): Koneksi internet terputus.') ==
+          'ApiException(401): Internet connection lost.',
+      teksEn.pesanGalat('ApiException(401): Koneksi internet terputus.'));
+  check('pesan galat tak dikenal dibiarkan',
+      teksEn.pesanGalat('Barcode tidak terdaftar di sistem.') ==
+          'Barcode tidak terdaftar di sistem.');
 
   // --------------------------------------------------------------------
   print('');
