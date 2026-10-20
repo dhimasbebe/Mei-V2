@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/charts/chart_range.dart';
 import '../../../core/router/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
@@ -11,6 +12,7 @@ import '../../../providers/dashboard_provider.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/interactive_line_chart.dart';
 import '../../widgets/kpi_card.dart';
 import '../../widgets/responsive.dart';
 import '../../widgets/section_header.dart';
@@ -27,9 +29,12 @@ class DashboardOverviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Rentang tren diambil dari modul murni agar konsisten dengan layar
+    // Analitik (AC-G2).
+    final int hariTren = ChartRange.jumlahHari(ChartRange.periodeDefault);
     final AsyncValue<DashboardKpi> kpi = ref.watch(dashboardKpiProvider);
     final AsyncValue<List<TrendPoint>> trends =
-        ref.watch(dashboardTrendsProvider(30));
+        ref.watch(dashboardTrendsProvider(hariTren));
     final AsyncValue<List<DistributionItem>> distribusi =
         ref.watch(dashboardDistributionProvider);
     final AsyncValue<List<OverdueItem>> overdue =
@@ -42,7 +47,7 @@ class DashboardOverviewScreen extends ConsumerWidget {
       color: AppColors.primary,
       onRefresh: () async {
         ref.invalidate(dashboardKpiProvider);
-        ref.invalidate(dashboardTrendsProvider(30));
+        ref.invalidate(dashboardTrendsProvider(hariTren));
         ref.invalidate(dashboardDistributionProvider);
         ref.invalidate(dashboardOverdueProvider(8));
       },
@@ -69,7 +74,7 @@ class DashboardOverviewScreen extends ConsumerWidget {
 
           SectionHeader(
             title: 'Tren pemeliharaan',
-            subtitle: '30 hari terakhir',
+            subtitle: '${ChartRange.label(ChartRange.periodeDefault)} terakhir',
             icon: Icons.show_chart,
             actionLabel: 'Analitik',
             onAction: () => context.go(Routes.dashboardAnalytics),
@@ -79,13 +84,18 @@ class DashboardOverviewScreen extends ConsumerWidget {
             child: SizedBox(
               height: 240,
               child: trends.when(
-                data: (List<TrendPoint> list) => _GrafikTren(data: list),
+                data: (List<TrendPoint> list) => InteractiveLineChart(
+                  data: list,
+                  tinggi: 240,
+                  labelGaris: 'pemeliharaan',
+                ),
                 loading: () =>
                     const SkeletonBox(height: 240, radius: AppRadius.md),
                 error: (Object e, _) => ErrorView(
                   message: 'Gagal memuat tren.',
                   compact: true,
-                  onRetry: () => ref.invalidate(dashboardTrendsProvider(30)),
+                  onRetry: () =>
+                      ref.invalidate(dashboardTrendsProvider(hariTren)),
                 ),
               ),
             ),
@@ -303,101 +313,22 @@ class _Panel extends StatelessWidget {
   }
 }
 
-class _GrafikTren extends StatelessWidget {
-  const _GrafikTren({required this.data});
-
-  final List<TrendPoint> data;
-
-  @override
-  Widget build(BuildContext context) {
-    if (data.isEmpty) {
-      return const EmptyState(
-        icon: Icons.show_chart,
-        title: 'Belum ada data tren',
-        message: 'Grafik akan terisi setelah ada pemeliharaan tercatat.',
-      );
-    }
-
-    final List<FlSpot> spots = data
-        .asMap()
-        .entries
-        .map(
-          (MapEntry<int, TrendPoint> e) =>
-              FlSpot(e.key.toDouble(), e.value.jumlah.toDouble()),
-        )
-        .toList();
-
-    final double maxY = spots
-            .map((FlSpot s) => s.y)
-            .reduce((double a, double b) => a > b ? a : b) *
-        1.25;
-
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          getDrawingHorizontalLine: (double v) =>
-              FlLine(color: context.pal.borderSubtle, strokeWidth: 1),
-        ),
-        titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: true, reservedSize: 34),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 26,
-              interval: (data.length / 6).ceilToDouble().clamp(1, 30),
-              getTitlesWidget: (double value, TitleMeta meta) {
-                final int i = value.toInt();
-                if (i < 0 || i >= data.length) return const SizedBox.shrink();
-                final String l = data[i].label;
-                return Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    l.length > 5 ? l.substring(5) : l,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: context.pal.textSecondary,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        ),
-        borderData: FlBorderData(show: false),
-        minY: 0,
-        maxY: maxY < 5 ? 5 : maxY,
-        lineBarsData: <LineChartBarData>[
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            color: AppColors.primary,
-            barWidth: 3,
-            dotData: FlDotData(show: data.length <= 15),
-            belowBarData: BarAreaData(
-              show: true,
-              color: AppColors.primary.withValues(alpha: 0.12),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GrafikDistribusi extends StatelessWidget {
+class _GrafikDistribusi extends StatefulWidget {
   const _GrafikDistribusi({required this.data});
 
   final List<DistributionItem> data;
 
   @override
+  State<_GrafikDistribusi> createState() => _GrafikDistribusiState();
+}
+
+class _GrafikDistribusiState extends State<_GrafikDistribusi> {
+  /// Indeks irisan yang sedang disentuh/`hover` — `-1` bila tidak ada.
+  int _touchedIndex = -1;
+
+  @override
   Widget build(BuildContext context) {
+    final List<DistributionItem> data = widget.data;
     if (data.isEmpty) {
       return const EmptyState(
         icon: Icons.pie_chart_outline,
@@ -406,6 +337,8 @@ class _GrafikDistribusi extends StatelessWidget {
       );
     }
 
+    final bool tanpaAnimasi =
+        MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     final double total =
         data.fold(0, (double s, DistributionItem d) => s + d.jumlah);
     final List<Color> warna = <Color>[
@@ -425,23 +358,51 @@ class _GrafikDistribusi extends StatelessWidget {
             PieChartData(
               sectionsSpace: 2,
               centerSpaceRadius: 34,
+              pieTouchData: PieTouchData(
+                enabled: true,
+                touchCallback: (FlTouchEvent event, PieTouchResponse? resp) {
+                  final int index =
+                      resp?.touchedSection?.touchedSectionIndex ?? -1;
+                  if (index < 0 || index >= data.length) {
+                    if (_touchedIndex != -1) {
+                      setState(() => _touchedIndex = -1);
+                    }
+                    return;
+                  }
+                  if (event is FlPointerExitEvent ||
+                      event is FlPointerHoverEvent ||
+                      event is FlTapUpEvent ||
+                      event is FlLongPressEnd) {
+                    if (_touchedIndex != index) {
+                      setState(() => _touchedIndex = index);
+                    }
+                  }
+                },
+              ),
               sections:
                   data.asMap().entries.map((MapEntry<int, DistributionItem> e) {
+                final bool aktif = e.key == _touchedIndex;
                 final double pct =
                     total == 0 ? 0 : (e.value.jumlah / total) * 100;
                 return PieChartSectionData(
                   color: warna[e.key % warna.length],
                   value: e.value.jumlah.toDouble(),
-                  title: pct < 6 ? '' : '${pct.toStringAsFixed(0)}%',
-                  radius: 52,
+                  // Irisan kecil tetap menampilkan persentase saat disentuh
+                  // agar informasinya tetap terbaca (AC-G7).
+                  title: (pct < 6 && !aktif) ? '' : '${pct.toStringAsFixed(0)}%',
+                  radius: aktif ? 60 : 52,
                   titleStyle: TextStyle(
-                    fontSize: 11,
+                    fontSize: aktif ? 12 : 11,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 );
               }).toList(),
             ),
+            duration: tanpaAnimasi
+                ? Duration.zero
+                : const Duration(milliseconds: 220),
+            curve: tanpaAnimasi ? Curves.linear : Curves.easeOutCubic,
           ),
         ),
         const SizedBox(width: AppSpacing.md),

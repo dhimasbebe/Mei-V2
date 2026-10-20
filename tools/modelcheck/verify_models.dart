@@ -1259,6 +1259,43 @@ void main() {
   check('AC-B5 totalMenit konsisten', sore.totalMenit == 16 * 60 + 45,
       '${sore.totalMenit}');
 
+  // ====================================================================
+  // 28. WS G — rentang grafik: kode periode bolak-balik & batas rentang
+  //     (Tahap 3 T05; logika murni baru, ditambahkan di AKHIR berkas)
+  // ====================================================================
+
+  // AC-G2/AC-G3 — `kodePeriode` mengembalikan kode yang sama dengan input,
+  // sehingga chip filter dapat ditandai aktif dari rentang yang dihitung.
+  check(
+      'AC-G2 kodePeriode bolak-balik untuk semua periode',
+      ChartRange.periods.every((String p) =>
+          ChartRange.forPeriod(p, acuan: acuan).kodePeriode == p),
+      ChartRange.periods
+          .map((String p) =>
+              '$p->${ChartRange.forPeriod(p, acuan: acuan).kodePeriode}')
+          .join(','));
+
+  // Rentang inklusif kedua ujung: titik = hari + 1.
+  check(
+      'AC-G2 jumlahTitik == jumlahHari + 1',
+      ChartRange.periods.every((String p) =>
+          ChartRange.forPeriod(p, acuan: acuan).jumlahTitik ==
+          ChartRange.jumlahHari(p) + 1));
+
+  final ChartRange r7 = ChartRange.forPeriod('7d', acuan: acuan);
+  check('AC-G2 titik terakhir == sampai',
+      r7.titik(r7.jumlahTitik - 1) == r7.sampai);
+  check('AC-G2 indeks(sampai) == jumlahTitik - 1',
+      r7.indeks(r7.sampai) == r7.jumlahTitik - 1);
+
+  // Di luar rentang -> null (bukan exception) agar UI tak pernah crash.
+  check('AC-G2 titik(-1) == null', r7.titik(-1) == null);
+  check('AC-G2 titik(jumlahTitik) == null', r7.titik(r7.jumlahTitik) == null);
+  check('AC-G2 indeks(dari-1) == null',
+      r7.indeks(r7.dari.subtract(const Duration(days: 1))) == null);
+  check('AC-G2 indeks(sampai+1) == null',
+      r7.indeks(r7.sampai.add(const Duration(days: 1))) == null);
+
   // --------------------------------------------------------------------
   print('');
   print('=' * 74);

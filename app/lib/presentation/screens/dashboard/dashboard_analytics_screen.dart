@@ -1,8 +1,9 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/charts/chart_range.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/dashboard.dart';
 import '../../../providers/dashboard_provider.dart';
@@ -10,12 +11,16 @@ import '../../widgets/app_card.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/filter_chip_bar.dart';
+import '../../widgets/interactive_line_chart.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/stat_tile.dart';
-import '../../../core/theme/app_palette.dart';
 
 /// Dashboard Analytics — analisis tren pemeliharaan dengan filter periode.
+///
+/// Periode dikelola sebagai kode `ChartRange.periods` (`'7d'`, `'30d'`,
+/// `'90d'`) sehingga rentang tanggal, label, dan jumlah hari seluruhnya
+/// berasal dari modul murni `core/charts/chart_range.dart` (AC-G2/AC-G3).
 class DashboardAnalyticsScreen extends ConsumerStatefulWidget {
   const DashboardAnalyticsScreen({super.key});
 
@@ -26,12 +31,15 @@ class DashboardAnalyticsScreen extends ConsumerStatefulWidget {
 
 class _DashboardAnalyticsScreenState
     extends ConsumerState<DashboardAnalyticsScreen> {
-  int _hari = 30;
+  /// Kode periode aktif — selalu salah satu nilai [ChartRange.periods].
+  String _periode = ChartRange.periodeDefault;
 
   @override
   Widget build(BuildContext context) {
+    final int hari = ChartRange.jumlahHari(_periode);
+    final ChartRange rentang = ChartRange.forPeriod(_periode);
     final AsyncValue<List<TrendPoint>> trends =
-        ref.watch(dashboardTrendsProvider(_hari));
+        ref.watch(dashboardTrendsProvider(hari));
 
     return ListView(
       children: <Widget>[
@@ -42,17 +50,18 @@ class _DashboardAnalyticsScreenState
         ),
         const SizedBox(height: AppSpacing.md),
         FilterChipBar(
-          items: const <String>['7 hari', '30 hari', '90 hari'],
-          selected: <String>['$_hari hari'],
+          items: ChartRange.periods,
+          selected: <String>[_periode],
           multi: false,
+          labelBuilder: ChartRange.label,
           onChanged: (List<String> pilih) {
             if (pilih.isEmpty) return;
-            setState(() => _hari = int.tryParse(pilih.last.split(' ').first) ?? 30);
+            setState(() => _periode = pilih.last);
           },
         ),
         const SizedBox(height: AppSpacing.lg),
         trends.when(
-          data: (List<TrendPoint> list) => _Ringkasan(data: list, hari: _hari),
+          data: (List<TrendPoint> list) => _Ringkasan(data: list, hari: hari),
           loading: () => const _SkeletonRingkasan(),
           error: (Object e, _) => const SizedBox.shrink(),
         ),
@@ -63,24 +72,33 @@ class _DashboardAnalyticsScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Tren $_hari hari',
+                'Tren ${ChartRange.label(_periode)}',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: context.pal.textPrimary,
                 ),
               ),
+              const SizedBox(height: 2),
+              Text(
+                '${_tanggal(rentang.dari)} – ${_tanggal(rentang.sampai)}',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: context.pal.textSecondary,
+                ),
+              ),
               const SizedBox(height: AppSpacing.lg),
-              SizedBox(
-                height: 300,
-                child: trends.when(
-                  data: (List<TrendPoint> list) => _GrafikBatang(data: list),
-                  loading: () =>
-                      const SkeletonBox(height: 300, radius: AppRadius.md),
-                  error: (Object e, _) => ErrorView(
-                    message: 'Gagal memuat tren.\n$e',
-                    onRetry: () => ref.invalidate(dashboardTrendsProvider(_hari)),
-                  ),
+              trends.when(
+                data: (List<TrendPoint> list) => InteractiveLineChart(
+                  data: list,
+                  tinggi: 300,
+                  labelGaris: 'pemeliharaan',
+                ),
+                loading: () =>
+                    const SkeletonBox(height: 300, radius: AppRadius.md),
+                error: (Object e, _) => ErrorView(
+                  message: 'Gagal memuat tren.\n$e',
+                  onRetry: () => ref.invalidate(dashboardTrendsProvider(hari)),
                 ),
               ),
             ],
@@ -89,6 +107,13 @@ class _DashboardAnalyticsScreenState
         const SizedBox(height: AppSpacing.xxl),
       ],
     );
+  }
+
+  /// Format ringkas `dd/MM/yyyy` untuk keterangan rentang tanggal.
+  static String _tanggal(DateTime d) {
+    final String bulan = d.month.toString().padLeft(2, '0');
+    final String hari = d.day.toString().padLeft(2, '0');
+    return '$hari/$bulan/${d.year}';
   }
 }
 
@@ -160,105 +185,6 @@ class _Ringkasan extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _GrafikBatang extends StatelessWidget {
-  const _GrafikBatang({required this.data});
-
-  final List<TrendPoint> data;
-
-  @override
-  Widget build(BuildContext context) {
-    if (data.isEmpty) {
-      return const EmptyState(
-        icon: Icons.bar_chart,
-        title: 'Tidak ada data',
-        message: 'Coba pilih periode lain.',
-      );
-    }
-
-    final double maxY = data
-            .map((TrendPoint t) => t.jumlah.toDouble())
-            .reduce((double a, double b) => a > b ? a : b) *
-        1.25;
-
-    return BarChart(
-      BarChartData(
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          getDrawingHorizontalLine: (double v) =>
-              FlLine(color: context.pal.borderSubtle, strokeWidth: 1),
-        ),
-        titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: true, reservedSize: 34),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 28,
-              interval: (data.length / 8).ceilToDouble().clamp(1, 60),
-              getTitlesWidget: (double value, TitleMeta meta) {
-                final int i = value.toInt();
-                if (i < 0 || i >= data.length) return const SizedBox.shrink();
-                final String l = data[i].label;
-                return Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    l.length > 5 ? l.substring(5) : l,
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: context.pal.textSecondary,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        ),
-        borderData: FlBorderData(show: false),
-        maxY: maxY < 5 ? 5 : maxY,
-        barTouchData: BarTouchData(
-          touchTooltipData: BarTouchTooltipData(
-            getTooltipItem: (
-              BarChartGroupData group,
-              int groupIndex,
-              BarChartRodData rod,
-              int rodIndex,
-            ) {
-              return BarTooltipItem(
-                '${data[group.x].label}\n${rod.toY.toInt()} pemeliharaan',
-                TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              );
-            },
-          ),
-        ),
-        barGroups: data.asMap().entries.map((MapEntry<int, TrendPoint> e) {
-          return BarChartGroupData(
-            x: e.key,
-            barRods: <BarChartRodData>[
-              BarChartRodData(
-                toY: e.value.jumlah.toDouble(),
-                color: AppColors.primary,
-                width: data.length > 40 ? 6 : 14,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(4),
-                ),
-              ),
-            ],
-          );
-        }).toList(),
-      ),
     );
   }
 }
