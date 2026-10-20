@@ -218,12 +218,24 @@ Catatan tambahan di luar daftar AC:
 3. **`flutter analyze` tanpa `--no-pub` menggantung** (`ERROR_PIPE_BUSY`) karena
    memicu `flutter pub get` implisit. Selalu pakai `--no-pub`;
    `scripts/verify-all.ps1` sudah diperbaiki agar melakukan itu (§7).
-4. **Kontaminasi keluaran antar-agen.** Pada sesi ini beberapa hasil perintah
+4. **Exit code `flutter analyze` bukan penanda bersih.** Analyzer keluar `1`
+   juga ketika seluruh temuannya hanya level `info`, sehingga `EXIT=0` tidak
+   bisa dipakai sebagai syarat lulus — dan mengabaikannya berarti temuan level
+   `error` pun lolos tanpa terlihat. Skrip kini menyimpan keluaran analyze lalu
+   menghitung per-severity, dan hanya gagal bila ada `error` atau `warning`
+   (`9786bf5`).
+5. **Kontaminasi keluaran antar-agen.** Pada sesi ini beberapa hasil perintah
    shell sempat tertukar dengan keluaran agen lain (mis. `grep` mengembalikan
    hasil terpotong). Pelajaran: setiap gerbang dijalankan ulang dengan keluaran
    dialihkan ke berkas lalu dibaca kembali, dan klaim "tidak ada" selalu
    diverifikasi dua kali dengan alat berbeda. Tiga klaim "komponen hilang"
    pada sesi ini ternyata keliru setelah dicek ulang.
+6. **Pembacaan berkas dapat mengembalikan isi basi.** Saat menutup QA, dua
+   berkas log berbeda (32.293 dan 32.803 byte) sama-sama terbaca sebagai teks
+   `clean — nothing to commit` lewat pembaca berkas, sementara `wc -c` dan
+   PowerShell menunjukkan ukuran sebenarnya. Karena itu penghitungan severity
+   di §3 diverifikasi lewat perintah hitung (`[regex]::Matches`), bukan lewat
+   pembacaan visual. Jangan percaya satu kanal pembacaan saja.
 
 ---
 
@@ -268,4 +280,6 @@ sah dan keduanya sudah diverifikasi EXIT 0:
 - `frontend_server_aot.dart.snapshot` **dengan** `--sdk-root`.
 
 Keduanya harus menyertakan `--no-link-platform`; tanpa flag itu langkah linking
-platform dijalankan dan gagal di lingkungan tanpa toolchain native.
+platform dijalankan dan gagal di lingkungan tanpa toolchain native. Snapshot AOT
+harus dijalankan lewat `dartaotruntime.exe`, bukan `dart` (`dart` menolak dengan
+"is an AOT snapshot and should be run with 'dartaotruntime'", EXIT 255).
