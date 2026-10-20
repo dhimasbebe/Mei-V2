@@ -7,6 +7,7 @@ import '../../../domain/models/dashboard.dart';
 import '../../../domain/models/verifikasi.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/dashboard_provider.dart';
+import '../../../providers/notif_provider.dart';
 import '../../../providers/verifikasi_provider.dart';
 import '../../shell/role_shell.dart';
 import '../../widgets/long_press_menu.dart';
@@ -49,7 +50,16 @@ class _SupervisorHomeScreenState extends ConsumerState<SupervisorHomeScreen> {
     return RefreshIndicator(
       color: AppColors.primary,
       onRefresh: () async {
-        await ref.read(verifikasiProvider.notifier).refresh();
+        // AC-B7: banner pengingat memakai provider yang sama di ketiga
+        // beranda, jadi ia harus ikut disegarkan di sini juga.
+        ref.invalidate(pengingatProvider);
+        final Future<void> pengingat = ref
+            .read(pengingatProvider.future)
+            .then<void>((_) {}, onError: (Object _) {});
+        await Future.wait<void>(<Future<void>>[
+          ref.read(verifikasiProvider.notifier).refresh(),
+          pengingat,
+        ]);
         ref.invalidate(dashboardKpiProvider);
         ref.invalidate(dashboardOverdueProvider(5));
       },

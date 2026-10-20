@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/tugas.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/notif_provider.dart';
 import '../../../providers/tugas_provider.dart';
 import '../../shell/role_shell.dart';
 import '../../widgets/long_press_menu.dart';
@@ -47,7 +48,19 @@ class _TeknisiHomeScreenState extends ConsumerState<TeknisiHomeScreen> {
 
     return RefreshIndicator(
       color: AppColors.primary,
-      onRefresh: () => ref.read(tugasProvider.notifier).refresh(),
+      onRefresh: () async {
+        // AC-B7: pengingat ikut disegarkan, bukan hanya daftar tugas.
+        // Kegagalan pengingat sengaja ditelan — data tugas adalah isi utama
+        // layar ini dan tidak boleh ikut gagal tampil karena itu.
+        ref.invalidate(pengingatProvider);
+        final Future<void> pengingat = ref
+            .read(pengingatProvider.future)
+            .then<void>((_) {}, onError: (Object _) {});
+        await Future.wait<void>(<Future<void>>[
+          ref.read(tugasProvider.notifier).refresh(),
+          pengingat,
+        ]);
+      },
       child: ListView(
         padding: EdgeInsets.zero,
         physics: const AlwaysScrollableScrollPhysics(),

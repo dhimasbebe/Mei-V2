@@ -8,6 +8,7 @@ import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/dashboard.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/dashboard_provider.dart';
+import '../../../providers/notif_provider.dart';
 import '../../../providers/verifikasi_provider.dart';
 import '../../shell/role_shell.dart';
 import '../../widgets/long_press_menu.dart';
@@ -37,6 +38,13 @@ class AdminHomeScreen extends ConsumerWidget {
     return RefreshIndicator(
       color: AppColors.primary,
       onRefresh: () async {
+        // AC-B7: banner pengingat memakai provider yang sama di ketiga
+        // beranda, jadi ia harus ikut disegarkan di sini juga.
+        ref.invalidate(pengingatProvider);
+        final Future<void> pengingat = ref
+            .read(pengingatProvider.future)
+            .then<void>((_) {}, onError: (Object _) {});
+        await pengingat;
         ref.invalidate(dashboardKpiProvider);
         ref.invalidate(dashboardOverdueProvider(5));
       },

@@ -85,6 +85,13 @@ class _SearchHistoryFieldState extends State<SearchHistoryField> {
     await _simpan();
   }
 
+  /// AC-H10: hapus satu entri tanpa mengorbankan seluruh riwayat.
+  Future<void> _hapus(String q) async {
+    _riwayat.remove(q);
+    setState(() {});
+    await _simpan();
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppPalette pal = context.pal;
@@ -121,7 +128,7 @@ class _SearchHistoryFieldState extends State<SearchHistoryField> {
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 ),
                 child: Text(
-                  'Hapus',
+                  'Hapus semua',
                   style: TextStyle(fontSize: 11, color: pal.textSecondary),
                 ),
               ),
@@ -132,12 +139,18 @@ class _SearchHistoryFieldState extends State<SearchHistoryField> {
             runSpacing: AppSpacing.xs,
             children: <Widget>[
               for (final String q in items)
-                ActionChip(
+                // InputChip (bukan ActionChip) agar tiap entri punya tombol
+                // hapus sendiri — AC-H10.
+                InputChip(
                   label: Text(q),
                   labelStyle: TextStyle(fontSize: 11, color: pal.textPrimary),
                   backgroundColor: pal.surfaceMuted,
                   side: BorderSide(color: pal.borderSubtle),
                   onPressed: () => _pilih(q),
+                  onDeleted: () => _hapus(q),
+                  deleteIcon: const Icon(Icons.close, size: 14),
+                  deleteIconColor: pal.textSecondary,
+                  deleteButtonTooltipMessage: 'Hapus "$q" dari riwayat',
                 ),
             ],
           ),
