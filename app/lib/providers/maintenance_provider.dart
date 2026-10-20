@@ -98,10 +98,54 @@ final maintenanceFormProvider =
 class MaintenanceFormNotifier extends StateNotifier<MaintenancePayload?> {
   MaintenanceFormNotifier() : super(null);
 
-  void init({required String barcodeAlat, required int idLokasi}) {
-    state = MaintenancePayload(barcodeAlat: barcodeAlat, idLokasi: idLokasi, detail: const []);
+  /// Buka sesi form baru untuk satu alat.
+  ///
+  /// [clientUuid] dan [waktuMaintenance] opsional: dipakai saat memulihkan
+  /// draf tersimpan (AC-A6) supaya sesi lanjutan memakai kunci idempotensi
+  /// yang SAMA. Tanpa argumen, `MaintenancePayload` membuat kunci baru.
+  void init({
+    required String barcodeAlat,
+    required int idLokasi,
+    String? clientUuid,
+    DateTime? waktuMaintenance,
+  }) {
+    state = MaintenancePayload(
+      barcodeAlat: barcodeAlat,
+      idLokasi: idLokasi,
+      detail: const <DetailMaintenance>[],
+      clientUuid: clientUuid,
+      waktuMaintenance: waktuMaintenance,
+    );
   }
 
+  /// Adopsi kunci + waktu dari draf yang dipulihkan (AC-A6).
+  ///
+  /// Dipakai layar form setelah `FormDraftStore` mengembalikan draf lama:
+  /// seluruh isian sesi ini harus terkirim dengan `client_uuid` yang sudah
+  /// dipakai saat autosave, bukan kunci baru.
+  void adopsiKunci({
+    required String clientUuid,
+    required DateTime waktuMaintenance,
+  }) {
+    if (state == null) return;
+    state = MaintenancePayload(
+      barcodeAlat: state!.barcodeAlat,
+      idLokasi: state!.idLokasi,
+      detail: state!.detail,
+      catatan: state!.catatan,
+      kondisiKeseluruhan: state!.kondisiKeseluruhan,
+      clientUuid: clientUuid,
+      waktuMaintenance: waktuMaintenance,
+    );
+  }
+
+  /// Setiap pembangunan ulang WAJIB membawa `clientUuid` dan
+  /// `waktuMaintenance` dari state sebelumnya.
+  ///
+  /// `MaintenancePayload` membuat UUID baru pada setiap konstruksi; tanpa
+  /// penerusan ini satu sesi form menghasilkan banyak kunci, sehingga kirim
+  /// ulang setelah gagal jaringan tidak pernah dicocokkan server sebagai
+  /// duplikat (AC-A17) dan berakhir sebagai laporan kedua.
   void updateDetail(List<DetailMaintenance> detail) {
     if (state == null) return;
     state = MaintenancePayload(
@@ -110,6 +154,8 @@ class MaintenanceFormNotifier extends StateNotifier<MaintenancePayload?> {
       detail: detail,
       catatan: state!.catatan,
       kondisiKeseluruhan: state!.kondisiKeseluruhan,
+      clientUuid: state!.clientUuid,
+      waktuMaintenance: state!.waktuMaintenance,
     );
   }
 
@@ -121,6 +167,8 @@ class MaintenanceFormNotifier extends StateNotifier<MaintenancePayload?> {
       detail: state!.detail,
       catatan: catatan,
       kondisiKeseluruhan: state!.kondisiKeseluruhan,
+      clientUuid: state!.clientUuid,
+      waktuMaintenance: state!.waktuMaintenance,
     );
   }
 
@@ -132,6 +180,8 @@ class MaintenanceFormNotifier extends StateNotifier<MaintenancePayload?> {
       detail: state!.detail,
       catatan: state!.catatan,
       kondisiKeseluruhan: kondisi,
+      clientUuid: state!.clientUuid,
+      waktuMaintenance: state!.waktuMaintenance,
     );
   }
 

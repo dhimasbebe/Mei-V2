@@ -6,6 +6,7 @@ import '../../../core/media/foto_lokal.dart';
 import '../../../core/media/photo_store.dart';
 import '../../../core/maintenance/checklist_quick_fill.dart';
 import '../../../core/offline/draft_queue.dart';
+import '../../../core/offline/form_draft_store.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
@@ -47,8 +48,13 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
   /// autosave berikutnya supaya antrean tidak menduplikasi — AC-A3).
   String? _uuidDraf;
 
-  /// Apakah draf sudah masuk antrean (enqueue pertama, lalu replace).
-  bool _drafTersimpan = false;
+  /// Penyimpanan draf form yang belum dikirim (AC-A6). Terpisah dari
+  /// `draftQueueProvider` supaya autosave tidak pernah memicu jaringan.
+  final FormDraftStore _drafLokal = FormDraftStore.instance;
+
+  /// `true` bila isian sesi ini dipulihkan dari draf tersimpan, sehingga
+  /// banner "Draf dipulihkan" ditampilkan.
+  bool _dipulihkan = false;
 
   /// ID laporan asal bila form dibuka lewat aksi "Duplikat" (AC-K6);
   /// `null` pada form biasa sehingga penanda salinan tidak muncul.
@@ -88,11 +94,14 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       if (v != null && v.trim().isNotEmpty) checklist[id] = v.trim();
     });
 
-    _uuidDraf ??= MaintenancePayload(
-      barcodeAlat: formState?.barcodeAlat ?? '',
-      idLokasi: formState?.idLokasi ?? 0,
-      detail: const <DetailMaintenance>[],
-    ).clientUuid;
+    // Kunci idempotensi sesi: ambil dari state form (stabil sejak `init()`
+    // dan ikut terbawa saat draf dipulihkan), baru buat baru bila tidak ada.
+    _uuidDraf ??= formState?.clientUuid ??
+        MaintenancePayload(
+          barcodeAlat: formState?.barcodeAlat ?? '',
+          idLokasi: formState?.idLokasi ?? 0,
+          detail: const <DetailMaintenance>[],
+        ).clientUuid;
 
     return DraftRecord(
       clientUuid: _uuidDraf!,
@@ -107,20 +116,17 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     );
   }
 
-  /// Menyimpan draf ke antrean offline (AC-A12): draf belum lengkap pun
-  /// tersimpan, sehingga aplikasi mati mendadak tidak menghilangkan kerja
-  /// teknisi.
+  /// Menyimpan isi form ke penyimpanan LOKAL (AC-A6, AC-A12): draf belum
+  /// lengkap pun tersimpan, sehingga aplikasi mati mendadak tidak
+  /// menghilangkan kerja teknisi.
+  ///
+  /// SENGAJA tidak memakai `draftQueueProvider.simpanDraf()`: antrean itu
+  /// langsung memicu `syncNow()` sehingga laporan setengah jadi terkirim ke
+  /// server. Draf setengah jadi hanya boleh hidup di [FormDraftStore].
   Future<void> _simpanDrafSekarang() async {
     final MaintenancePayload? formState = ref.read(maintenanceFormProvider);
     if (formState == null) return;
-    final DraftNotifier notifier = ref.read(draftQueueProvider.notifier);
-    final DraftRecord draf = _bangunDraf();
-    if (!_drafTersimpan) {
-      _drafTersimpan = true;
-      await notifier.simpanDraf(draf);
-    } else {
-      await notifier.perbaruiDraf(draf);
-    }
+    await _drafLokal.simpan(_bangunDraf());
   }
 
   @override
@@ -147,8 +153,137 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       ref.read(salinanDariProvider.notifier).state = null;
     }
 
+    // Pemulihan draf lokal (AC-A6). Dilewati bila form dibuka lewat
+    // "Duplikat" — isi salinan eksplisit harus menang atas autosave lama.
+    if (seed == null) {
+      unawaited(_muatDrafTersimpan());
+    }
+
     // Catatan ikut memicu progres + autosave draf.
     _catatanCtrl.addListener(_perbaruiProgres);
+  }
+
+  /// Barcode alat untuk sesi form ini (dipakai sebagai kunci draf lokal).
+  String? get _barcodeSesi => ref.read(maintenanceFormProvider)?.barcodeAlat;
+
+  /// `true` bila teknisi sudah mengisi sesuatu sebelum pemulihan selesai.
+  ///
+  /// Mencegah pemulihan menimpa ketikan yang masuk saat `shared_preferences`
+  /// masih dibaca (operasi itu asinkron).
+  bool _formSudahDiisi() {
+    if (_catatanCtrl.text.trim().isNotEmpty) return true;
+    if (_kondisiKeseluruhan != null) return true;
+    if (_fotos.isNotEmpty) return true;
+    for (final String? v in _selectValues.values) {
+      if (v != null && v.trim().isNotEmpty) return true;
+    }
+    for (final TextEditingController c in _controllers.values) {
+      if (c.text.trim().isNotEmpty) return true;
+    }
+    return false;
+  }
+
+  /// Muat draf tersimpan untuk barcode sesi ini lalu terapkan.
+  ///
+  /// Dipilih "pulihkan setelah daftar spesifikasi tersedia" (bukan menunda
+  /// ke build pertama): controller untuk item angka/teks butuh daftar
+  /// [Spesifikasi] untuk tahu id mana yang bertipe teks, dan menunggu
+  /// provider di sini membuat isian langsung lengkap pada frame pertama
+  /// setelah pemulihan.
+  Future<void> _muatDrafTersimpan() async {
+    final String? barcode = _barcodeSesi;
+    if (barcode == null || barcode.trim().isEmpty) return;
+
+    final DraftRecord? draf = await _drafLokal.baca(barcode);
+    if (draf == null || !mounted) return;
+    if (_formSudahDiisi()) return; // jangan timpa ketikan pengguna
+
+    final int? idKategori = ref.read(alatDetailProvider)?.idKategori;
+    List<Spesifikasi> list = const <Spesifikasi>[];
+    if (idKategori != null) {
+      try {
+        list = await ref.read(spesifikasiProvider(idKategori).future);
+      } catch (_) {
+        // Checklist gagal dimuat: nilai pilihan tetap bisa dipulihkan.
+      }
+    }
+    if (!mounted || _formSudahDiisi()) return;
+    _terapkanDraf(draf, list);
+  }
+
+  /// Terapkan isi [draf] ke field form + adopsi kunci idempotensinya.
+  ///
+  /// Field diubah di luar `setState` lalu satu `setState` di akhir: menulis
+  /// `_catatanCtrl.text` memicu listener [_perbaruiProgres] yang ikut memanggil
+  /// `setState`, dan `setState` bersarang membuat rebuild ganda tak perlu.
+  void _terapkanDraf(DraftRecord draf, List<Spesifikasi> list) {
+    for (final Spesifikasi s in list) {
+      final String? nilai = draf.checklist[s.idSpesifikasi];
+      if (nilai == null || nilai.trim().isEmpty) continue;
+      if (s.tipeInput == 'select') {
+        _selectValues[s.idSpesifikasi] = nilai;
+      } else {
+        final TextEditingController c = _controllers.putIfAbsent(
+          s.idSpesifikasi,
+          () => TextEditingController()..addListener(_perbaruiProgres),
+        );
+        c.text = nilai;
+      }
+    }
+    _catatanCtrl.text = draf.catatan ?? '';
+    _kondisiKeseluruhan = draf.kondisiKeseluruhan;
+    _fotos = draf.fotoPaths.map(_fotoDariKunci).toList(growable: false);
+    _uuidDraf = draf.clientUuid;
+    _dipulihkan = true;
+    if (mounted) setState(() {});
+
+    // Sesi lanjutan memakai kunci yang sama dengan draf tersimpan, supaya
+    // kirim ulang tidak pernah menjadi laporan kedua (AC-A17).
+    ref.read(maintenanceFormProvider.notifier).adopsiKunci(
+          clientUuid: draf.clientUuid,
+          waktuMaintenance: draf.waktuMaintenance,
+        );
+  }
+
+  /// Membangun kembali [FotoLokal] dari kunci yang tersimpan.
+  ///
+  /// `DraftRecord` hanya menyimpan path; MIME diturunkan dari ekstensi dan
+  /// [FotoLokal.persisten] dari bentuk kunci (`mem://` = hanya di memori).
+  static FotoLokal _fotoDariKunci(String kunci) {
+    final String bersih = kunci.replaceAll('\\', '/');
+    final int i = bersih.lastIndexOf('/');
+    final String nama = i < 0 ? bersih : bersih.substring(i + 1);
+    final String lower = nama.toLowerCase();
+    return FotoLokal(
+      kunci: kunci,
+      nama: nama.isEmpty ? 'foto.jpg' : nama,
+      mime: lower.endsWith('.png') ? 'image/png' : 'image/jpeg',
+      persisten: !kunci.startsWith('mem://'),
+    );
+  }
+
+  /// Buang draf tersimpan lalu kosongkan isian (aksi "Buang draf").
+  Future<void> _buangDrafTersimpan() async {
+    final String? barcode = _barcodeSesi;
+    if (barcode != null) await _drafLokal.hapus(barcode);
+    if (!mounted) return;
+
+    for (final TextEditingController c in _controllers.values) {
+      c.text = '';
+    }
+    _selectValues.clear();
+    _catatanCtrl.text = '';
+    _kondisiKeseluruhan = null;
+    _fotos = <FotoLokal>[];
+    _uuidDraf = null;
+    _dipulihkan = false;
+    setState(() {});
+
+    AppSnackbar.show(
+      context,
+      'Draf tersimpan dibuang.',
+      type: AppSnackbarType.info,
+    );
   }
 
   @override
@@ -210,6 +345,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
             const SizedBox(height: 16),
           ],
           _HeaderInfo(formState: formState),
+          if (_dipulihkan) ...<Widget>[
+            const SizedBox(height: 12),
+            _PenandaPemulihan(onBuang: _buangDrafTersimpan),
+          ],
           const SizedBox(height: 16),
           _ProgresChecklist(
             terisi: list.where((Spesifikasi s) => _nilaiUntuk(s).isNotEmpty).length,
@@ -416,12 +555,13 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       // Unggah foto lampiran (Tahap 3 — WS C) setelah laporan ada di server.
       await _unggahFoto(laporan.idMaintenance);
 
-      // Draf autosave tidak diperlukan lagi — laporan sudah terkirim.
-      if (_drafTersimpan && _uuidDraf != null) {
+      // Laporan sudah terkirim: buang draf lokal (AC-A6) dan sisa antrean
+      // kirim untuk kunci sesi ini (bila pernah gagal sebelumnya).
+      await _drafLokal.hapus(_barcodeSesi ?? '');
+      if (_uuidDraf != null) {
         await ref.read(draftQueueProvider.notifier).hapusDraf(_uuidDraf!);
       }
       _uuidDraf = null;
-      _drafTersimpan = false;
 
       if (mounted) {
         // AC-F4: animasi centang (CustomPainter, tanpa paket tambahan)
@@ -437,8 +577,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       if (mounted) {
         // Simpan laporan ke antrean offline (WS A): akan dikirim otomatis
         // saat online (AC-A19), idempoten lewat client_uuid (AC-A17).
+        // Draf lokal dihapus karena pekerjaannya sudah pindah ke antrean —
+        // kalau tidak, teknisi melihat pekerjaan yang sama dua kali.
         await ref.read(draftQueueProvider.notifier).simpanDraf(_bangunDraf());
-        _drafTersimpan = true;
+        await _drafLokal.hapus(_barcodeSesi ?? '');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Gagal mengirim. Laporan disimpan di antrean offline '
@@ -720,6 +862,68 @@ class _PenandaSalinan extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Penanda bahwa isian form dipulihkan dari draf lokal (AC-A6).
+///
+/// Pola visualnya sama dengan [_PenandaSalinan] — permukaan `surfaceAlt`,
+/// garis `borderSubtle`, teks dari palet tema — dengan satu aksi teks
+/// "Buang draf" supaya teknisi bisa membuang isian lama dan mulai bersih.
+class _PenandaPemulihan extends StatelessWidget {
+  const _PenandaPemulihan({required this.onBuang});
+
+  final Future<void> Function() onBuang;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.pal.surfaceAlt,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: context.pal.borderSubtle),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Icon(
+            Icons.restore_outlined,
+            size: 18,
+            color: AppColors.primary,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Draf dipulihkan',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: context.pal.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Isian Anda yang belum terkirim dimuat kembali.',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: context.pal.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          TextButton(
+            onPressed: onBuang,
+            child: const Text('Buang draf'),
           ),
         ],
       ),
