@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/locale/locale_codec.dart';
+import '../../../core/locale/teks.dart';
 import '../../../core/router/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/user.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/locale_provider.dart';
 import '../../../providers/notif_provider.dart';
 import '../../../providers/theme_provider.dart';
 import '../../widgets/app_button.dart';
@@ -32,6 +35,10 @@ class ProfileScreen extends ConsumerWidget {
     if (user == null) {
       return const Center(child: Text('Tidak ada data pengguna.'));
     }
+
+    // Teks dwibahasa khusus seksi bahasa (WS P). Seksi lain pada layar ini
+    // masih berbahasa Indonesia — penerjemahan menyeluruh di luar rilis ini.
+    final Teks teks = Teks(ref.watch(localeProvider));
 
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -102,6 +109,19 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         const _PemilihTema(),
+
+        const SizedBox(height: AppSpacing.xl),
+        // Tahap 3 WS P (AC-P4/AC-P6): pemilih bahasa Indonesia/English.
+        // Preferensi disimpan di perangkat dan tetap berlaku setelah aplikasi
+        // ditutup. Judul & keterangan seksi ini ikut dwibahasa karena
+        // pengguna harus bisa menemukan jalan kembali ke bahasa Indonesia.
+        SectionHeader(
+          title: teks.labelBahasa,
+          subtitle: teks.subjudulBahasa,
+          icon: Icons.translate,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const _PemilihBahasa(),
 
         const SizedBox(height: AppSpacing.xl),
         // Tahap 3 WS B (AC-B9): sakelar pengingat harian. Bila izin notifikasi
@@ -543,6 +563,87 @@ class _PemilihPengingat extends ConsumerWidget {
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Pemilih bahasa Indonesia/English (Tahap 3 WS P, AC-P4/AC-P6).
+///
+/// Nilai terpilih dibaca dari `localeProvider`, yang memulihkan preferensi
+/// tersimpan saat dibuat — jadi pemilih selalu mencerminkan pilihan terakhir
+/// ketika layar dibuka. Perubahan ditulis lewat notifier yang sama sehingga
+/// `MaterialApp.locale` (dan layar Login) langsung ikut berubah.
+class _PemilihBahasa extends ConsumerWidget {
+  const _PemilihBahasa();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocale aktif = ref.watch(localeProvider);
+    final Teks teks = Teks(aktif);
+    final AppPalette pal = context.pal;
+
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              const Icon(
+                Icons.translate,
+                color: AppColors.primary,
+                size: AppSizes.iconMd,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  '${teks.bahasaAktif}: ${LocaleCodec.labelSendiri(aktif)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: pal.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<AppLocale>(
+              // Endonim: nama bahasa ditulis dalam bahasanya sendiri agar
+              // tetap terbaca oleh penutur yang tidak memahami bahasa aktif.
+              segments: <ButtonSegment<AppLocale>>[
+                for (final AppLocale bahasa in LocaleCodec.didukung)
+                  ButtonSegment<AppLocale>(
+                    value: bahasa,
+                    label: Text(LocaleCodec.label(bahasa)),
+                  ),
+              ],
+              selected: <AppLocale>{aktif},
+              showSelectedIcon: false,
+              style: SegmentedButton.styleFrom(
+                backgroundColor: pal.surfaceMuted,
+                foregroundColor: pal.textPrimary,
+                selectedBackgroundColor: AppColors.primarySoft,
+                selectedForegroundColor: AppColors.primary,
+                side: BorderSide(color: pal.divider),
+                minimumSize: const Size(0, AppSizes.touchTarget),
+              ),
+              onSelectionChanged: (Set<AppLocale> pilihan) {
+                final AppLocale? baru = pilihan.isEmpty ? null : pilihan.first;
+                if (baru == null || baru == aktif) return;
+                ref.read(localeProvider.notifier).ubah(baru);
+              },
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // Kejujuran cakupan: hanya Login yang sudah dwibahasa pada rilis ini.
+          Text(
+            teks.catatanBahasa,
+            style: TextStyle(fontSize: 11, color: pal.textSecondary),
+          ),
         ],
       ),
     );

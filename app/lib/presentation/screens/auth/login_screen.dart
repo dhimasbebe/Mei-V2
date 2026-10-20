@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/locale/teks.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/locale_provider.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/press_button.dart';
@@ -17,6 +19,9 @@ import '../../../core/theme/app_palette.dart';
 /// mata, dropdown role) → tombol MASUK → footer ko-branding Telkom Property.
 /// Dropdown role hanya disambiguasi UX; backend tetap sumber kebenaran. Bila
 /// role terpilih tidak cocok, sesi dibatalkan (lihat [AuthNotifier.login]).
+///
+/// Tahap 3 WS P (AC-P3): **seluruh** string layar ini melewati [Teks] sehingga
+/// berubah serentak saat bahasa diganti di Profil.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -77,6 +82,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Widget build(BuildContext context) {
     final AuthState auth = ref.watch(authProvider);
 
+    // Teks dua bahasa (AC-P3): seluruh string layar ini berasal dari sini.
+    final Teks teks = Teks(ref.watch(localeProvider));
+
     // Reaksi terhadap error baru: tampilkan banner; bila error = role tidak
     // cocok, reset dropdown role (PRD §6.2).
     ref.listen<AuthState>(authProvider, (AuthState? prev, AuthState next) {
@@ -119,6 +127,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
+                      // Slogan merek berbahasa Inggris — dipakai apa adanya
+                      // di kedua bahasa.
                       AppStrings.tagline,
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -130,8 +140,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     const SizedBox(height: AppSpacing.xxl),
                     AppTextField(
                       controller: _nipCtrl,
-                      label: AppStrings.labelNip,
-                      hint: AppStrings.hintNip,
+                      label: teks.labelNip,
+                      hint: teks.hintNip,
                       keyboardType: TextInputType.number,
                       enabled: enabled,
                       onChanged: _onInputChanged,
@@ -141,15 +151,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       ),
                       validator: (String? v) =>
                           (v == null || v.trim().isEmpty)
-                              ? AppStrings.msgNipKosong
+                              ? teks.msgNipKosong
                               : null,
                       onSubmitted: (_) => _login(),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     AppTextField(
                       controller: _passCtrl,
-                      label: AppStrings.labelPassword,
-                      hint: AppStrings.hintPassword,
+                      label: teks.labelPassword,
+                      hint: teks.hintPassword,
                       obscure: _obscure,
                       enabled: enabled,
                       onChanged: _onInputChanged,
@@ -159,8 +169,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       ),
                       suffixIcon: IconButton(
                         tooltip: _obscure
-                            ? 'Lihat password'
-                            : 'Sembunyikan password',
+                            ? teks.tooltipLihatPassword
+                            : teks.tooltipSembunyikanPassword,
                         onPressed: enabled
                             ? () => setState(() => _obscure = !_obscure)
                             : null,
@@ -172,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         ),
                       ),
                       validator: (String? v) => (v == null || v.length < 4)
-                          ? AppStrings.msgPasswordMinimal
+                          ? teks.msgPasswordMinimal
                           : null,
                       onSubmitted: (_) => _login(),
                     ),
@@ -181,7 +191,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       initialValue: _role,
                       isExpanded: true,
                       decoration: InputDecoration(
-                        labelText: 'Role',
+                        labelText: teks.labelRole,
                         prefixIcon: Icon(
                           Icons.badge_outlined,
                           color: AppColors.primary,
@@ -209,10 +219,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         ),
                       ),
                       hint: Text(
-                        AppStrings.hintPilihRole,
+                        teks.hintPilihRole,
                         style: TextStyle(color: context.pal.textSecondary),
                       ),
                       items: <DropdownMenuItem<String>>[
+                        // Nilai role adalah kontrak API (dibandingkan dengan
+                        // `user.roleUsers`), jadi TIDAK diterjemahkan.
                         for (final String r in AppStrings.roles)
                           DropdownMenuItem<String>(
                             value: r,
@@ -226,9 +238,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               })
                           : null,
                       validator: (String? v) =>
-                          (v == null || v.isEmpty)
-                              ? AppStrings.msgRoleWajib
-                              : null,
+                          (v == null || v.isEmpty) ? teks.msgRoleWajib : null,
                     ),
                     if (_role != null) ...<Widget>[
                       const SizedBox(height: AppSpacing.md),
@@ -236,11 +246,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ],
                     if (showError) ...<Widget>[
                       const SizedBox(height: AppSpacing.lg),
-                      _ErrorBanner(message: err),
+                      _ErrorBanner(message: teks.pesanGalat(err)),
                     ],
                     const SizedBox(height: AppSpacing.xl),
                     PressButton(
-                      label: AppStrings.labelMasuk,
+                      label: teks.labelMasuk,
                       isLoading: auth.isLoading,
                       onPressed: _login,
                     ),
@@ -258,7 +268,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      AppStrings.telkomPropertySurabayaUtara,
+                      teks.namaInstansi,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
@@ -268,6 +278,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ),
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
+                      // Nomor versi aplikasi — data, bukan teks terjemahan.
                       AppStrings.appVersion,
                       textAlign: TextAlign.center,
                       style: TextStyle(

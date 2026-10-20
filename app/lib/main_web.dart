@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/locale/locale_codec.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/draft_provider.dart';
+import 'providers/locale_provider.dart';
 import 'providers/notif_provider.dart';
 import 'providers/theme_provider.dart';
 
@@ -31,6 +34,10 @@ class MeiVWebApp extends ConsumerWidget {
     // Tahap 3 WS B, AC-B9.
     ref.watch(notifPrefsProvider);
 
+    // Bahasa aktif (Tahap 3 WS P) — perilaku identik dengan `main.dart`:
+    // bawaan Indonesia (AC-P2), persisten antar sesi (AC-P4).
+    final AppLocale bahasa = ref.watch(localeProvider);
+
     return MaterialApp.router(
       title: 'Mei-V Dashboard',
       debugShowCheckedModeBanner: false,
@@ -38,6 +45,15 @@ class MeiVWebApp extends ConsumerWidget {
       darkTheme: AppTheme.dark(),
       themeMode: ref.watch(themeModeProvider),
       routerConfig: router,
+      locale: Locale(LocaleCodec.keKode(bahasa)),
+      supportedLocales: LocaleCodec.didukung
+          .map((AppLocale l) => Locale(LocaleCodec.keKode(l)))
+          .toList(),
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }
