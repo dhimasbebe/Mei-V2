@@ -6,7 +6,7 @@
 .DESCRIPTION
     Empat lapis verifikasi:
       1. Uji backend Laravel (php artisan test)   -> 132 uji, 779 assertion
-      2. Uji kontrak model Dart vs fixture JSON   -> 413 pemeriksaan
+      2. Uji kontrak model Dart vs fixture JSON   -> 477 pemeriksaan
       3. Kompilasi kedua entry point Flutter      -> main.dart + main_web.dart
       4. Kompilasi variasi platform (tool/compile_probe.dart) -> *_web.dart, *_stub.dart
 
@@ -313,17 +313,38 @@ if (-not $flutter -and -not $dart) {
     Write-Warn "flutter/dart tidak ditemukan - lewati kompilasi."
 } else {
     if ($flutter) {
-        Write-Note "Menjalankan flutter analyze ..."
         Push-Location $AppDir
         try {
-            Invoke-Safe -Exe $flutter.Source -Arguments @('analyze') -Label 'flutter analyze'
-            if ($script:ToolExit -eq -1) {
-                Write-Note "Dilewati - tidak bisa meluncurkan flutter di lingkungan ini."
-            } elseif ($script:ToolExit -ne 0) {
-                Write-Warn "flutter analyze keluar dengan kode $script:ToolExit (lihat keluaran di atas)."
-                Write-Note "Langkah berikutnya (gen_kernel) tetap berjalan dan memeriksa tipe di kedua entry point."
-            } else {
-                Write-Ok "flutter analyze bersih"
+            # `flutter analyze` TANPA `--no-pub` menjalankan `flutter pub get`
+            # lebih dulu secara implisit, dan di Windows pub get bisa
+            # menggantung tanpa batas (ERROR_PIPE_BUSY) walau paket sudah
+            # teresolusi. Karena itu pub get dijalankan eksplisit HANYA bila
+            # .dart_tool\package_config.json memang belum ada, lalu analyze
+            # selalu dipanggil dengan --no-pub.
+            $pkgConfig = Join-Path $AppDir '.dart_tool\package_config.json'
+            if (-not (Test-Path $pkgConfig)) {
+                Write-Note "Resolusi paket belum ada - menjalankan flutter pub get lebih dulu ..."
+                Invoke-Safe -Exe $flutter.Source -Arguments @('pub', 'get') -Label 'flutter pub get'
+                if ($script:ToolExit -ne 0) {
+                    Write-Fail "flutter pub get gagal - analyze dilewati"
+                    $script:Failed++
+                }
+            }
+
+            if (Test-Path $pkgConfig) {
+                Write-Note "Menjalankan flutter analyze --no-pub ..."
+                Invoke-Safe -Exe $flutter.Source -Arguments @('analyze', '--no-pub') -Label 'flutter analyze'
+                if ($script:ToolExit -eq -1) {
+                    Write-Note "Dilewati - tidak bisa meluncurkan flutter di lingkungan ini."
+                } elseif ($script:ToolExit -ne 0) {
+                    # analyze keluar != 0 juga saat hanya ada issue level `info`
+                    # (mis. prefer_const_constructors). Baca ringkasannya: yang
+                    # menentukan lulus/tidak adalah jumlah error & warning.
+                    Write-Note "flutter analyze keluar dengan kode $script:ToolExit - periksa ringkasan di atas; kode != 0 normal bila hanya ada issue 'info'."
+                    Write-Note "Langkah berikutnya (gen_kernel) tetap berjalan dan memeriksa tipe di kedua entry point."
+                } else {
+                    Write-Ok "flutter analyze bersih"
+                }
             }
         } finally { Pop-Location }
     } else {
