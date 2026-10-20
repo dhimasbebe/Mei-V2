@@ -36,6 +36,13 @@ abstract class Routes {
   static const String dataMaster = '/data/master';
   static const String dataAlat = '/data/alat';
 
+  /// Admin — impor massal alat dari CSV (WS M, Fitur Tahap 3).
+  ///
+  /// Sengaja DI LUAR prefiks `/data/alat`: `RouteAccess._cocok` memberi Teknisi
+  /// akses ke seluruh `/data/alat/...`, sehingga rute impor di bawah prefiks itu
+  /// akan ikut terbuka bagi Teknisi. Endpoint backend-nya Admin-only.
+  static const String alatImpor = '/impor-alat';
+
   /// Dashboard web (Supervisor & Admin).
   static const String dashboard = '/dashboard';
   static const String dashboardAnalytics = '/dashboard/analytics';

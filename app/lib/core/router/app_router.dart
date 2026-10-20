@@ -7,6 +7,7 @@ import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_analytics_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_overview_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_records_screen.dart';
+import '../../presentation/screens/data/alat_import_screen.dart';
 import '../../presentation/screens/data/alat_management_screen.dart';
 import '../../presentation/screens/data/data_screen.dart';
 import '../../presentation/screens/data/master_data_screen.dart';
@@ -133,6 +134,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.dataAlat,
             builder: (BuildContext context, GoRouterState state) =>
                 const AlatManagementScreen(),
+          ),
+          GoRoute(
+            path: Routes.alatImpor,
+            builder: (BuildContext context, GoRouterState state) =>
+                const AlatImportScreen(),
           ),
           GoRoute(
             path: Routes.dashboard,
