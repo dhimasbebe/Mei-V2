@@ -15,7 +15,18 @@ abstract class RouteAccess {
   static bool boleh(String? role, String location) {
     if (publik.contains(location)) return true;
 
-    switch ((role ?? '').trim().toLowerCase()) {
+    final String roleBersih = (role ?? '').trim().toLowerCase();
+
+    // AC-I11 — `/patroli` khusus Teknisi. Cabang `admin` di bawah mengizinkan
+    // SEMUA rute, jadi larangan ini harus diperiksa lebih dahulu; Supervisor &
+    // Admin yang membuka `/patroli` diarahkan ke `/403`, bukan diam-diam
+    // dipindahkan ke beranda.
+    if (_cocok(location, Routes.patrol) &&
+        (roleBersih == 'admin' || roleBersih == 'supervisor')) {
+      return false;
+    }
+
+    switch (roleBersih) {
       case 'admin':
         // Admin mengelola seluruh sistem.
         return true;

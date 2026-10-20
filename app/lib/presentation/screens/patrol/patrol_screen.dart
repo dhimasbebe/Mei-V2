@@ -465,7 +465,7 @@ class _BarisAntrean extends StatelessWidget {
                 )
               else ...<Widget>[
                 StatusBadge(
-                  label: 'ISI',
+                  label: 'KERJAKAN',
                   color: AppColors.primary,
                   softColor: AppColors.primarySoft,
                   icon: Icons.edit_document,

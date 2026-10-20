@@ -49,6 +49,8 @@ import '../../app/lib/core/notif/notif_schedule.dart';
 import '../../app/lib/core/offline/draft_queue.dart';
 import '../../app/lib/core/offline/draft_status.dart';
 import '../../app/lib/core/offline/retry_policy.dart';
+import '../../app/lib/core/router/route_access.dart';
+import '../../app/lib/core/router/routes.dart';
 import '../../app/lib/core/search/search_history.dart';
 import '../../app/lib/core/theme/app_palette_spec.dart';
 import '../../app/lib/core/theme/theme_mode_codec.dart';
@@ -1524,6 +1526,37 @@ void main() {
   check('pesan galat tak dikenal dibiarkan',
       teksEn.pesanGalat('Barcode tidak terdaftar di sistem.') ==
           'Barcode tidak terdaftar di sistem.');
+
+  // ====================================================================
+  // 31. GUARD RUTE — `/patroli` khusus Teknisi (WS I, T07)
+  //     (logika murni baru, ditambahkan di AKHIR berkas)
+  // ====================================================================
+
+  // AC-I11 — Supervisor & Admin diarahkan ke `/403` (boleh() == false).
+  // Cabang `admin` pada tabel akses mengizinkan SEMUA rute, sehingga
+  // pengecualian `/patroli` harus diperiksa lebih dahulu.
+  check('AC-I11 teknisi boleh buka /patroli',
+      RouteAccess.boleh('teknisi', Routes.patrol));
+  check('AC-I11 Teknisi (huruf besar) boleh buka /patroli',
+      RouteAccess.boleh('Teknisi', Routes.patrol));
+  check('AC-I11 supervisor DITOLAK di /patroli',
+      !RouteAccess.boleh('supervisor', Routes.patrol));
+  check('AC-I11 admin DITOLAK di /patroli (bukan lolos lewat cabang admin)',
+      !RouteAccess.boleh('admin', Routes.patrol));
+
+  // Regresi: pengecualian hanya untuk `/patroli`, rute lain tidak berubah.
+  check('regresi admin tetap boleh /data',
+      RouteAccess.boleh('admin', Routes.data));
+  check('regresi admin tetap boleh /dashboard',
+      RouteAccess.boleh('admin', Routes.dashboard));
+  check('regresi supervisor tetap boleh /dashboard',
+      RouteAccess.boleh('supervisor', Routes.dashboard));
+  check('regresi supervisor tetap DITOLAK di /data',
+      !RouteAccess.boleh('supervisor', Routes.data));
+  check('regresi teknisi tetap boleh /scan',
+      RouteAccess.boleh('teknisi', Routes.scan));
+  check('regresi teknisi tetap DITOLAK di /dashboard',
+      !RouteAccess.boleh('teknisi', Routes.dashboard));
 
   // --------------------------------------------------------------------
   print('');
