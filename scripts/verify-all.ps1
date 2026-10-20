@@ -333,17 +333,49 @@ if (-not $flutter -and -not $dart) {
 
             if (Test-Path $pkgConfig) {
                 Write-Note "Menjalankan flutter analyze --no-pub ..."
-                Invoke-Safe -Exe $flutter.Source -Arguments @('analyze', '--no-pub') -Label 'flutter analyze'
+
+                # Exit code TIDAK bisa dipakai sebagai penanda lulus/tidak:
+                # `flutter analyze` keluar 1 juga ketika seluruh temuannya
+                # hanya level `info` (mis. prefer_const_constructors), jadi
+                # lulus/tidak harus ditentukan dari jumlah error & warning.
+                # Keluaran dialirkan lewat Tee-Object agar tetap sampai ke
+                # konsol/pipeline (redirect `> log.txt` tidak kosong) sekaligus
+                # tersimpan untuk dihitung per-severity.
+                $anLog = Join-Path $env:TEMP 'meiv-analyze.txt'
+                Remove-Item $anLog -ErrorAction SilentlyContinue
+                try {
+                    & $flutter.Source analyze --no-pub 2>&1 |
+                        ForEach-Object { "$_" } |
+                        Tee-Object -FilePath $anLog
+                    if ($null -ne $LASTEXITCODE) { $script:ToolExit = [int]$LASTEXITCODE }
+                    else { $script:ToolExit = 0 }
+                } catch {
+                    $msg = $_.Exception.Message
+                    if ($msg -match 'pipe instances are busy|CreateFile failed 231') {
+                        Write-Warn "Tidak bisa meluncurkan flutter analyze : lingkungan ini memblokir proses anak (named pipe)."
+                    } else {
+                        Write-Warn "Gagal menjalankan flutter analyze : $msg"
+                    }
+                    $script:ToolExit = -1
+                }
+
                 if ($script:ToolExit -eq -1) {
                     Write-Note "Dilewati - tidak bisa meluncurkan flutter di lingkungan ini."
-                } elseif ($script:ToolExit -ne 0) {
-                    # analyze keluar != 0 juga saat hanya ada issue level `info`
-                    # (mis. prefer_const_constructors). Baca ringkasannya: yang
-                    # menentukan lulus/tidak adalah jumlah error & warning.
-                    Write-Note "flutter analyze keluar dengan kode $script:ToolExit - periksa ringkasan di atas; kode != 0 normal bila hanya ada issue 'info'."
-                    Write-Note "Langkah berikutnya (gen_kernel) tetap berjalan dan memeriksa tipe di kedua entry point."
+                } elseif (Test-Path $anLog) {
+                    # Format satu baris per temuan:
+                    #   <severity> - <pesan> - <berkas>:<baris>:<kolom> - <kode>
+                    $anText = Get-Content $anLog -Raw
+                    $nErr  = ([regex]::Matches($anText, 'error - ')).Count
+                    $nWarn = ([regex]::Matches($anText, 'warning - ')).Count
+                    $nInfo = ([regex]::Matches($anText, 'info - ')).Count
+                    if ($nErr -gt 0 -or $nWarn -gt 0) {
+                        Write-Fail ("flutter analyze: {0} error, {1} warning, {2} info" -f $nErr, $nWarn, $nInfo)
+                        $script:Failed++
+                    } else {
+                        Write-Ok ("flutter analyze: 0 error, 0 warning, {0} info" -f $nInfo)
+                    }
                 } else {
-                    Write-Ok "flutter analyze bersih"
+                    Write-Note "Keluaran analyze tidak terbaca - periksa ringkasan di atas secara manual."
                 }
             }
         } finally { Pop-Location }
