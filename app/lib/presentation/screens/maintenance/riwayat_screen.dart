@@ -83,6 +83,7 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
       if (!mounted) return;
       ref.read(alatDetailProvider.notifier).state = alat;
       ref.read(formSeedProvider.notifier).state = draf;
+      ref.read(salinanDariProvider.notifier).state = ringkas.idMaintenance;
       ref.read(maintenanceFormProvider.notifier).init(
             barcodeAlat: draf.barcodeAlat,
             idLokasi: draf.idLokasi,

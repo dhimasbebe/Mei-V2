@@ -17,6 +17,14 @@ final maintenanceRepositoryProvider = Provider<MaintenanceRepository>(
 /// dibaca supaya tidak bocor ke form berikutnya.
 final formSeedProvider = StateProvider<DraftRecord?>((ref) => null);
 
+/// Asal laporan untuk penanda "Salinan dari laporan #N" (AC-K6).
+///
+/// Diisi layar riwayat bersama [formSeedProvider] saat aksi Duplikat dipakai,
+/// lalu dibaca-sekali dan dikosongkan oleh form. Sengaja TIDAK dimasukkan ke
+/// [DraftRecord] supaya format draf yang sudah tersimpan di perangkat
+/// (`meiv.draft_queue.v1`) tidak berubah.
+final salinanDariProvider = StateProvider<int?>((ref) => null);
+
 final maintenanceListProvider =
     StateNotifierProvider<MaintenanceListNotifier, AsyncValue<PagedResult<Maintenance>>>((ref) {
   return MaintenanceListNotifier(ref.watch(maintenanceRepositoryProvider));

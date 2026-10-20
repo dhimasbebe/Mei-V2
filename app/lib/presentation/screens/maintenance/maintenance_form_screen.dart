@@ -8,6 +8,7 @@ import '../../../core/maintenance/checklist_quick_fill.dart';
 import '../../../core/offline/draft_queue.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/maintenance.dart';
 import '../../../domain/models/spesifikasi.dart';
 import '../../../providers/alat_provider.dart';
@@ -16,6 +17,7 @@ import '../../../providers/kategori_provider.dart';
 import '../../../providers/maintenance_provider.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../widgets/app_snackbar.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/success_check.dart';
 import '../../widgets/foto_picker_field.dart';
@@ -47,6 +49,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
 
   /// Apakah draf sudah masuk antrean (enqueue pertama, lalu replace).
   bool _drafTersimpan = false;
+
+  /// ID laporan asal bila form dibuka lewat aksi "Duplikat" (AC-K6);
+  /// `null` pada form biasa sehingga penanda salinan tidak muncul.
+  int? _salinanDari;
 
   /// Timer debounce autosave 600 ms (§5.1) — form menulis draf setelah
   /// pengguna berhenti mengetik, bukan pada tiap ketukan tombol.
@@ -134,6 +140,13 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       });
     }
 
+    // Penanda "Salinan dari laporan #N" (AC-K6). Dibaca-sekali lalu
+    // dikosongkan, sehingga form biasa berikutnya tidak mewarisi banner.
+    _salinanDari = ref.read(salinanDariProvider);
+    if (_salinanDari != null) {
+      ref.read(salinanDariProvider.notifier).state = null;
+    }
+
     // Catatan ikut memicu progres + autosave draf.
     _catatanCtrl.addListener(_perbaruiProgres);
   }
@@ -192,6 +205,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          if (_salinanDari != null) ...<Widget>[
+            _PenandaSalinan(idSumber: _salinanDari!),
+            const SizedBox(height: 16),
+          ],
           _HeaderInfo(formState: formState),
           const SizedBox(height: 16),
           _ProgresChecklist(
@@ -331,12 +348,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
 
     final int akanDiisi = ChecklistQuickFill.markAllOk(items);
     if (akanDiisi == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Tidak ada item pilihan yang kosong. Isian Anda tidak diubah.',
-          ),
-        ),
+      AppSnackbar.show(
+        context,
+        'Tidak ada item pilihan yang kosong. Isian Anda tidak diubah.',
+        type: AppSnackbarType.info,
       );
       return;
     }
@@ -353,11 +368,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     });
     _jadwalkanSimpanDraf();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$akanDiisi item diisi otomatis. Periksa kembali.'),
-        backgroundColor: AppColors.statusOk,
-      ),
+    AppSnackbar.show(
+      context,
+      '$akanDiisi item ditandai Baik',
+      type: AppSnackbarType.sukses,
     );
   }
 
@@ -651,6 +665,64 @@ class _KondisiSelector extends StatelessWidget {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+/// Penanda bahwa form ini adalah salinan laporan lama (AC-K6).
+///
+/// Tanpa penanda ini teknisi tidak tahu sedang menyunting salinan, bukan
+/// laporan asli. Seluruh warna memakai token tema (`context.pal` /
+/// [AppColors.primary]) agar ikut mode gelap.
+class _PenandaSalinan extends StatelessWidget {
+  const _PenandaSalinan({required this.idSumber});
+
+  /// ID laporan asal yang disalin.
+  final int idSumber;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.pal.surfaceAlt,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: context.pal.borderSubtle),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Icon(
+            Icons.copy_all_outlined,
+            size: 18,
+            color: AppColors.primary,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Salinan dari laporan #$idSumber',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: context.pal.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Periksa dan ubah bagian yang berbeda sebelum mengirim.',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: context.pal.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
