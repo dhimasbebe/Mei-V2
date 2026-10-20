@@ -48,6 +48,9 @@ abstract class Routes {
   static const String dashboardAnalytics = '/dashboard/analytics';
   static const String dashboardRecords = '/dashboard/records';
 
+  /// Daftar alat melewati siklus pemeliharaan (AC-G6: kartu "Terlambat").
+  static const String dashboardOverdue = '/dashboard/overdue';
+
   /// Layar penuh (di luar shell navigasi).
   static const String detailAlat = '/alat/:barcode';
   static const String maintenanceForm = '/maintenance/form';

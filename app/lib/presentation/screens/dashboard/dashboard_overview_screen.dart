@@ -8,6 +8,8 @@ import '../../../core/router/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
 import '../../../domain/models/dashboard.dart';
+import '../../../domain/models/user.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/empty_state.dart';
@@ -19,6 +21,14 @@ import '../../widgets/section_header.dart';
 import '../../widgets/skeleton.dart';
 import '../../widgets/status_badge.dart';
 import '../../../core/theme/app_palette.dart';
+
+/// `yyyy-MM-dd` untuk query `dari`/`sampai` (AC-G6). Selalu ASCII angka;
+/// tidak memakai locale agar tidak bergantung pada terjemahan.
+String _tanggalQuery(DateTime d) {
+  final String bulan = d.month.toString().padLeft(2, '0');
+  final String hari = d.day.toString().padLeft(2, '0');
+  return '${d.year}-$bulan-$hari';
+}
 
 /// Dashboard Overview — ringkasan KPI, tren, distribusi, dan alat terlambat.
 ///
@@ -43,6 +53,23 @@ class DashboardOverviewScreen extends ConsumerWidget {
     final int kolom =
         Responsive.gridColumns(context, mobile: 2, tablet: 2, desktop: 4);
 
+    // AC-G6: tujuan tiap kartu. Kartu yang datanya hanya bisa dikelola Admin
+    // (Total alat → Data Alat, Teknisi aktif → Data Users) sengaja tanpa aksi
+    // untuk Supervisor, agar tidak melempar pengguna ke `/403`.
+    final User? pengguna = ref.watch(authProvider).user;
+    final bool admin = pengguna?.isAdmin ?? false;
+    final DateTime sekarang = DateTime.now();
+    final DateTime awalBulan = DateTime(sekarang.year, sekarang.month);
+    final List<VoidCallback?> aksiKpi = <VoidCallback?>[
+      admin ? () => context.go(Routes.dataAlat) : null,
+      () => context.go(
+            '${Routes.dashboardRecords}'
+            '?dari=${_tanggalQuery(awalBulan)}&sampai=${_tanggalQuery(sekarang)}',
+          ),
+      () => context.go(Routes.dashboardOverdue),
+      admin ? () => context.go(Routes.dataUsers) : null,
+    ];
+
     return RefreshIndicator(
       color: AppColors.primary,
       onRefresh: () async {
@@ -63,8 +90,10 @@ class DashboardOverviewScreen extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           kpi.when(
-            data: (DashboardKpi k) => _GridKpi(kpi: k, kolom: kolom),
-            loading: () => _GridKpi(kpi: null, kolom: kolom),
+            data: (DashboardKpi k) =>
+                _GridKpi(kpi: k, kolom: kolom, aksi: aksiKpi),
+            loading: () =>
+                _GridKpi(kpi: null, kolom: kolom, aksi: aksiKpi),
             error: (Object e, _) => ErrorView(
               message: 'Gagal memuat KPI.\n$e',
               onRetry: () => ref.invalidate(dashboardKpiProvider),
@@ -244,11 +273,21 @@ class DashboardOverviewScreen extends ConsumerWidget {
 }
 
 class _GridKpi extends StatelessWidget {
-  const _GridKpi({required this.kpi, required this.kolom});
+  const _GridKpi({
+    required this.kpi,
+    required this.kolom,
+    required this.aksi,
+  });
 
   /// `null` berarti masih memuat — kartu menampilkan skeleton.
   final DashboardKpi? kpi;
   final int kolom;
+
+  /// Aksi ketuk per kartu, berurutan sesuai urutan di bawah (AC-G6).
+  /// Entri `null` berarti kartu itu tidak dapat diketuk.
+  final List<VoidCallback?> aksi;
+
+  VoidCallback? _aksi(int i) => i < aksi.length ? aksi[i] : null;
 
   @override
   Widget build(BuildContext context) {
@@ -260,6 +299,7 @@ class _GridKpi extends StatelessWidget {
         icon: Icons.build_outlined,
         color: AppColors.roleAdmin,
         loading: loading,
+        onTap: loading ? null : _aksi(0),
       ),
       KpiCard(
         label: 'Bulan ini',
@@ -267,6 +307,7 @@ class _GridKpi extends StatelessWidget {
         icon: Icons.fact_check_outlined,
         color: AppColors.tepatWaktu,
         loading: loading,
+        onTap: loading ? null : _aksi(1),
       ),
       KpiCard(
         label: 'Terlambat',
@@ -274,6 +315,7 @@ class _GridKpi extends StatelessWidget {
         icon: Icons.warning_amber_rounded,
         color: AppColors.overdue,
         loading: loading,
+        onTap: loading ? null : _aksi(2),
       ),
       KpiCard(
         label: 'Teknisi aktif',
@@ -281,6 +323,7 @@ class _GridKpi extends StatelessWidget {
         icon: Icons.people_outline,
         color: AppColors.roleSupervisor,
         loading: loading,
+        onTap: loading ? null : _aksi(3),
         delta: loading
             ? null
             : '${kpi!.kepatuhanPersen.toStringAsFixed(0)}% tepat waktu',

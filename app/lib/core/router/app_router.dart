@@ -6,6 +6,7 @@ import '../../presentation/screens/audit/audit_log_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_analytics_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_overview_screen.dart';
+import '../../presentation/screens/dashboard/dashboard_overdue_screen.dart';
 import '../../presentation/screens/dashboard/dashboard_records_screen.dart';
 import '../../presentation/screens/data/alat_import_screen.dart';
 import '../../presentation/screens/data/alat_management_screen.dart';
@@ -152,8 +153,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: Routes.dashboardRecords,
+            builder: (BuildContext context, GoRouterState state) {
+              // AC-G6: kartu KPI "Bulan ini" menelusuri ke sini dengan rentang
+              // tanggal pada query string. Tanggal tidak valid diabaikan
+              // (layar tampil tanpa filter, bukan gagal).
+              final String? dari = state.uri.queryParameters['dari'];
+              final String? sampai = state.uri.queryParameters['sampai'];
+              return DashboardRecordsScreen(
+                dari: dari == null ? null : DateTime.tryParse(dari),
+                sampai: sampai == null ? null : DateTime.tryParse(sampai),
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.dashboardOverdue,
             builder: (BuildContext context, GoRouterState state) =>
-                const DashboardRecordsScreen(),
+                const DashboardOverdueScreen(),
           ),
         ],
       ),

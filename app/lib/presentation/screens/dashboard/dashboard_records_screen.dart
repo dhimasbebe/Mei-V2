@@ -22,7 +22,12 @@ import '../../../core/theme/app_palette.dart';
 ///
 /// Dilengkapi pencarian barcode, filter status verifikasi, dan paginasi.
 class DashboardRecordsScreen extends ConsumerStatefulWidget {
-  const DashboardRecordsScreen({super.key});
+  const DashboardRecordsScreen({super.key, this.dari, this.sampai});
+
+  /// Rentang tanggal awal (AC-G6 — kartu KPI "Bulan ini" menelusuri ke sini
+  /// dengan `?dari=&sampai=`). `null` berarti tanpa batas tanggal.
+  final DateTime? dari;
+  final DateTime? sampai;
 
   @override
   ConsumerState<DashboardRecordsScreen> createState() =>
@@ -33,10 +38,16 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
   final TextEditingController _cari = TextEditingController();
   static const int _perPage = 15;
   String _status = 'Semua';
+  DateTime? _dari;
+  DateTime? _sampai;
 
   @override
   void initState() {
     super.initState();
+    // Disimpan di state (bukan dibaca langsung dari widget) agar pengguna
+    // dapat menghapus filter periode dari layar ini.
+    _dari = widget.dari;
+    _sampai = widget.sampai;
     Future<void>.microtask(_muat);
   }
 
@@ -52,7 +63,25 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
           perPage: _perPage,
           barcodeAlat: _cari.text.trim().isEmpty ? null : _cari.text.trim(),
           statusVerifikasi: _status == 'Semua' ? null : _status.toLowerCase(),
+          dari: _dari,
+          sampai: _sampai,
         );
+  }
+
+  /// `dd/MM/yyyy` — dipakai penanda periode. Format angka dipilih supaya
+  /// tidak bergantung pada data locale/terjemahan.
+  static String _tanggal(DateTime d) {
+    final String hari = d.day.toString().padLeft(2, '0');
+    final String bulan = d.month.toString().padLeft(2, '0');
+    return '$hari/$bulan/${d.year}';
+  }
+
+  void _hapusPeriode() {
+    setState(() {
+      _dari = null;
+      _sampai = null;
+    });
+    _muat();
   }
 
   /// Ekspor periode (WS L, T09): pilih rentang lalu unduh PDF atau CSV.
@@ -123,6 +152,17 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
           },
         ),
         const SizedBox(height: AppSpacing.lg),
+        if (_dari != null || _sampai != null) ...<Widget>[
+          _PenandaPeriode(
+            teks: _dari != null && _sampai != null
+                ? '${_tanggal(_dari!)} – ${_tanggal(_sampai!)}'
+                : (_dari != null
+                    ? 'Sejak ${_tanggal(_dari!)}'
+                    : 'Sampai ${_tanggal(_sampai!)}'),
+            onHapus: _hapusPeriode,
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
         Row(
           children: <Widget>[
             Expanded(
@@ -186,7 +226,10 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
       return EmptyState(
         icon: Icons.inbox_outlined,
         title: 'Tidak ada catatan',
-        message: _cari.text.trim().isEmpty && _status == 'Semua'
+        message: _cari.text.trim().isEmpty &&
+                _status == 'Semua' &&
+                _dari == null &&
+                _sampai == null
             ? 'Belum ada pemeliharaan tercatat.'
             : 'Tidak ada catatan yang cocok dengan filter.',
       );
@@ -335,5 +378,60 @@ class _DashboardRecordsScreenState extends ConsumerState<DashboardRecordsScreen>
       'ditolak' => (AppColors.verifikasiDitolak, 'Ditolak'),
       _ => (AppColors.verifikasiMenunggu, 'Menunggu'),
     };
+  }
+}
+
+/// Penanda rentang tanggal aktif (AC-G6) — memberi tahu pengguna bahwa daftar
+/// sedang tersaring, sekaligus jalan keluar untuk menghapus saringan itu.
+class _PenandaPeriode extends StatelessWidget {
+  const _PenandaPeriode({required this.teks, required this.onHapus});
+
+  final String teks;
+  final VoidCallback onHapus;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppPalette pal = context.pal;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.xs,
+        AppSpacing.xs,
+        AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: pal.surfaceAlt,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: pal.borderSubtle),
+      ),
+      child: Row(
+        children: <Widget>[
+          Icon(Icons.date_range_outlined, size: AppSizes.iconSm, color: pal.textSecondary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              teks,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: pal.textPrimary,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: onHapus,
+            style: TextButton.styleFrom(
+              minimumSize: const Size(0, 32),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            ),
+            child: Text(
+              'Hapus',
+              style: TextStyle(fontSize: 11, color: pal.textSecondary),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
