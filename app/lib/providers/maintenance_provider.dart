@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/offline/draft_queue.dart';
 import '../data/repositories/maintenance_repository.dart';
 import '../domain/models/dashboard.dart';
 import '../domain/models/maintenance.dart';
@@ -6,6 +7,15 @@ import '../domain/models/maintenance.dart';
 final maintenanceRepositoryProvider = Provider<MaintenanceRepository>(
   (ref) => const MaintenanceRepository(),
 );
+
+/// Benih isi form untuk aksi "Duplikat laporan" (WS K).
+///
+/// [DraftTemplate.fromReport] membentuk draf baru (client_uuid baru, foto
+/// kosong); layar riwayat menaruh hasilnya di sini SEBELUM membuka form,
+/// lalu form membacanya sekali di `initState` untuk mengisi checklist,
+/// catatan, dan kondisi keseluruhan. Provider langsung dikosongkan setelah
+/// dibaca supaya tidak bocor ke form berikutnya.
+final formSeedProvider = StateProvider<DraftRecord?>((ref) => null);
 
 final maintenanceListProvider =
     StateNotifierProvider<MaintenanceListNotifier, AsyncValue<PagedResult<Maintenance>>>((ref) {

@@ -59,6 +59,12 @@ abstract class RoleNav {
       path: Routes.scan,
     ),
     RoleNavDestination(
+      label: 'Patroli',
+      icon: Icons.playlist_add_outlined,
+      activeIcon: Icons.playlist_add_check,
+      path: Routes.patrol,
+    ),
+    RoleNavDestination(
       label: 'Riwayat',
       icon: Icons.history_outlined,
       activeIcon: Icons.history,

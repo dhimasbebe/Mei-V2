@@ -15,6 +15,9 @@ abstract class Routes {
   static const String home = '/';
   static const String tugas = '/tugas';
   static const String scan = '/scan';
+
+  /// Patroli scan berkelanjutan (Teknisi — Tahap 3 WS I).
+  static const String patrol = '/patroli';
   static const String riwayat = '/riwayat';
   static const String profile = '/profil';
 

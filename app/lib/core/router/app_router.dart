@@ -18,6 +18,7 @@ import '../../presentation/screens/maintenance/maintenance_form_screen.dart';
 import '../../presentation/screens/maintenance/riwayat_screen.dart';
 import '../../presentation/screens/maintenance/scan_screen.dart';
 import '../../presentation/screens/offline/sync_queue_screen.dart';
+import '../../presentation/screens/patrol/patrol_screen.dart';
 import '../../presentation/screens/profile/profile_screen.dart';
 import '../../presentation/screens/verifikasi/verifikasi_screen.dart';
 import '../../presentation/shell/role_shell.dart';
@@ -82,6 +83,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.scan,
             builder: (BuildContext context, GoRouterState state) =>
                 const ScanScreen(),
+          ),
+          GoRoute(
+            path: Routes.patrol,
+            builder: (BuildContext context, GoRouterState state) =>
+                const PatrolScreen(),
           ),
           GoRoute(
             path: Routes.riwayat,

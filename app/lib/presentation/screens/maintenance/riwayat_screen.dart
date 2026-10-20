@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/maintenance/draft_template.dart';
+import '../../../core/offline/draft_queue.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_tokens.dart';
+import '../../../domain/models/alat.dart';
 import '../../../domain/models/dashboard.dart';
 import '../../../domain/models/maintenance.dart';
+import '../../../providers/alat_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/maintenance_provider.dart';
 import '../../widgets/app_card.dart';
@@ -52,6 +57,48 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
           username: teknisi ? ref.read(authProvider).user?.username : null,
           statusVerifikasi: _status == 'Semua' ? null : _status.toLowerCase(),
         );
+  }
+
+  /// Duplikat laporan (WS K): bentuk draf BARU dari laporan lama lewat modul
+  /// murni [DraftTemplate] — `client_uuid` baru (bukan kirim ulang) dan foto
+  /// sengaja tidak disalin. Form dibuka terisi; teknisi hanya mengubah bagian
+  /// yang berbeda lalu mengirim sebagai laporan baru.
+  Future<void> _duplikat(Maintenance ringkas) async {
+    try {
+      // Daftar riwayat tidak memuat detail checklist — ambil versi lengkap.
+      final Maintenance lengkap = await ref
+          .read(maintenanceDetailProvider(ringkas.idMaintenance).future);
+      final Alat alat = await ref
+          .read(alatRepositoryProvider)
+          .getByBarcode(lengkap.barcodeAlat);
+
+      final DraftRecord draf = DraftTemplate.fromReport(
+        lengkap,
+        buatUuid: () => MaintenancePayload(
+          barcodeAlat: lengkap.barcodeAlat,
+          idLokasi: lengkap.idLokasi,
+          detail: const <DetailMaintenance>[],
+        ).clientUuid,
+      );
+
+      if (!mounted) return;
+      ref.read(alatDetailProvider.notifier).state = alat;
+      ref.read(formSeedProvider.notifier).state = draf;
+      ref.read(maintenanceFormProvider.notifier).init(
+            barcodeAlat: draf.barcodeAlat,
+            idLokasi: draf.idLokasi,
+          );
+      context.goMaintenanceForm();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Gagal menyiapkan duplikat. Periksa koneksi lalu coba lagi.',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -118,6 +165,10 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
   }
 
   Widget _daftar(PagedResult<Maintenance> result) {
+    final String role =
+        (ref.read(authProvider).user?.roleUsers ?? '').toLowerCase();
+    final bool bolehDuplikat = role == 'teknisi' || role == 'admin';
+
     if (result.data.isEmpty) {
       return EmptyState(
         icon: Icons.history,
@@ -150,7 +201,12 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
           }
           return Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: _KartuRiwayat(m: result.data[index]),
+            child: _KartuRiwayat(
+              m: result.data[index],
+              onDuplikat: bolehDuplikat
+                  ? () => _duplikat(result.data[index])
+                  : null,
+            ),
           );
         },
       ),
@@ -159,9 +215,12 @@ class _RiwayatScreenState extends ConsumerState<RiwayatScreen> {
 }
 
 class _KartuRiwayat extends StatelessWidget {
-  const _KartuRiwayat({required this.m});
+  const _KartuRiwayat({required this.m, this.onDuplikat});
 
   final Maintenance m;
+
+  /// Aksi "Duplikat" (WS K); `null` bila role tidak berhak.
+  final VoidCallback? onDuplikat;
 
   @override
   Widget build(BuildContext context) {
@@ -204,6 +263,13 @@ class _KartuRiwayat extends StatelessWidget {
                 ),
               ),
               FotoCountBadge(jumlah: m.jumlahFoto),
+              if (onDuplikat != null)
+                IconButton(
+                  tooltip: 'Duplikat laporan',
+                  visualDensity: VisualDensity.compact,
+                  onPressed: onDuplikat,
+                  icon: const Icon(Icons.copy_all_outlined, size: 18),
+                ),
               const SizedBox(width: AppSpacing.sm),
               StatusBadge(
                 label: status.$4,

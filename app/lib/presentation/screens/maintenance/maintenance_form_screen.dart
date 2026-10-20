@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/media/foto_lokal.dart';
 import '../../../core/media/photo_store.dart';
+import '../../../core/maintenance/checklist_quick_fill.dart';
 import '../../../core/offline/draft_queue.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -120,6 +121,20 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Duplikat laporan (WS K): isi awal dari draf yang dibentuk riwayat.
+    // Dibaca SEKALI, lalu provider dikosongkan agar tidak terbawa ke form
+    // berikutnya.
+    final DraftRecord? seed = ref.read(formSeedProvider);
+    if (seed != null) {
+      _selectValues.addAll(seed.checklist);
+      _catatanCtrl.text = seed.catatan ?? '';
+      _kondisiKeseluruhan = seed.kondisiKeseluruhan;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) ref.read(formSeedProvider.notifier).state = null;
+      });
+    }
+
     // Catatan ikut memicu progres + autosave draf.
     _catatanCtrl.addListener(_perbaruiProgres);
   }
@@ -186,9 +201,20 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
             kondisiTerpilih: _kondisiKeseluruhan != null,
           ),
           const SizedBox(height: 20),
-          Text(
-            'Checklist Pemeriksaan',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  'Checklist Pemeriksaan',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => _isiSemuaBaik(list),
+                icon: const Icon(Icons.done_all, size: 18),
+                label: const Text('Semua Baik'),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           ...list.map((Spesifikasi s) => _buildInput(s)),
@@ -283,6 +309,55 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
         controller: _controllers[s.idSpesifikasi]!,
         label: '$label$satuanText',
         keyboardType: s.tipeInput == 'number' ? TextInputType.number : TextInputType.text,
+      ),
+    );
+  }
+
+  /// Aksi "Semua Baik" (WS J) — hanya mengisi item pilihan yang punya opsi
+  /// Baik/OK dan BELUM diisi pengguna. Isian yang sudah ada tidak ditimpa dan
+  /// item angka/teks tetap kosong (AC-J1/J2), seluruhnya lewat modul murni
+  /// [ChecklistQuickFill] agar perilakunya identik dengan yang diuji
+  /// `tools/modelcheck`.
+  void _isiSemuaBaik(List<Spesifikasi> list) {
+    if (list.isEmpty) return;
+
+    final List<QuickFillItem> items = list
+        .map((Spesifikasi s) => QuickFillItem(
+              idSpesifikasi: s.idSpesifikasi,
+              tipeInput: s.tipeInput,
+              opsi: s.opsi,
+              nilai: _nilaiUntuk(s),
+            ))
+        .toList(growable: false);
+
+    final int akanDiisi = ChecklistQuickFill.markAllOk(items);
+    if (akanDiisi == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Tidak ada item pilihan yang kosong. Isian Anda tidak diubah.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final List<QuickFillItem> hasil = ChecklistQuickFill.isiSemua(items);
+    setState(() {
+      for (int i = 0; i < items.length; i++) {
+        // Hanya item select yang BARU terisi — tidak menimpa isian pengguna.
+        if (items[i].tipeInput != 'select') continue;
+        if (!items[i].terisi && hasil[i].terisi) {
+          _selectValues[hasil[i].idSpesifikasi] = hasil[i].nilai;
+        }
+      }
+    });
+    _jadwalkanSimpanDraf();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$akanDiisi item diisi otomatis. Periksa kembali.'),
+        backgroundColor: AppColors.statusOk,
       ),
     );
   }

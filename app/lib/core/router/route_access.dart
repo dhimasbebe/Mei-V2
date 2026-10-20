@@ -36,6 +36,7 @@ abstract class RouteAccess {
         return _cocok(location, Routes.home) ||
             _cocok(location, Routes.tugas) ||
             _cocok(location, Routes.scan) ||
+            _cocok(location, Routes.patrol) ||
             _cocok(location, Routes.riwayat) ||
             _cocok(location, Routes.profile) ||
             _cocok(location, Routes.alatPrefix) ||
