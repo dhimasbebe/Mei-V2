@@ -37,6 +37,18 @@ class MaintenanceListNotifier extends StateNotifier<AsyncValue<PagedResult<Maint
 
   final MaintenanceRepository _repo;
 
+  /// Filter yang sedang aktif, disimpan supaya [nextPage] memakai himpunan
+  /// yang sama. Sebelumnya halaman berikutnya diambil tanpa filter apa pun,
+  /// sehingga penyaringan `username`/status hilang dan Teknisi melihat
+  /// laporan teknisi lain pada halaman 2 ke atas.
+  int _perPage = 20;
+  String? _barcodeAlat;
+  int? _idKategori;
+  String? _username;
+  String? _statusVerifikasi;
+  DateTime? _dari;
+  DateTime? _sampai;
+
   Future<void> load({
     int page = 1,
     int perPage = 20,
@@ -47,6 +59,14 @@ class MaintenanceListNotifier extends StateNotifier<AsyncValue<PagedResult<Maint
     DateTime? dari,
     DateTime? sampai,
   }) async {
+    _perPage = perPage;
+    _barcodeAlat = barcodeAlat;
+    _idKategori = idKategori;
+    _username = username;
+    _statusVerifikasi = statusVerifikasi;
+    _dari = dari;
+    _sampai = sampai;
+
     state = const AsyncValue.loading();
     try {
       final result = await _repo.getList(
@@ -69,7 +89,16 @@ class MaintenanceListNotifier extends StateNotifier<AsyncValue<PagedResult<Maint
     final current = state.valueOrNull;
     if (current == null || current.currentPage >= current.lastPage) return;
     try {
-      final result = await _repo.getList(page: current.currentPage + 1);
+      final result = await _repo.getList(
+        page: current.currentPage + 1,
+        perPage: _perPage,
+        barcodeAlat: _barcodeAlat,
+        idKategori: _idKategori,
+        username: _username,
+        statusVerifikasi: _statusVerifikasi,
+        dari: _dari,
+        sampai: _sampai,
+      );
       state = AsyncValue.data(
         PagedResult<Maintenance>(
           data: [...current.data, ...result.data],
