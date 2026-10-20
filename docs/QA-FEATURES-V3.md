@@ -11,21 +11,22 @@ oleh QA, bukan dari laporan pelaksana.
 
 ## 1. Ringkasan gerbang
 
-Seluruh gerbang di bawah dijalankan ulang oleh QA pada commit **`edcc22a`**
+Seluruh gerbang di bawah dijalankan ulang oleh QA pada commit **`6c8fb1e`**
 (HEAD saat laporan ini ditulis), bukan diwarisi dari laporan pelaksana.
 
 | Gerbang | Perintah | Hasil |
 |---|---|---|
 | `[KERNEL]` kompilasi | `gen_kernel_aot` × `main.dart`, `main_web.dart`, `tool/compile_probe.dart` | **EXIT 0 ketiganya** |
 | `[MDL]` kontrak model | `cd tools/modelcheck && dart run verify_models.dart` | **477 lulus, 0 gagal** |
-| `[BE]` backend | `cd backend && ../tools/php/php.exe artisan test` | **132 passed (779 assertions)** |
+| `[BE]` backend | `cd backend && ../tools/php/php.exe artisan test` | **140 passed (838 assertions)** |
 | Statik | `cd app && flutter analyze --no-pub` | **146 issue, 0 warning, 0 error** |
 | `[MANUAL]` perangkat | `flutter run` | **belum — lihat §6** |
 
 146 issue statik seluruhnya level `info` (`prefer_const_constructors` dan
-sejenisnya), tanpa satu pun `warning` atau `error`. Angka ini tidak berubah
-sejak `d9384ab` sampai `edcc22a`, jadi tiga perbaikan mode gelap tidak
-menambah temuan baru.
+sejenisnya), tanpa satu pun `warning` atau `error`. Angka ini tidak bergerak
+dari `d9384ab` sampai `6c8fb1e` meskipun 17 berkas berubah di rentang itu (13
+di antaranya di bawah `app/lib`), jadi tidak ada temuan baru yang tertinggal di
+belakang.
 
 `tool/compile_probe.dart` ada karena `gen_kernel_aot` berjalan di platform VM,
 sehingga `dart.library.io` selalu `true` dan berkas `*_web.dart` pada import
@@ -39,13 +40,13 @@ probe ini, galat tipe di jalur web hanya muncul saat aplikasi web dijalankan.
 | Workstream | Jumlah | Lulus | Deviasi | Tidak ada |
 |---|---|---|---|---|
 | A — Offline penuh | 4 | 3 | 1 | 0 |
-| B — Notifikasi | 3 | 1 | 2 | 0 |
+| B — Notifikasi | 3 | 3 | 0 | 0 |
 | C — Foto lampiran | 4 | 2 | 2 | 0 |
 | D — Audit log | 3 | 3 | 0 | 0 |
 | E — Mode gelap | 3 | 3 | 0 | 0 |
 | F — Animasi | 5 | 4 | 1 | 0 |
-| G — Grafik | 4 | 3 | 0 | 1 |
-| H — Gesture | 5 | 3 | 2 | 0 |
+| G — Grafik | 4 | 4 | 0 | 0 |
+| H — Gesture | 5 | 4 | 1 | 0 |
 | I — Patroli | 5 | 5 | 0 | 0 |
 | J — Checklist cepat | 3 | 3 | 0 | 0 |
 | K — Duplikat laporan | 2 | 2 | 0 | 0 |
@@ -54,11 +55,11 @@ probe ini, galat tipe di jalur web hanya muncul saat aplikasi web dijalankan.
 | N — Label QR | 2 | 2 | 0 | 0 |
 | O — Share link | 2 | 2 | 0 | 0 |
 | P — Multi-bahasa | 4 | 4 | 0 | 0 |
-| **Total** | **52** | **43** | **8** | **1** |
+| **Total** | **52** | **47** | **5** | **0** |
 
-Tiga deviasi sudah diperbaiki selama QA (A6, E8, E9) dan karena itu dihitung
-lulus. Delapan deviasi sisanya dan satu AC yang belum diimplementasikan
-dirinci di §4.
+Tujuh deviasi sudah diperbaiki selama QA dan karena itu dihitung lulus
+(A6, E8, E9, B7, B8, H10, G6), menyusul perbaikan-perbaikan di §3. Lima
+deviasi sisanya dirinci di §4. Tidak ada lagi AC yang belum diimplementasikan.
 
 ---
 
@@ -167,21 +168,79 @@ padahal AC menyatakan Supervisor **dan** Admin diarahkan ke `/403`. Pengecualian
 `boleh('admin','/patroli')` = `false` sementara `boleh('admin','/data')` tetap
 `true`, jadi hak Admin atas rute lain tidak berubah.
 
+### 3.7 Celah privasi laporan antar-Teknisi — **kritis** (`93844e2`)
+
+Ditemukan pada putaran QA kedua, setelah laporan ini pertama ditulis. Bukan
+sekadar beda kalimat AC: datanya benar-benar bisa dibaca.
+
+- `GET /api/v1/maintenance` berada di grup auth biasa **tanpa** middleware
+  role, dan filter `username` bersifat opsional. Teknisi yang memanggil API
+  langsung tanpa parameter itu menerima laporan **semua** teknisi.
+- `GET /api/v1/maintenance/{id}` sama sekali tidak memeriksa kepemilikan —
+  `findOrFail($id)` mengembalikan laporan siapa pun, lengkap dengan relasi
+  `foto`, kepada siapa pun yang punya token. Id berurutan, jadi bisa
+  dienumerasi.
+
+Penyaringan per `username` yang diandalkan AC-K5 ternyata hanya ada di klien.
+`FotoController::index` sudah benar sejak awal (memeriksa kepemilikan di baris
+108), jadi pola yang tepat sudah ada di kode — `MaintenanceController` saja
+yang melewatkannya.
+
+Perbaikan: peran Teknisi dipaksa `where('username', ...)` pada `index()`
+(parameter `username` dari klien **diabaikan**, bukan digabung, supaya tidak
+bisa dipakai menebak keberadaan data), dan `show()` mengembalikan 403 beramplop
+bila bukan pemiliknya. Supervisor/Admin tetap melihat semua. Dikunci oleh
+`tests/Feature/MaintenancePrivacyTest.php` — 8 uji, termasuk pembanding
+Supervisor pada data yang sama sehingga terbukti filternya bekerja dan bukan
+uji hampa.
+
+### 3.8 Empat deviasi AC yang ditutup (`2d1c20d`, `fe3af3e`, `6c8fb1e`)
+
+- **AC-B8** — `LocalNotifierIo.init({onTap})` menerima callback tetapi tidak
+  pernah diisi, dan payload-nya konstanta tanpa rute. Kini `NotifPrefsNotifier`
+  menerima `navigasiKetuk` dan meneruskannya ke kedua pemanggilan `init()`.
+  Tujuan ditentukan dari peran **saat diketuk**, bukan dari payload: jadwal
+  harian bertahan melewati pergantian pengguna di perangkat yang sama.
+- **AC-B7** — `pengingatProvider` tidak disegarkan saat pull-to-refresh.
+  `NotifBanner` memakai provider yang sama di ketiga beranda, jadi perbaikan
+  diterapkan di ketiganya; kegagalan pengingat sengaja ditelan agar daftar
+  tugas tetap tampil.
+- **AC-H10** — `SearchHistory.remove()` sudah ada dan berfungsi tetapi tidak
+  tersambung. Chip riwayat kini `InputChip` dengan tombol hapus per entri;
+  tombol "Hapus" lama menjadi "Hapus semua" agar bedanya jelas.
+- **AC-G6** — empat kartu KPI kini dapat diketuk: "Bulan ini" → Records dengan
+  `?dari=&sampai=` (awal bulan–hari ini), "Terlambat" → rute baru
+  `/dashboard/overdue`, "Total alat" → Data Alat dan "Teknisi aktif" → Data
+  Users. Dua yang terakhir sengaja tanpa aksi untuk Supervisor karena rutenya
+  Admin-only — mengetuknya hanya akan melempar pengguna ke `/403`.
+
+Dua cacat ikutan ikut diperbaiki:
+
+- `nextPage()` mengambil halaman berikutnya **tanpa filter apa pun**, sehingga
+  penyaringan `username` dan status hilang sejak halaman 2. Selain membocorkan
+  laporan teknisi lain, ini juga membuat daftar berfilter salah untuk semua
+  peran (`20b097a`).
+- Halaman Records tidak punya indikator periode, sehingga daftar yang tersaring
+  dari kartu KPI akan tampak "kehilangan data". Ditambahkan penanda rentang
+  dengan aksi hapus.
+
 ---
 
 ## 4. Deviasi yang diterima (tidak diperbaiki)
 
+Lima AC di bawah ini **tidak** akan diperbaiki. Semuanya sudah dinilai ulang
+pada putaran QA kedua: yang tersisa hanyalah perbedaan kalimat AC atau
+keputusan desain yang disengaja, bukan fungsi yang hilang. Deviasi yang
+sebelumnya tercatat di sini (A6, E8, E9, B7, B8, H10, G6) sudah ditutup dan
+karena itu tidak lagi muncul.
+
 | AC | Keadaan | Alasan diterima |
 |---|---|---|
-| **G6** | **Tidak diimplementasikan** — kartu KPI tidak dapat diketuk | `KpiCard` sudah punya slot `onTap` tetapi tidak ada pemanggil. Menuntut rute daftar terfilter baru; dinilai fitur baru, bukan perbaikan. **Kandidat prioritas berikutnya.** |
-| B8 | Menekan notifikasi tidak membuka layar apa pun | `onTap` diterima `LocalNotifierIo` tetapi kedua pemanggil `init()` tidak mengisinya, dan payload-nya konstanta `'pengingat'` tanpa informasi role/rute. Perlu rancangan navigasi dari provider. |
 | A8 | Lencana = pengingat **+** draf, bukan draf saja | Satu lencana gabungan dinilai lebih berguna daripada dua lencana; menyimpang dari kalimat AC. |
-| B7 | `pengingatProvider` tidak disegarkan saat pull-to-refresh Teknisi | Komponen draf tetap hidup (state lokal); hanya komponen alat jatuh tempo yang bisa basi. |
 | C15 | Tidak ada thumbnail "menunggu unggah" | Unggah otomatis pasca-sinkron **ada**; yang tidak ada hanya pratinjau, antrean menampilkan `Foto: N`. |
 | C12 | Tombol berbunyi "Kamera"/"Galeri" | Perilaku (kamera, galeri, pratinjau) lengkap; hanya literal AC yang berbeda, dan label sekarang lebih ringkas. |
 | F3 | `Hero` menerbangkan ikon kategori, bukan teks barcode | Mekanisme transisi benar dan tag unik per barcode; objek yang terbang berbeda dari kalimat AC. |
 | H8 | Dua layar tanpa pull-to-refresh (`patrol_screen`, `dashboard_records_screen`) | Semua layar yang disebut AC sudah punya. Antrean patroli bersifat lokal sehingga refresh tidak bermakna. |
-| H10 | Riwayat pencarian tampil selalu (bukan saat fokus) dan hanya bisa dihapus semua | `SearchHistory.remove` sudah ada tetapi belum disambungkan ke UI. |
 
 Catatan tambahan di luar daftar AC:
 
@@ -195,11 +254,13 @@ Catatan tambahan di luar daftar AC:
   Teknisi (terpasang di `teknisi_home_screen.dart:61`), menghitung seluruh draf
   tertunda termasuk hasil patroli. Tidak ada lencana per-laporan untuk jenis
   laporan apa pun.
-- **AC-K5** — tombol Duplikat dibatasi per **role**, bukan per kepemilikan,
-  tetapi daftar riwayat Teknisi sudah disaring per `username` di klien sehingga
-  baris milik teknisi lain tidak pernah tampil. Backend menerima `username`
-  sebagai filter opsional dan **tidak** memaksakannya untuk role Teknisi —
-  pertahanan berlapis belum ada (di luar lingkup tahap 3).
+- **AC-K5** — tombol Duplikat dibatasi per **role**, bukan per kepemilikan, dan
+  itu tetap berlaku. Namun klaim lama bahwa penyaringan `username` "sudah ada
+  di klien saja" tidak lagi benar: sejak `93844e2` server **memaksa**
+  `where('username', ...)` untuk peran Teknisi pada `index()` dan menolak
+  `show()` milik teknisi lain dengan 403, sehingga pertahanan berlapis kini
+  benar-benar ada (lihat §3.7). Yang belum ada hanyalah pembatasan tombol
+  Duplikat per baris.
 - **`_simpan()` parsial** — bila tulis `shared_preferences` gagal separuh,
   antrean tetap utuh di memori dan ditulis ulang pada mutasi berikutnya.
 
@@ -259,6 +320,23 @@ lewat `flutter run`:
    yang benar.
 8. **Bahasa** — pilih English: seluruh layar Login berbahasa Inggris dan pilihan
    bertahan setelah aplikasi ditutup.
+9. **Ketuk notifikasi pengingat** (§3.8 / AC-B8) — nyalakan pengingat harian,
+   lalu ketuk notifikasinya. Teknisi harus mendarat di Tugas, Supervisor di
+   Verifikasi, Admin di Dashboard. Paling baik dicoba setelah **berganti
+   pengguna di perangkat yang sama**, karena tujuan sengaja dihitung saat
+   diketuk, bukan disimpan di payload.
+10. **Tarik-untuk-segarkan Beranda** (§3.8 / AC-B7) — buka beranda, tarik ke
+    bawah, dan pastikan angka "jatuh tempo" pada banner pengingat ikut berubah
+    bila ada perubahan data, tanpa membuat daftar tugas berkedip kosong.
+11. **Hapus satu entri riwayat pencarian** (§3.8 / AC-H10) — cari beberapa kata
+    kunci, lalu ketuk tanda silang pada salah satu chip: hanya chip itu yang
+    hilang, sisanya tetap, dan keadaan itu bertahan setelah aplikasi ditutup.
+    Tombol "Hapus semua" harus tetap menghapus seluruhnya.
+12. **Kartu KPI dapat diketuk** (§3.8 / AC-G6) — di Dashboard, ketuk "Bulan ini"
+    (harus membuka Records dengan penanda rentang tanggal yang bisa dihapus),
+    "Terlambat" (harus membuka daftar overdue), lalu ulangi sebagai Supervisor:
+    "Total alat" dan "Teknisi aktif" sengaja tidak bereaksi, bukan melempar ke
+    `/403`.
 
 ---
 
