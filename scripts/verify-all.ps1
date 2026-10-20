@@ -4,14 +4,20 @@
     Menjalankan SEMUA pemeriksaan Mei-V2 sekaligus.
 
 .DESCRIPTION
-    Tiga lapis verifikasi:
-      1. Uji backend Laravel (php artisan test)   -> 19 uji, 173 assertion
-      2. Uji kontrak model Dart vs fixture JSON   -> 80 pemeriksaan
+    Empat lapis verifikasi:
+      1. Uji backend Laravel (php artisan test)   -> 132 uji, 779 assertion
+      2. Uji kontrak model Dart vs fixture JSON   -> 413 pemeriksaan
       3. Kompilasi kedua entry point Flutter      -> main.dart + main_web.dart
+      4. Kompilasi variasi platform (tool/compile_probe.dart) -> *_web.dart, *_stub.dart
 
     Langkah 2 memakai fixture yang sudah tersimpan di app/test/fixtures,
     jadi TIDAK butuh server berjalan. Pakai -Live untuk merekam ulang
     fixture dari server sungguhan lebih dulu (membuktikan kontrak end-to-end).
+
+    Langkah 4 ada karena `gen_kernel_aot` berjalan di platform VM, sehingga
+    `dart.library.io` selalu true dan file *_web.dart pada import kondisional
+    tidak ikut terkompilasi oleh langkah 3. Tanpa langkah 4, galat tipe di
+    jalur web hanya muncul saat aplikasi web dijalankan.
 
 .PARAMETER Live
     Jalankan `php artisan serve` sementara, rekam ulang fixture dari API
@@ -329,7 +335,15 @@ if (-not $flutter -and -not $dart) {
     # Path $genKernel / $runtime / $platform sudah dihitung di atas.
     if ($genKernel -and (Test-Path $genKernel) -and
         (Test-Path $runtime) -and $platform) {
-        foreach ($entry in @('lib\main.dart', 'lib\main_web.dart')) {
+        $entri = @('lib\main.dart', 'lib\main_web.dart')
+        # Langkah 4: variasi platform (*_web.dart / *_stub.dart) hanya ikut
+        # terkompilasi lewat probe ini, karena gen_kernel berjalan di platform
+        # VM sehingga `dart.library.io` selalu true.
+        $probe = Join-Path $AppDir 'tool\compile_probe.dart'
+        if (Test-Path $probe) { $entri += 'tool\compile_probe.dart' }
+        else { Write-Note "tool\compile_probe.dart tidak ada - langkah variasi platform dilewati." }
+
+        foreach ($entry in $entri) {
             $out = Join-Path $AppDir ('.dart_tool\' + [IO.Path]::GetFileNameWithoutExtension($entry) + '.dill')
             Write-Note "Kompilasi $entry ..."
             Push-Location $AppDir
@@ -337,7 +351,7 @@ if (-not $flutter -and -not $dart) {
                 Invoke-Safe -Exe $runtime -Arguments @(
                     $genKernel, '--platform', $platform,
                     '--packages', '.dart_tool\package_config.json',
-                    '--target=flutter', '-o', $out, $entry
+                    '--target=flutter', '--no-link-platform', '-o', $out, $entry
                 ) -Label "gen_kernel $entry"
                 if ($script:ToolExit -ne 0) { Write-Fail "$entry gagal dikompilasi"; $script:Failed++ }
                 else { Write-Ok "$entry bersih" }
