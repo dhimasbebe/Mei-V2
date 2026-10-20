@@ -10,12 +10,14 @@ import '../core/patrol/patrol_queue.dart';
 /// `PatrolQueue` tetap dapat diuji lewat `dart.exe` (lihat `tools/modelcheck`).
 class PatrolNotifier extends StateNotifier<PatrolQueue> {
   PatrolNotifier() : super(PatrolQueue()) {
-    _muat();
+    _muatSelesai = _muat();
   }
 
-  /// True setelah percobaan muat pertama selesai (berhasil maupun gagal).
-  bool _siap = false;
-  bool get siap => _siap;
+  /// Selesai setelah percobaan muat pertama rampung (berhasil maupun gagal).
+  /// Semua mutator menunggu ini supaya tidak menimpa hasil muat — tanpa ini,
+  /// pemindaian yang terjadi sebelum muat selesai bisa menghapus antrean lama
+  /// di disk sekaligus membuang barcode yang baru masuk dari memori.
+  late final Future<void> _muatSelesai;
 
   Future<void> _muat() async {
     try {
@@ -25,9 +27,6 @@ class PatrolNotifier extends StateNotifier<PatrolQueue> {
       if (mounted) state = q;
     } catch (_) {
       // Gagal memuat: antrean tetap kosong, aplikasi tidak boleh crash.
-    } finally {
-      _siap = true;
-      if (mounted) state = PatrolQueue(state.items);
     }
   }
 
@@ -41,7 +40,11 @@ class PatrolNotifier extends StateNotifier<PatrolQueue> {
   }
 
   /// Tambah barcode ke antrean. `false` = duplikat (AC-I1), tanpa perubahan.
+  ///
+  /// Menunggu [_muatSelesai] lebih dulu: menulis sebelum muat rampung akan
+  /// menimpa antrean tersimpan dengan antrean kosong + satu barcode baru.
   Future<bool> tambah(String barcode, {DateTime? pada}) async {
+    await _muatSelesai;
     if (!state.add(barcode, pada: pada)) return false;
     state = PatrolQueue(state.items);
     await _simpan();
@@ -49,12 +52,16 @@ class PatrolNotifier extends StateNotifier<PatrolQueue> {
   }
 
   Future<void> hapus(String barcode) async {
+    await _muatSelesai;
     state.remove(barcode);
     state = PatrolQueue(state.items);
     await _simpan();
   }
 
+  /// Kosongkan antrean. Menunggu muat dulu supaya tidak mengosongkan antrean
+  /// kosong yang kemudian diisi ulang oleh hasil muat (aksi jadi tak berefek).
   Future<void> kosongkan() async {
+    await _muatSelesai;
     state.clear();
     state = PatrolQueue();
     await _simpan();
@@ -62,6 +69,7 @@ class PatrolNotifier extends StateNotifier<PatrolQueue> {
 
   /// Tandai hasil validasi `GET /alat/{barcode}` (AC-I4).
   Future<void> tandaiTervalidasi(String barcode) async {
+    await _muatSelesai;
     if (state.tandaiTervalidasi(barcode)) {
       state = PatrolQueue(state.items);
       await _simpan();
@@ -69,6 +77,7 @@ class PatrolNotifier extends StateNotifier<PatrolQueue> {
   }
 
   Future<void> tandaiBelumValidasi(String barcode) async {
+    await _muatSelesai;
     if (state.tandaiBelumValidasi(barcode)) {
       state = PatrolQueue(state.items);
       await _simpan();
