@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 
 /// Tombol utama gaya Mei-V: pill-shaped, warna merah / hitam / outline.
@@ -21,20 +22,44 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color fg = variant == AppButtonVariant.filled ? AppColors.background : AppColors.primary;
-    final Color bg = variant == AppButtonVariant.filled ? AppColors.primary : AppColors.background;
-    final Color border = variant == AppButtonVariant.outline ? AppColors.primary : Colors.transparent;
+    final bool filled = variant == AppButtonVariant.filled;
+    final bool outline = variant == AppButtonVariant.outline;
+
+    final Color fg = filled ? AppColors.background : AppColors.primary;
+
+    // Latar mengikuti peran varian. `outline` sengaja TRANSPARAN agar
+    // permukaan halaman yang tampil — sebelumnya putih solid, sehingga di
+    // mode gelap tampak seperti slab putih dengan teks merah.
+    final Color bg = switch (variant) {
+      AppButtonVariant.filled => AppColors.primary,
+      AppButtonVariant.outline => Colors.transparent,
+      AppButtonVariant.dark => AppColors.background,
+    };
+
+    // Status nonaktif memakai aturan latar yang SAMA (bukan selalu pink 50%
+    // yang menimpa varian outline), dengan teks redup yang tetap terbaca di
+    // kedua tema.
+    final Color bgDisabled = switch (variant) {
+      AppButtonVariant.filled => AppColors.primary.withValues(alpha: 0.5),
+      AppButtonVariant.outline => Colors.transparent,
+      AppButtonVariant.dark => AppColors.background.withValues(alpha: 0.6),
+    };
+    final Color fgDisabled =
+        filled ? AppColors.background : context.pal.textSecondary;
+
+    final Color border = outline ? AppColors.primary : Colors.transparent;
 
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         foregroundColor: fg,
         backgroundColor: bg,
-        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
+        disabledBackgroundColor: bgDisabled,
+        disabledForegroundColor: fgDisabled,
         minimumSize: const Size(double.infinity, AppSizes.touchTarget),
         shape: const StadiumBorder(),
         side: BorderSide(color: border, width: 1.5),
-        elevation: variant == AppButtonVariant.filled ? 2 : 0,
+        elevation: filled ? 2 : 0,
       ),
       child: isLoading
           ? SizedBox(

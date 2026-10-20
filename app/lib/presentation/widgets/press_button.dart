@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_tokens.dart';
 import 'app_button.dart';
 
@@ -47,9 +48,29 @@ class _PressButtonState extends State<PressButton> {
     final bool filled = widget.variant == AppButtonVariant.filled;
     final bool dark = widget.variant == AppButtonVariant.dark;
     final Color fg = filled || dark ? AppColors.background : AppColors.primary;
+
+    // `outline` transparan agar permukaan halaman yang tampil (bukan slab
+    // putih di mode gelap); `dark` tetap hitam — chrome yang memang tidak
+    // mengikuti tema.
     final Color bg = filled
         ? AppColors.primary
-        : (dark ? AppColors.black : AppColors.background);
+        : (dark ? AppColors.black : Colors.transparent);
+
+    // Nonaktif mengikuti aturan latar yang sama, teks redup namun terbaca.
+    final Color bgDisabled = filled
+        ? AppColors.primary.withValues(alpha: 0.5)
+        : (dark
+            ? AppColors.black.withValues(alpha: 0.6)
+            : Colors.transparent);
+    final Color fgDisabled =
+        filled || dark ? AppColors.background : context.pal.textSecondary;
+
+    // Ripple tetap terbaca di atas latar transparan: overlay brand tipis
+    // (bukan mengandalkan fill opaque seperti sebelumnya).
+    final Color? overlay = filled || dark
+        ? null
+        : AppColors.primary.withValues(alpha: 0.08);
+
     final BorderSide side = widget.variant == AppButtonVariant.outline
         ? const BorderSide(color: AppColors.primary, width: 1.5)
         : BorderSide.none;
@@ -68,7 +89,9 @@ class _PressButtonState extends State<PressButton> {
           style: ElevatedButton.styleFrom(
             foregroundColor: fg,
             backgroundColor: bg,
-            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
+            disabledBackgroundColor: bgDisabled,
+            disabledForegroundColor: fgDisabled,
+            overlayColor: overlay,
             minimumSize: Size(
               widget.expand ? double.infinity : 0.0,
               AppSizes.touchTarget,
@@ -97,7 +120,9 @@ class _PressButtonState extends State<PressButton> {
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.4,
-                        color: fg,
+                        // Warna eksplisit menimpa disabledForegroundColor,
+                        // jadi status nonaktif diterapkan di sini juga.
+                        color: _enabled ? fg : fgDisabled,
                       ),
                     ),
                   ],
