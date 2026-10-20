@@ -8,8 +8,11 @@ import '../core/notif/local_notifier.dart';
 import '../core/notif/local_notifier_stub.dart'
     if (dart.library.io) '../core/notif/local_notifier_io.dart' as impl;
 import '../core/notif/notif_schedule.dart';
+import '../core/router/app_router.dart';
 import '../data/repositories/pengingat_repository.dart';
 import '../domain/models/pengingat.dart';
+import '../domain/models/user.dart';
+import 'auth_provider.dart';
 import 'draft_provider.dart';
 
 /// Kunci preferensi pengingat harian (AC-B9).
@@ -39,6 +42,20 @@ final pengingatTotalProvider = Provider<int>((ref) {
 final localNotifierProvider = Provider<LocalNotifier>(
   (ref) => impl.buatLocalNotifier(),
 );
+
+/// Rute tujuan saat notifikasi pengingat diketuk (AC-B8), atau `null` bila
+/// tidak ada tujuan yang masuk akal (belum login / peran tak dikenal).
+///
+/// Payload notifikasi sengaja **tidak** memuat peran: jadwal harian dibuat
+/// sekali dan bisa bertahan melewati pergantian pengguna di perangkat yang
+/// sama. Tujuan ditentukan dari peran yang sedang login pada saat diketuk.
+String? rutePengingatUntuk(User? user) {
+  if (user == null) return null;
+  if (user.isTeknisi) return Routes.tugas;
+  if (user.isSupervisor) return Routes.verifikasi;
+  if (user.isAdmin) return Routes.dashboard;
+  return null;
+}
 
 /// State preferensi pengingat harian.
 @immutable
@@ -88,11 +105,19 @@ class NotifPrefsState {
 /// Menyimpan preferensi pengingat di perangkat dan menyinkronkannya ke
 /// penjadwal OS. Kegagalan plugin tidak pernah membuat aplikasi crash.
 class NotifPrefsNotifier extends StateNotifier<NotifPrefsState> {
-  NotifPrefsNotifier(this._notifier) : super(const NotifPrefsState()) {
+  NotifPrefsNotifier(
+    this._notifier, {
+    void Function(String? payload)? navigasiKetuk,
+  })  : _navigasiKetuk = navigasiKetuk,
+        super(const NotifPrefsState()) {
     unawaited(muat());
   }
 
   final LocalNotifier _notifier;
+
+  /// Aksi saat notifikasi OS diketuk (AC-B8). `null` berarti ketukan
+  /// diabaikan — perilaku lama, dipakai bila tidak ada tujuan yang pasti.
+  final void Function(String? payload)? _navigasiKetuk;
 
   Future<void> muat() async {
     final bool didukung = _notifier.didukung;
@@ -126,7 +151,7 @@ class NotifPrefsNotifier extends StateNotifier<NotifPrefsState> {
       return;
     }
 
-    final bool siap = await _notifier.init();
+    final bool siap = await _notifier.init(onTap: _navigasiKetuk);
     bool izin = false;
     if (siap && aktif) {
       izin = await _notifier.mintaIzin();
@@ -155,7 +180,7 @@ class NotifPrefsNotifier extends StateNotifier<NotifPrefsState> {
     String? pesan;
 
     if (aktif && _notifier.didukung) {
-      final bool siap = await _notifier.init();
+      final bool siap = await _notifier.init(onTap: _navigasiKetuk);
       if (siap) {
         izin = await _notifier.mintaIzin();
         if (izin) {
@@ -210,9 +235,18 @@ class NotifPrefsNotifier extends StateNotifier<NotifPrefsState> {
 }
 
 final notifPrefsProvider =
-    StateNotifierProvider<NotifPrefsNotifier, NotifPrefsState>(
-  (ref) => NotifPrefsNotifier(ref.watch(localNotifierProvider)),
-);
+    StateNotifierProvider<NotifPrefsNotifier, NotifPrefsState>((ref) {
+  return NotifPrefsNotifier(
+    ref.watch(localNotifierProvider),
+    // AC-B8: ketuk notifikasi membuka layar yang relevan dengan peran aktif.
+    navigasiKetuk: (String? _) {
+      final User? user = ref.read(authProvider).user;
+      final String? tujuan = rutePengingatUntuk(user);
+      if (tujuan == null) return;
+      ref.read(routerProvider).go(tujuan);
+    },
+  );
+});
 
 /// Lencana tab "Tugas" (Teknisi): alat jatuh tempo/terlambat + draf offline
 /// yang belum terkirim (AC-B7).
