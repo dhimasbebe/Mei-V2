@@ -1,16 +1,21 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../../domain/models/alat.dart';
+import '../../domain/models/alat_import.dart';
 import '../../domain/models/audit_log.dart';
 import '../../domain/models/dashboard.dart';
 import '../../domain/models/kategori.dart';
 import '../../domain/models/lokasi.dart';
 import '../../domain/models/maintenance.dart';
 import '../../domain/models/pengingat.dart';
+import '../../domain/models/share_link.dart';
 import '../../domain/models/spesifikasi.dart';
 import '../../domain/models/tugas.dart';
 import '../../domain/models/user.dart';
 import '../../domain/models/verifikasi.dart';
 import 'api_client.dart';
+import 'api_exception.dart';
 
 /// Semua endpoint Mei-V API v1.
 ///
@@ -677,6 +682,111 @@ class ApiService {
   }
 
   // --------------------------------------------------------------------------
+  // Ekspor PDF / label QR / impor CSV / tautan bagikan
+  // (WS L, M, N, O — Fitur Tahap 3, T09)
+  // --------------------------------------------------------------------------
+
+  /// `GET /maintenance/{id}/pdf` (Supervisor/Admin) — PDF resmi satu laporan.
+  ///
+  /// Respons BINER `application/pdf` tanpa envelope → pola sama dengan
+  /// [exportLaporan], dipaksa [ResponseType.bytes] (AC-L1).
+  Future<List<int>> getMaintenancePdf(int id) => _bytes(
+        () => _dio.get<List<int>>(
+          '/maintenance/$id/pdf',
+          options: Options(responseType: ResponseType.bytes),
+        ),
+      );
+
+  /// `GET /dashboard/export/pdf?dari=&sampai=` (Supervisor/Admin).
+  ///
+  /// Server menolak 422 bila rentang > 90 hari atau baris > 500. Karena body
+  /// galat ikut dibaca sebagai bytes, pesan aslinya dipulihkan oleh
+  /// [_exceptionDariBytes] supaya pengguna melihat ALASANNYA (AC-L3).
+  Future<List<int>> getPeriodePdf({
+    required DateTime dari,
+    required DateTime sampai,
+  }) =>
+      _bytes(
+        () => _dio.get<List<int>>(
+          '/dashboard/export/pdf',
+          queryParameters: <String, dynamic>{
+            'dari': dari.toIso8601String(),
+            'sampai': sampai.toIso8601String(),
+          },
+          options: Options(responseType: ResponseType.bytes),
+        ),
+      );
+
+  /// `POST /dashboard/export/qr-labels` (Supervisor/Admin).
+  ///
+  /// Body `{ "barcode": ["AC-001", ...] }` → PDF grid label. Daftar kosong
+  /// atau barcode tak dikenal ditolak 422 beserta daftarnya (AC-N2, AC-N3).
+  Future<List<int>> postQrLabels(List<String> barcode) => _bytes(
+        () => _dio.post<List<int>>(
+          '/dashboard/export/qr-labels',
+          data: <String, dynamic>{'barcode': barcode},
+          options: Options(responseType: ResponseType.bytes),
+        ),
+      );
+
+  /// `POST /alat/impor/preview` (Admin) — validasi per baris, TANPA menulis DB.
+  ///
+  /// Dua sumber input (AC-M9): [csv] = teks CSV yang ditempel (jalur ponsel),
+  /// atau [fileBytes] = isi berkas CSV multipart (jalur web). [fileBytes]
+  /// menang bila keduanya diisi.
+  Future<AlatImportResult> previewImporCsv({
+    String? csv,
+    List<int>? fileBytes,
+    String namaFile = 'alat.csv',
+  }) async {
+    final Response<dynamic> res = await _dio.post<dynamic>(
+      '/alat/impor/preview',
+      data: _formImpor(csv: csv, fileBytes: fileBytes, namaFile: namaFile),
+      options: _opsiImpor(fileBytes),
+    );
+    return AlatImportResult.fromJson(_unwrap(res));
+  }
+
+  /// `POST /alat/impor/commit` (Admin) — menulis HANYA baris valid.
+  ///
+  /// 0 baris valid → 422 (AC-M3). Respons memuat `diimpor`/`gagal` yang tetap
+  /// terbaca oleh [AlatImportResult.fromJson].
+  Future<AlatImportResult> commitImporCsv({
+    String? csv,
+    List<int>? fileBytes,
+    String namaFile = 'alat.csv',
+  }) async {
+    final Response<dynamic> res = await _dio.post<dynamic>(
+      '/alat/impor/commit',
+      data: _formImpor(csv: csv, fileBytes: fileBytes, namaFile: namaFile),
+      options: _opsiImpor(fileBytes),
+    );
+    return AlatImportResult.fromJson(_unwrap(res));
+  }
+
+  /// `POST /maintenance/{id}/share` (Supervisor/Admin) — buat tautan publik.
+  ///
+  /// [expiresAt] opsional (null = tanpa kedaluwarsa). Dua permintaan pada
+  /// laporan yang sama menghasilkan dua token berbeda (AC-O1).
+  Future<ShareLink> buatShareLink(int id, {DateTime? expiresAt}) async {
+    final Response<dynamic> res = await _dio.post<dynamic>(
+      '/maintenance/$id/share',
+      data: <String, dynamic>{
+        if (expiresAt != null)
+          'expires_at': _formatSqlDateTime(expiresAt),
+      },
+    );
+    return ShareLink.fromJson(_unwrap(res));
+  }
+
+  /// `DELETE /share/{token}` (Supervisor/Admin) — cabut tautan (soft revoke).
+  ///
+  /// Idempoten: token yang sudah dicabut tetap dianggap berhasil.
+  Future<void> cabutShareLink(String token) async {
+    await _dio.delete<dynamic>('/share/$token');
+  }
+
+  // --------------------------------------------------------------------------
   // Helpers
   // --------------------------------------------------------------------------
 
@@ -709,5 +819,109 @@ class ApiService {
     }
     if (res.data is List) return res.data as List<dynamic>;
     return <dynamic>[];
+  }
+
+  // --------------------------------------------------------------------------
+  // Helper ekspor biner + impor (WS L, M, N — T09)
+  // --------------------------------------------------------------------------
+
+  /// Menjalankan permintaan [ResponseType.bytes] dan mengembalikan isinya.
+  ///
+  /// Endpoint biner tetap memakai route `api/*`, sehingga kegagalan validasi
+  /// datang sebagai envelope JSON yang—karena respons diminta sebagai bytes—
+  /// tidak dapat dibaca `_ErrorInterceptor` (data bukan `Map`). Tanpa
+  /// penanganan di sini pengguna hanya melihat "Terjadi kesalahan." alih-alih
+  /// "Rentang maksimal 90 hari." (AC-L3). Karena itu body galat di-decode
+  /// ulang di [_exceptionDariBytes].
+  Future<List<int>> _bytes(Future<Response<List<int>>> Function() jalankan) async {
+    try {
+      final Response<List<int>> res = await jalankan();
+      return res.data ?? <int>[];
+    } on DioException catch (e) {
+      throw _exceptionDariBytes(e);
+    }
+  }
+
+  /// Membangun [ApiException] bertipe benar dari body galat berformat bytes.
+  ///
+  /// Bila body bukan JSON (mis. halaman HTML 500), jatuh ke [ServerException]
+  /// dengan pesan bawaan sehingga pemanggil tetap mendapat tipe yang dapat
+  /// ditangani.
+  ApiException _exceptionDariBytes(DioException e) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError) {
+      return const NetworkException();
+    }
+
+    final int? status = e.response?.statusCode;
+    Map<String, dynamic>? body;
+
+    final dynamic data = e.response?.data;
+    if (data is List<int> && data.isNotEmpty) {
+      try {
+        final dynamic decoded = jsonDecode(utf8.decode(data, allowMalformed: true));
+        if (decoded is Map<String, dynamic>) body = decoded;
+      } on FormatException {
+        body = null;
+      }
+    } else if (data is Map<String, dynamic>) {
+      body = data;
+    }
+
+    final String pesan = (body?['message'] as String?) ??
+        (body?['error'] as String?) ??
+        'Gagal mengunduh berkas.';
+
+    switch (status) {
+      case 401:
+        return UnauthorizedException(pesan);
+      case 403:
+        return ForbiddenException(pesan);
+      case 404:
+        return NotFoundException(pesan);
+      case 409:
+        return ConflictException(pesan);
+      case 422:
+        final dynamic errors = body?['errors'];
+        Map<String, List<String>>? peta;
+        if (errors is Map<String, dynamic>) {
+          peta = errors.map((String k, dynamic v) => MapEntry<String, List<String>>(
+                k,
+                v is List ? v.map((dynamic x) => '$x').toList() : <String>['$v'],
+              ));
+        }
+        return ValidationException(peta, message: pesan);
+      default:
+        return status == null ? const NetworkException() : ServerException(pesan);
+    }
+  }
+
+  /// Body impor: multipart bila [fileBytes] ada, selain itu JSON teks `csv`.
+  dynamic _formImpor({
+    String? csv,
+    List<int>? fileBytes,
+    required String namaFile,
+  }) {
+    if (fileBytes != null && fileBytes.isNotEmpty) {
+      return FormData.fromMap(<String, dynamic>{
+        'file': MultipartFile.fromBytes(fileBytes, filename: namaFile),
+      });
+    }
+    return <String, dynamic>{'csv': csv ?? ''};
+  }
+
+  /// Multipart butuh header yang dibiarkan Dio lengkapi (boundary).
+  Options? _opsiImpor(List<int>? fileBytes) =>
+      fileBytes != null && fileBytes.isNotEmpty
+          ? Options(contentType: 'multipart/form-data')
+          : null;
+
+  /// Format `Y-m-d H:i:s` yang diterima validasi `date` di backend.
+  String _formatSqlDateTime(DateTime d) {
+    String dua(int n) => n.toString().padLeft(2, '0');
+    return '${d.year}-${dua(d.month)}-${dua(d.day)} '
+        '${dua(d.hour)}:${dua(d.minute)}:${dua(d.second)}';
   }
 }

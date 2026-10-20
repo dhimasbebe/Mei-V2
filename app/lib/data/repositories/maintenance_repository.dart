@@ -1,6 +1,7 @@
 import '../../domain/models/audit_log.dart';
 import '../../domain/models/dashboard.dart';
 import '../../domain/models/maintenance.dart';
+import '../../domain/models/share_link.dart';
 import '../api/api_service.dart';
 
 class MaintenanceRepository {
@@ -56,4 +57,16 @@ class MaintenanceRepository {
         dari: dari,
         sampai: sampai,
       );
+
+  // --- Ekspor & tautan bagikan (WS L, O — T09) -------------------------------
+
+  /// PDF resmi satu laporan (Supervisor/Admin) — biner siap disimpan.
+  Future<List<int>> getPdf(int id) => _api.getMaintenancePdf(id);
+
+  /// Buat tautan bagikan publik untuk laporan [id] (AC-O1).
+  Future<ShareLink> buatShareLink(int id, {DateTime? expiresAt}) =>
+      _api.buatShareLink(id, expiresAt: expiresAt);
+
+  /// Cabut tautan bagikan berdasarkan [token] (soft revoke, idempoten).
+  Future<void> cabutShareLink(String token) => _api.cabutShareLink(token);
 }

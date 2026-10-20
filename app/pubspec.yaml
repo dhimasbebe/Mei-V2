@@ -48,6 +48,17 @@ dependencies:
   flutter_local_notifications: ^17.2.4
   timezone: ^0.9.4
 
+  # ---------------------------------------------------------------------
+  # Fitur Ekspor/Impor (WS L/M/N/O — T09), DISETUJUI pengguna.
+  #   share_plus  : [O] bagikan tautan + berkas PDF lewat sheet OS
+  #   file_picker : [M] pilih berkas CSV saat impor massal alat
+  # Catatan deviasi DESIGN §C.3/T09 ("pubspec tidak bertambah paket"):
+  # kedua paket disetujui pengguna SETELAH dokumen itu ditulis, sehingga
+  # AC-L6 dibaca sebagai "tidak ada paket baru di luar yang disetujui".
+  # ---------------------------------------------------------------------
+  share_plus: ^10.1.4
+  file_picker: ^8.1.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,11 +72,11 @@ dev_dependencies:
 #   dependensi; tambahkan saat mengerjakan T12.
 # - Fitur Tahap 3 (docs/DESIGN-FEATURES-V3.md §6): antrean offline memakai
 #   shared_preferences (satu string JSON), TIDAK memakai hive.
-# - Paket berikut MENUNGGU persetujuan pengguna dan BELUM ditambahkan (T01
-#   hanya menyentuh komentar ini, tanpa paket baru):
+# - Seluruh paket Fitur Tahap 3 sudah DISETUJUI pengguna dan terpasang:
 #       image_picker, path_provider, flutter_local_notifications, timezone,
-#       flutter_image_compress.
-#   Setiap fitur terkait dirancang jalur ganda (lihat §5.2).
+#       flutter_image_compress, share_plus, file_picker.
+#   Setiap fitur terkait tetap dirancang jalur ganda (lihat §5.2) supaya web
+#   dan perangkat tanpa plugin tidak gagal total.
 
 flutter:
   uses-material-design: true

@@ -38,6 +38,7 @@ import '../../app/lib/core/audit/audit_aksi.dart';
 import '../../app/lib/core/audit/audit_detail.dart';
 import '../../app/lib/core/audit/audit_filter.dart';
 import '../../app/lib/core/charts/chart_range.dart';
+import '../../app/lib/core/files/file_export_spec.dart';
 import '../../app/lib/core/gesture/swipe_action.dart';
 import '../../app/lib/core/media/photo_policy.dart';
 import '../../app/lib/core/motion/app_motion.dart';
@@ -1295,6 +1296,80 @@ void main() {
       r7.indeks(r7.dari.subtract(const Duration(days: 1))) == null);
   check('AC-G2 indeks(sampai+1) == null',
       r7.indeks(r7.sampai.add(const Duration(days: 1))) == null);
+
+  // ====================================================================
+  // 29. WS L/M/N — penamaan & pemeriksaan berkas ekspor
+  //     (Tahap 3 T09; logika murni baru, ditambahkan di AKHIR berkas)
+  // ====================================================================
+
+  // Nama berkas WAJIB sama dengan yang dikirim backend lewat ->download(...)
+  // supaya unduhan dari aplikasi dan dari peramban tidak berbeda konvensi.
+  check('AC-L4 namaPdfLaporan selaras backend',
+      FileExportSpec.namaPdfLaporan(42) == 'meiv-laporan-42.pdf',
+      FileExportSpec.namaPdfLaporan(42));
+  check('AC-L4 namaLabelQr selaras backend',
+      FileExportSpec.namaLabelQr() == 'meiv-label-qr.pdf',
+      FileExportSpec.namaLabelQr());
+
+  // Tanggal selalu dua digit -> urutan nama berkas = urutan kronologis.
+  final DateTime d1 = DateTime(2026, 1, 5);
+  final DateTime d2 = DateTime(2026, 12, 31);
+  check('AC-L4 tanggal dua digit',
+      FileExportSpec.tanggal(d1) == '2026-01-05' &&
+          FileExportSpec.tanggal(d2) == '2026-12-31',
+      '${FileExportSpec.tanggal(d1)} / ${FileExportSpec.tanggal(d2)}');
+  check(
+      'AC-L4 namaPdfPeriode memuat kedua ujung',
+      FileExportSpec.namaPdfPeriode(d1, d2) ==
+          'meiv-ringkasan-2026-01-05_2026-12-31.pdf',
+      FileExportSpec.namaPdfPeriode(d1, d2));
+  check(
+      'AC-L4 namaCsvPeriode berekstensi .csv',
+      FileExportSpec.namaCsvPeriode(d1, d2).endsWith('.csv'),
+      FileExportSpec.namaCsvPeriode(d1, d2));
+
+  // AC-L1 — body PDF diawali `%PDF`; pemeriksaan ini yang mencegah halaman
+  // galat HTML/JSON tersimpan dengan nama .pdf.
+  check('AC-L1 tampakPdf menerima %PDF-1.7',
+      FileExportSpec.tampakPdf('%PDF-1.7\n'.codeUnits));
+  check('AC-L1 tampakPdf menolak JSON galat',
+      !FileExportSpec.tampakPdf('{"code":422}'.codeUnits));
+  check('AC-L1 tampakPdf menolak HTML', !FileExportSpec.tampakPdf('<html>'.codeUnits));
+  check('AC-L1 tampakPdf menolak kosong', !FileExportSpec.tampakPdf(<int>[]));
+  check('AC-L1 tampakPdf menolak terlalu pendek',
+      !FileExportSpec.tampakPdf(<int>[0x25, 0x50]));
+
+  // CSV tidak punya tanda ajaib; cukup pastikan ada isi dan bukan HTML.
+  check('AC-L5 tampakCsv menerima header',
+      FileExportSpec.tampakCsv('barcode_alat,merk\nAC-1,X'.codeUnits));
+  check('AC-L5 tampakCsv menolak HTML',
+      !FileExportSpec.tampakCsv('<!DOCTYPE html>'.codeUnits));
+  check('AC-L5 tampakCsv menolak kosong', !FileExportSpec.tampakCsv(<int>[]));
+
+  // AC-L3 — batas 90 hari dihitung INKLUSIF seperti PdfController::periode
+  // (`diffInDays + 1 > 90`), agar UI menolak SEBELUM server membalas 422.
+  final DateTime batasMulai = DateTime(2026, 1, 1);
+  check(
+      'AC-L3 rentang 90 hari masih diterima',
+      !FileExportSpec.rentangTerlaluPanjang(
+          batasMulai, batasMulai.add(const Duration(days: 89))));
+  check(
+      'AC-L3 rentang 91 hari ditolak di klien',
+      FileExportSpec.rentangTerlaluPanjang(
+          batasMulai, batasMulai.add(const Duration(days: 90))));
+  check('AC-L3 rentang satu hari diterima',
+      !FileExportSpec.rentangTerlaluPanjang(batasMulai, batasMulai));
+  check('AC-L3 batas hari == 90', FileExportSpec.maxHariPdf == 90);
+  check('AC-L3 batas baris == 500', FileExportSpec.maxBarisPdf == 500);
+
+  check('ukuranManusia byte', FileExportSpec.ukuranManusia(900) == '900 B',
+      FileExportSpec.ukuranManusia(900));
+  check('ukuranManusia KB',
+      FileExportSpec.ukuranManusia(842 * 1024) == '842 KB',
+      FileExportSpec.ukuranManusia(842 * 1024));
+  check('ukuranManusia MB',
+      FileExportSpec.ukuranManusia((1.4 * 1024 * 1024).round()) == '1.4 MB',
+      FileExportSpec.ukuranManusia((1.4 * 1024 * 1024).round()));
 
   // --------------------------------------------------------------------
   print('');
